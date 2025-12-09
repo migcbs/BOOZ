@@ -1,0 +1,2212 @@
+/* ----------------------------------- */
+/* IMPORTE DE TIPOGRAFÍA (SOLO NUNITO) */
+/* ----------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+
+/* ----------------------------------- */
+/* ESTILOS GENERALES CLIENTE         */
+/* ----------------------------------- */
+
+* {
+  box-sizing: border-box;
+  /* 🟢 Tipografía General: Nunito */
+  font-family: "Nunito", sans-serif; 
+}
+
+h1, h2, h3 {
+  margin-bottom: 10px;
+  /* 🟢 Tipografía General: Nunito para Títulos */
+  font-family: "Nunito", sans-serif; 
+}
+
+button {
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   CONTENEDOR GLOBAL DE PÁGINA 📦
+------------------------------------------------------- */
+
+.main-content-wrapper {
+  position: relative;
+  min-height: 100vh;
+  margin-top: -50px;
+  padding-top: 0; 
+}
+
+
+/* ------------------------------------------------------
+   BANNER INMERSIVO Y FONDO FLUIDO 🏞️
+------------------------------------------------------- */
+
+.banner {
+  width: 100vw; 
+  height: calc(110vh - 100px); 
+  margin-top: 0; 
+  
+
+  position: relative; 
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  border-bottom-left-radius: 40px; 
+  border-bottom-right-radius: 40px; 
+  overflow: hidden; 
+  
+  margin-bottom: -50px; 
+}
+
+.banner-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150%; 
+  
+  background-size: cover;
+  background-position: center top; 
+  
+  transform: translate3d(0, 0, 0); 
+  transition: none; 
+  z-index: 1; 
+}
+
+.banner-background .image-darkener {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.60); 
+    z-index: 2;
+}
+
+.banner-overlay {
+  position: relative; 
+  z-index: 5; 
+  background: transparent; 
+  backdrop-filter: none; 
+  padding: 20px 40px; 
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+}
+
+.banner-title {
+    font-size: 3rem; 
+    font-weight: 800;
+    margin-bottom: 25px;
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+    letter-spacing: 1px;
+    /* 🟢 Tipografía: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+
+/* ------------------------------------------------------
+   BOTÓN LIQUID GLASS (Mantenido) ✨
+------------------------------------------------------- */
+
+.reserve-button {
+    padding: 14px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px; 
+    cursor: pointer;
+    
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(8px); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    color: white; 
+    
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); 
+}
+
+.reserve-button:hover {
+    transform: translateY(-1px); 
+    background: rgba(255, 255, 255, 0.25); 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    color: #89CFF0;
+}
+
+
+/* ------------------------------------------------------
+   SECCIONES POSTERIORES (Contenido con Padding)
+------------------------------------------------------- */
+
+.page-content-padded {
+    padding: 0 4vw; 
+    max-width: 1100px; 
+    margin: 0 auto; 
+    position: relative; 
+    z-index: 5; 
+}
+
+.seccion-info {
+  margin-top: -30px; 
+  padding: 50px 30px; 
+  text-align: center;
+  background: var(--glass-bg); 
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--blur);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE (Ajuste móvil) 📱
+------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  /* Banner Móvil */
+  .banner {
+      height: calc(100vh - 50px); 
+      border-bottom-left-radius: 25px;
+      border-bottom-right-radius: 25px;
+      
+  }
+  
+  .banner-overlay {
+    padding: 25px 30px;
+  }
+  
+  .banner-title {
+    font-size: 2rem;
+  }
+  
+  .reserve-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+  }
+
+  .seccion-info {
+      margin-top: -20px; 
+  }
+}
+
+/* ----------------------------------- */
+/* CALENDARIO GENERAL                  */
+/* ----------------------------------- */
+
+.calendar-container {
+  text-align: center;
+  padding: 30px 0 100px; 
+  color: #a9b090; 
+  background-color: transparent; 
+  animation: fadeIn 0.5s ease;
+  width: 100%;
+  /* 🟢 Tipografía General */
+  font-family: "Nunito", sans-serif; 
+}
+
+.calendar-title {
+  font-size: 2.4rem; 
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #a9b090; 
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
+  text-transform: uppercase;
+  /* 🟢 Tipografía para Título: Nunito */
+  font-family: "Nunito", sans-serif; 
+}
+
+/* ----------------------------------- */
+/* NAVEGACIÓN Y DÍAS DE LA SEMANA      */
+/* ----------------------------------- */
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px; 
+    margin: 0 auto 20px;
+    padding: 0 20px;
+}
+
+.calendar-header .calendar-title {
+    margin: 0;
+}
+
+.days-of-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 0 20px;
+    font-weight: 700;
+    color: #8e8e93; 
+    margin-bottom: 10px;
+}
+
+.day-name {
+    text-align: center;
+    padding: 5px 0;
+    font-size: 0.9rem;
+}
+
+/* Estilos de navegación de calendario (btn-glass) */
+.nav-btn-glass {
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f2f2f7; 
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.nav-btn-glass:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ----------------------------------- */
+/* GRID Y TARJETAS (VISTA ESCRITORIO) */
+/* ----------------------------------- */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); 
+  gap: 15px;
+  max-width: 1200px; 
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.day-card {
+  padding: 15px 10px 45px; 
+  height: 120px; 
+  border-radius: 12px;
+  
+  background: rgba(255, 255, 255, 0.05); 
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  
+  text-align: center;
+  transition: all 0.3s ease; 
+  cursor: default; 
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center; 
+  position: relative;
+}
+
+.day-card:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.day-card.grayed-out {
+    opacity: 0.3;
+    overflow: hidden; 
+}
+
+.day-card.today-card {
+    border: 1px solid #89CFF0;
+    box-shadow: 0 0 8px rgba(137, 207, 240, 0.5); 
+}
+
+/* Nombre y número de día */
+.desktop-day-name { 
+    font-size: 0.8rem; 
+    font-weight: 500; 
+    color: #8e8e93; 
+    margin-bottom: 0; 
+}
+
+.desktop-day-number { 
+    font-size: 1.8rem; 
+    font-weight: 600;
+    margin-top: 18px;
+    margin-bottom: 0; 
+    color: #a9b090; 
+}
+
+/* ----------------------------------- */
+/* Indicadores de disponibilidad       */
+/* ----------------------------------- */
+
+.status-summary { 
+    display: none !important;
+}
+
+/* ----------------------------------- */
+/* BOTÓN RESERVAR (Liquid Glass)       */
+/* ----------------------------------- */
+
+.btn-reservar {
+  position: absolute;
+  bottom: 8px; 
+  left: 50%;
+  transform: translateX(-50%); 
+  
+  width: 90%; 
+  cursor: pointer;
+
+  background: rgba(137, 207, 240, 0.7); 
+  color: white; 
+  padding: 6px 10px; 
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.25s ease-out;
+  backdrop-filter: blur(8px); 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  font-size: 0.75rem; 
+}
+
+.btn-reservar:hover {
+  background: #89CFF0;
+  color: white; 
+  transform: translateX(-50%) scale(1.03); 
+}
+
+.btn-reservar:active {
+    transform: translateX(-50%) scale(0.95); 
+    box-shadow: none;
+}
+
+
+/* ----------------------------------- */
+/* RESPONSIVE: VISTA SEMANAL (MÓVIL)   */
+/* ----------------------------------- */
+
+@media (max-width: 768px) {
+    .calendar-container { background-color: transparent; }
+
+    .calendar-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        max-width: none; 
+        padding: 0 15px;
+    }
+
+    .day-card {
+        height: auto;
+        padding: 15px 20px;
+        
+        display: flex; 
+        flex-direction: row; 
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        
+        background: rgba(44, 44, 46, 0.9); 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        backdrop-filter: none;
+        
+        position: static;
+    }
+    
+    .btn-reservar {
+        position: static;
+        transform: none; 
+        width: auto;
+        
+        min-width: 90px;
+        padding: 10px 15px;
+        font-weight: 700;
+        font-size: 0.9rem; 
+    }
+    
+    .btn-reservar:hover {
+        transform: none;
+    }
+
+    .mobile-day-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex-grow: 1; 
+        color: #f2f2f7;
+    }
+    
+    .mobile-day-date {
+        color: #8e8e93;
+    }
+}
+
+/* ----------------------------------- */
+/* POPUP DE RESERVA (Liquid Glass)     */
+/* ----------------------------------- */
+
+
+/* ----------------------------------- */
+/* ESTILOS BASE DEL MODAL (Paso 1)     */
+/* ----------------------------------- */
+
+.modal-step-card {
+    max-width: 600px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    animation: scaleIn 0.3s ease-out; 
+    
+    /* 🟢 Tipografía General: Nunito */
+    font-family: "Nunito", sans-serif;
+}
+
+.step-title {
+    font-size: 2rem;
+    color: #89CFF0; 
+    margin-bottom: 10px;
+    /* 🟢 Tipografía para Título: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+
+.modal-subtitle {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 25px;
+}
+
+/* ----------------------------------- */
+/* OPCIONES DE PAQUETES/CLASE ÚNICA    */
+/* ----------------------------------- */
+
+.package-options-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.paquete-option-card {
+    background: rgba(255, 255, 255, 0.1); 
+    border: 2px solid transparent;
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    flex: 1; 
+    transition: all 0.2s;
+    min-width: 150px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.paquete-option-card:hover {
+    background: rgba(137, 207, 240, 0.2);
+    border-color: #89CFF0; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.package-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #34c759; 
+    margin: 5px 0 15px;
+}
+
+.btn-select-package {
+    background-color: #89CFF0; 
+    color: #1a232f;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-select-package:hover {
+    background-color: #5ab1db;
+}
+
+/* ----------------------------------- */
+/* CLASE MUESTRA (Gancho agresivo)     */
+/* ----------------------------------- */
+
+.divider-line {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    margin: 30px 0;
+}
+
+.clase-muestra-box {
+    background: rgba(137, 207, 240, 0.1);
+    border: 1px solid #89CFF0;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-clase-muestra {
+    background-color: #FFD700; 
+    color: #1a232f; 
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: 700;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.btn-clase-muestra:hover {
+    background-color: #e6c200;
+}
+
+/* ----------------------------------- */
+/* BOTÓN CANCELAR Y RESPONSIVE         */
+/* ----------------------------------- */
+
+.btn-cerrar-modal-simple {
+    background: transparent;
+    color: #ccc;
+    border: 1px solid #555;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    margin-top: 20px;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.btn-cerrar-modal-simple:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: white;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .modal-step-card {
+        padding: 20px;
+    }
+    .package-options-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .paquete-option-card {
+        min-width: 100%;
+    }
+    .btn-cerrar-modal-simple {
+        width: 100%;
+    }
+}
+
+/* ----------------------------------- */
+/* ÁREA DE SELECCIÓN DE CAMILLAS (Paso 2) */
+/* ----------------------------------- */
+
+.bed-selection-area {
+    margin: 25px 0;
+    border-top: 1px dashed rgba(255, 255, 255, 0.3);
+    padding-top: 20px;
+}
+
+.camillas-simuladas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+    padding: 10px 0;
+}
+
+.camilla-item {
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f2f2f7;
+    backdrop-filter: blur(10px);
+    
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none; 
+    min-width: 60px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.camilla-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.camilla-item.selected {
+    background-color: #34c759; 
+    color: #1a232f; 
+    border-color: #34c759;
+    font-weight: 700;
+    box-shadow: 0 0 8px #34c759;
+}
+
+.camilla-item.reserved {
+    background: rgba(255, 99, 71, 0.1); 
+    border-color: rgba(255, 99, 71, 0.3);
+    color: #FF6347; 
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.camilla-item.reserved:hover {
+    background: rgba(255, 99, 71, 0.1); 
+    transform: none;
+}
+
+/* ----------------------------------- */
+/* POPUP DE RESERVA (Liquid Glass - Parte 2)     */
+/* ----------------------------------- */
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+.popup-card {
+  background: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15); 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); 
+  color: #f2f2f7; 
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1); 
+  
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 450px;
+  animation: popupIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* 🟢 Tipografía General: Nunito */
+  font-family: "Nunito", sans-serif;
+}
+
+.popup-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: white;
+    /* 🟢 Tipografía para Título: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+.popup-card h4 {
+    color: #89CFF0; 
+    /* 🟢 Tipografía para Subtítulo: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+.popup-card p {
+    color: #ccc; 
+}
+
+/* 🟢 Keyframes */
+@keyframes fadeInOverlay {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes popupIn {
+  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Selección de Horario (Botones) */
+.hour-selection h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.hour-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.btn-hour {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white; 
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+}
+.btn-hour:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+.btn-hour.selected {
+    background: #89CFF0; 
+    color: #1a1a1a;
+    border-color: #89CFF0;
+    backdrop-filter: none;
+}
+.btn-hour.full {
+    background: rgba(255, 0, 0, 0.15); 
+    color: #ff3b30; 
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    cursor: not-allowed;
+    text-shadow: none;
+    backdrop-filter: blur(5px);
+}
+.btn-hour.full:hover {
+    background: rgba(255, 0, 0, 0.25);
+}
+
+.available-count {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-left: 5px;
+}
+
+/* Selección de Camillas (Fines de semana) */
+.spot-selection-container h3 {
+    font-size: 1.1rem;
+    margin: 15px 0 10px;
+    color: white;
+}
+.spots-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.spot-item {
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.spot-item:hover:not(.reserved) {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.spot-item.reserved {
+    background: #FC7358;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.7; 
+    border-color: #FC7358;
+    backdrop-filter: none;
+}
+
+.spot-item.selected:not(.reserved) {
+    background: #89CFF0;
+    color: #1a1a1a;
+    border-color: #89CFF0;
+    backdrop-filter: none;
+}
+
+.spot-legend {
+    font-size: 0.85rem;
+    color: #ccc; 
+}
+
+/* ----------------------------------- */
+/* Botones finales (Liquid Glass)      */
+/* ----------------------------------- */
+.popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-confirmar, .btn-cerrar {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  border: none;
+  backdrop-filter: blur(8px); 
+}
+
+.btn-confirmar {
+  background: rgba(137, 207, 240, 0.7); 
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.btn-confirmar:hover {
+    background: #89CFF0; 
+    backdrop-filter: none;
+}
+.btn-confirmar:disabled {
+  background: #26566d;
+  color: #ccc;
+  cursor: not-allowed;
+  backdrop-filter: blur(8px); 
+}
+
+.btn-cerrar {
+  background: rgba(252, 115, 88, 0.7); 
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.btn-cerrar:hover {
+    background: #e74c3c;
+    backdrop-filter: none;
+}
+
+/* ----------------------------------- */
+/* MEDIA QUERY (Móvil)                 */
+/* ----------------------------------- */
+@media (max-width: 480px) {
+    .popup-card {
+        padding: 20px;
+    }
+    .popup-card h3 {
+        font-size: 1.3rem;
+    }
+    .spots-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ----------------------------------- */
+/* BARRA DE PROGRESO (VISUAL MODERNO)  */
+/* ----------------------------------- */
+
+.progress-bar-container {
+    height: 35px;
+    border-radius: 10px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: rgba(137, 207, 240, 0.6); 
+    transition: width 0.4s ease-in-out;
+}
+
+.progress-bar-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white; 
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    z-index: 2; 
+}
+
+/* Estilos condicionales */
+.progress-bar-container.low .progress-bar-fill {
+    background: rgba(255, 149, 0, 0.7); 
+}
+
+.progress-bar-container.full {
+    border-color: rgba(255, 59, 48, 0.5);
+}
+
+.progress-bar-container.full .progress-bar-fill {
+    background: rgba(255, 59, 48, 0.8); 
+}
+
+.spot-selection-container.weekday-summary {
+    margin-top: 20px;
+}
+
+/* ----------------------------------- */
+/* PAQUETES (Liquid Glass) - Parte 2 */
+/* ----------------------------------- */
+
+.paquetes-container {
+  text-align: center;
+  padding: 50px 0; 
+  /* 🟢 Tipografía General: Nunito */
+  font-family: "Nunito", sans-serif;
+}
+
+.paquetes-container h2 {
+    color: white; 
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    /* 🟢 Tipografía para Título: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+
+.paquetes-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.paquete-card {
+  background: rgba(255, 255, 255, 0.05); 
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px); 
+  
+  padding: 30px 20px; 
+  border-radius: 20px; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  color: white; 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.paquete-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    /* 🟢 Tipografía para Subtítulo: Nunito */
+    font-family: "Nunito", sans-serif; 
+}
+
+.paquete-card:hover {
+  transform: scale(1.05); 
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1); 
+}
+
+.clases-count {
+    font-size: 1.2em;
+    color: #89CFF0; 
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.precio {
+  font-size: 3rem; 
+  font-weight: 800;
+  margin: 15px 0 25px 0;
+  color: #89CFF0; 
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.btn-comprar {
+  background: rgba(52, 203, 89, 0.8); 
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px); 
+  padding: 12px 25px;
+  border-radius: 12px; 
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-comprar:hover {
+  background: #34c759; 
+  transform: translateY(-1px);
+  backdrop-filter: none;
+}
+
+/* ----------------------------------- */
+/* MODAL / POP-UP (Ventana Flotante - Parte 2) */
+/* ----------------------------------- */
+
+.modal-overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+}
+
+.modal-card {
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 20px;
+    color: #fff;
+    text-align: left;
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+    /* 🟢 Tipografía General: Nunito */
+    font-family: "Nunito", sans-serif;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(25px); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+.modal-card h3 {
+    /* 🟢 Tipografía para Título: Nunito */
+    font-family: "Nunito", sans-serif;
+}
+
+.modal-subtitle {
+    color: #ccc;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* ----------------------------------- */
+/* FORMULARIO DE PAGO (Inputs - Parte 2) */
+/* ----------------------------------- */
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.3); 
+    color: #fff;
+    transition: border-color 0.2s, background-color 0.2s;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); 
+}
+
+.input-field::placeholder {
+    color: #999;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #89CFF0; 
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(137, 207, 240, 0.4); 
+}
+
+.address-fields {
+    display: flex;
+    gap: 10px;
+}
+
+.half-field {
+    flex: 1;
+}
+
+.card-element-label {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 5px;
+}
+
+.card-element-wrapper {
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); 
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.error-message {
+    color: #ffcdd2;
+    background-color: rgba(176, 0, 32, 0.4);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9em;
+    /* 🟢 Tipografía General: Nunito */
+    font-family: "Nunito", sans-serif;
+}
+
+.stripe-disclaimer {
+    font-size: 0.75em;
+    color: #999;
+    text-align: center;
+    margin-top: 15px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------- */
+/* BLOQUE DE UBICACIÓN (MAPA GLASS DRAMÁTICO Y FUNCIONAL) */
+/* ----------------------------------- */
+
+.ubicacion-container {
+  /* 🟢 Liquid Glass Dramático */
+  background: rgba(255, 255, 255, 0.05); 
+  border: 1px solid rgba(255, 255, 255, 0.15); 
+  backdrop-filter: blur(20px); 
+  
+  padding: 50px 30px; 
+  margin: 40px auto; 
+  max-width: 90vw; 
+  min-width: 300px;
+  
+  border-radius: 25px;
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5); 
+  
+  text-align: center;
+  color: white; 
+  /* 🟢 Tipografía General: Nunito */
+  font-family: "Nunito", sans-serif;
+}
+
+.ubicacion-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+  font-weight: 800;
+  color: #89CFF0; 
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  /* 🟢 Tipografía para Título: Nunito */
+  font-family: "Nunito", sans-serif;
+}
+
+.ubicacion-container p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #ccc;
+}
+
+/* 🟢 Mapa más grande respetando el contenedor */
+.mapa-iframe {
+  width: 100%;
+  height: 500px; 
+  border: 2px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 15px; 
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); 
+  margin-bottom: 30px;
+}
+
+/* 🟢 Botón Cómo Llegar (Liquid Glass - Accent) */
+.btn-como-llegar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 35px;
+    
+    /* Liquid Glass Estilo */
+    background: rgba(137, 207, 240, 0.15); 
+    border: 1px solid rgba(137, 207, 240, 0.5);
+    backdrop-filter: blur(8px);
+    
+    color: #89CFF0; 
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 50px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-como-llegar:hover {
+    background: rgba(137, 207, 240, 0.3); 
+    transform: translateY(-2px) scale(1.02);
+    color: white;
+}
+
+/* ----------------------------------- */
+/* RESPONSIVE MÓVIL 📱 (Ajuste para que el mapa no sea demasiado alto) */
+/* ----------------------------------- */
+
+@media (max-width: 768px) {
+    .ubicacion-container {
+        padding: 30px 15px;
+        margin: 20px auto;
+        border-radius: 15px;
+    }
+    
+    .ubicacion-container h2 {
+        font-size: 2rem;
+    }
+
+    .mapa-iframe {
+        height: 300px; 
+        margin-bottom: 20px;
+    }
+    
+    .btn-como-llegar {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------- */
+/* BOTÓN FLOTANTE Y MODAL DE WHATSAPP (SUTIL) */
+/* ----------------------------------- */
+
+/* 1. BOTÓN FLOTANTE (Sutil) */
+.floating-whatsapp-btn {
+  position: fixed; 
+  bottom: 30px;
+  right: 30px;
+  
+  background-color: rgba(255, 255, 255, 0.9); 
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%; 
+  width: 55px; 
+  height: 55px; 
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+  cursor: pointer;
+  z-index: 999; 
+  transition: transform 0.2s, background-color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.floating-whatsapp-btn:hover {
+  transform: scale(1.05);
+  background-color: white; 
+}
+
+/* 2. MODAL ESPECÍFICO DE WHATSAPP */
+.whatsapp-modal-card {
+    /* Reutiliza: .modal-card y .glass-card */
+    max-width: 400px;
+    padding: 25px;
+}
+
+.whatsapp-modal-card h3 {
+    color: #89CFF0; 
+    margin-bottom: 10px;
+    /* 🟢 Tipografía para Título: Nunito */
+    font-family: "Nunito", sans-serif;
+}
+
+.whatsapp-modal-card .modal-subtitle {
+    margin-bottom: 20px;
+}
+
+.whatsapp-modal-card .form-group {
+    margin-bottom: 15px;
+}
+
+.whatsapp-modal-card label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+/* 🟢 BOTÓN DE CERRAR DENTRO DEL MODAL (Absolute) */
+.btn-close-whatsapp-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.btn-close-whatsapp-modal:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 3. BOTONES DE ACCIÓN (Horizontal y Ajustado) */
+.modal-actions-whatsapp {
+    display: flex;
+    flex-direction: row; 
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-whatsapp-send {
+    flex-grow: 1; 
+    background-color: #25D366; 
+    color: white;
+    border: none;
+    padding: 10px 15px; 
+    border-radius: 8px;
+    font-size: 1em; 
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-whatsapp-send:hover {
+    background-color: #1FAF50;
+}
+
+.btn-cerrar-modal-whatsapp {
+    flex-shrink: 0;
+    background: transparent;
+    color: #ccc;
+    border: 1px solid #555;
+    padding: 10px 15px; 
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-cerrar-modal-whatsapp:hover {
+    border-color: #89CFF0;
+    color: #89CFF0;
+}
+
+/* RESPONSIVE: Ajuste del botón en móvil */
+@media (max-width: 600px) {
+    .floating-whatsapp-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px; 
+        height: 50px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------- */
+/* ESTILOS DE LA PÁGINA DE PERFIL      */
+/* ----------------------------------- */
+
+.profile-page-container {
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 0 20px;
+    color: white; 
+    /* 🟢 Tipografía General: Nunito */
+    font-family: "Nunito", sans-serif;
+    
+    /* CÓDIGO AÑADIDO (Mejora de fuente y transición) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: color 0.3s ease;
+    z-index: 10;
+}
+
+.main-title-glass {
+    font-size: 2.5rem;
+    color: #89CFF0; 
+    margin-bottom: 30px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
+    /* 🌟 Sutil resplandor de texto para el enfoque Liquid Glass */
+    text-shadow: 0 0 10px rgba(137, 207, 240, 0.5);
+}
+
+/* 🟢 NUEVAS CLASES PARA TÍTULOS Y SUBTÍTULOS */
+.card-title-accent {
+    font-size: 1.5rem;
+    color: #89CFF0; /* Color primario */
+    margin-bottom: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-subtitle-small {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: 400;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* Fin Nuevas Clases */
+
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    gap: 30px;
+}
+
+/* 🔄 AJUSTE CLAVE: ESTILO CRISTAL PULIDO para .profile-card */
+.profile-card {
+    margin-bottom: 20px;
+    padding: 30px;
+    border-radius: 20px;
+    /* Fondo Glass más transparente para el efecto pulido */
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(20px) saturate(180%); 
+    /* Borde más claro y sutil */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Sombra exterior suave para profundidad */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+    transition: transform 0.3s, box-shadow 0.3s;
+    
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌟 Overlay de Reflejo para la sensación de "Liquid Glass" */
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.05), 
+        rgba(255, 255, 255, 0) 50%
+    );
+    pointer-events: none; 
+    z-index: 1;
+}
+
+.profile-card:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-4px); 
+}
+
+/* === INFORMACIÓN PERSONAL === */
+.personal-info-card {
+    text-align: center;
+    /* Asegura que el título personalizado sea el único con h2 en esta tarjeta */
+    margin-bottom: 10; 
+}
+
+.profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #89CFF0;
+    margin-bottom: 15px;
+    /* Sutil elevación para el foco */
+    box-shadow: 0 0 15px rgba(137, 207, 240, 0.4); 
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    font-family: "Nunito", sans-serif; 
+    font-weight: 700;
+}
+
+.member-since {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+/* 🟢 Datos de Contacto y Médicos */
+.contact-details, .medical-summary {
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.contact-details p {
+    margin: 10px 0; /* Espaciado más limpio */
+    font-size: 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center; /* Alineación vertical centrada para íconos */
+    gap: 10px; 
+    color: #f2f2f7;
+    font-weight: 300;
+}
+
+/* 🟢 Estilos para el resumen médico */
+.medical-summary p {
+    margin: 8px 0;
+    text-align: left;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #ccc;
+}
+.medical-summary strong {
+    color: white;
+    font-weight: 500;
+}
+
+.btn-edit-profile {
+    background-color: transparent;
+    border: 1px solid #89CFF0; 
+    color: #89CFF0;
+    padding: 10px 20px; 
+    border-radius: 10px; 
+    margin-top: 25px; 
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    /* Sutil efecto de cristal en el botón */
+    box-shadow: 0 4px 10px rgba(137, 207, 240, 0.2);
+}
+.btn-edit-profile:hover {
+    background-color: rgba(137, 207, 240, 0.15);
+    color: white;
+    border-color: white;
+    box-shadow: 0 6px 15px rgba(137, 207, 240, 0.4); /* Sombra más fuerte al pasar el mouse */
+}
+
+
+/* -------------------------------------- */
+/* === RESUMEN DE MEMBRESÍA (SUTIL) === */
+/* -------------------------------------- */
+/* Removida la definición directa de h3, ahora usa .card-title-accent */
+.membership-card {
+    /* Mantenemos el estilo de la tarjeta principal */
+}
+
+.package-name {
+    /* AJUSTE: Más sutil */
+    font-weight: 500; /* Original: 600 */
+    margin-bottom: 20px; /* Original: 25px */
+    font-size: 1.05rem; /* Original: 1.1rem */
+    color: #f2f2f7;
+}
+
+/* 🟢 AJUSTADO SUTIL: Estilo de Créditos Arcade */
+.credits-count-arcade {
+    font-size: 3rem; /* Original: 3.5rem */
+    font-weight: 700; /* Original: 800 */
+    color: #FFD700; 
+    margin: 10px 0 25px; /* Original: 15px 0 30px */
+    /* AJUSTE: Sombra de glow más suave */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); /* Original: 0 0 15px rgba(255, 215, 0, 0.6) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.credits-count-arcade svg {
+    font-size: 2rem; /* Original: 2.5rem */
+    margin-left: 8px; /* Original: 10px */
+    transition: transform 0.3s;
+}
+.credits-count-arcade:hover svg {
+    /* AJUSTE: Animación más sutil */
+    transform: rotate(0deg) scale(1.05); /* Original: rotate(-10deg) scale(1.1) */
+}
+
+/* 🟢 AJUSTADO SUTIL: Widget de Reloj para Días Restantes (Pulido) */
+.clock-widget-container {
+    text-align: center;
+    margin-bottom: 25px; /* Original: 30px */
+    padding: 12px; /* Original: 15px */
+    border-radius: 12px; /* Original: 15px */
+    /* AJUSTE: Fondo más transparente */
+    background: rgba(52, 199, 89, 0.03); /* Original: rgba(52, 199, 89, 0.05) */
+    backdrop-filter: blur(10px); /* Original: blur(15px) */
+    border: 1px solid rgba(52, 199, 89, 0.1); /* Original: 1px solid rgba(52, 199, 89, 0.2) */
+}
+.clock-face {
+    width: 110px; /* Original: 130px */
+    height: 110px;
+    margin: 0 auto 8px; /* Original: 0 auto 10px */
+    border-radius: 50%;
+    border: 2px solid #34c759; /* Original: 3px solid #34c759 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* AJUSTE: Fondo de reloj más transparente */
+    background: rgba(52, 199, 89, 0.08); /* Original: rgba(52, 199, 89, 0.1) */
+    box-shadow: 0 0 5px rgba(52, 199, 89, 0.3); /* Original: 0 0 10px rgba(52, 199, 89, 0.5) */
+}
+.days-number {
+    font-size: 2.5rem; /* Original: 3.2rem */
+    font-weight: 800; /* Original: 900 */
+    color: white;
+    line-height: 1;
+}
+.days-label {
+    font-size: 0.6rem;
+    color: #ccc;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+.expiration-note {
+    font-size: 0.8rem; /* Original: 0.9rem */
+    color: #b0b0b0; /* Original: #ccc */
+    font-style: italic;
+    font-weight: 300;
+}
+
+
+.btn-buy-more {
+    background-color: #89CFF0;
+    font-weight: bolder;
+    color: #1a232f; 
+    border: none;
+    padding: 12px 15px; /* Original: 14px 15px */
+    border-radius: 8px; /* Original: 10px */
+    font-weight: 600; /* Original: 700 */
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    /* AJUSTE: Sombra más sutil */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Original: 0 4px 10px rgba(0, 0, 0, 0.2) */
+}
+.btn-buy-more:hover {
+    background-color: #5ab1db; 
+    transform: translateY(-1px); /* Original: translateY(-3px) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Original: 0 8px 15px rgba(0, 0, 0, 0.3) */
+}
+
+/* 🟢 AJUSTADO SUTIL: Botón de Cancelación de Membresía */
+.btn-cancel-membership {
+    background-color: transparent;
+    border: 1px solid #FF6347;
+    color: #FF6347; 
+    padding: 8px 15px; /* Original: 10px 15px */
+    border-radius: 8px; /* Original: 10px */
+    font-weight: 500; /* Original: 600 */
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    margin-top: 10px; /* Original: 15px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem; /* Original: 0.95rem */
+}
+.btn-cancel-membership:hover {
+    /* AJUSTE: Fondo de hover más suave */
+    background-color: rgba(255, 99, 71, 0.05); /* Original: rgba(255, 99, 71, 0.1) */
+    color: white;
+    border-color: white;
+}
+
+
+/* === PRÓXIMA RESERVA (Destacado) === */
+.upcoming-card {
+    background: rgba(137, 207, 240, 0.1); /* Fondo más acentuado */
+    border: 1px solid rgba(137, 207, 240, 0.3); 
+    /* Box shadow más sutil aquí ya que el fondo es más fuerte */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.upcoming-card:hover {
+    transform: scale(1.01) translateY(-4px); /* Animación de destaque */
+}
+
+/* Removida la definición directa de h2, ahora usa .card-title-accent */
+
+.next-class-date {
+    font-size: 1.6rem; 
+    font-weight: 700;
+    margin-bottom: 25px; 
+    color: #f2f2f7;
+    /* Sutil glow de texto */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.detail-row {
+    font-size: 1.1rem;
+    margin: 15px 0; /* Espaciado limpio */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ccc;
+    font-weight: 300;
+}
+.detail-row strong {
+    color: white;
+}
+
+.btn-cancel-upcoming {
+    background-color: #FF6347; 
+    color: white;
+    border: none;
+    padding: 14px 15px; /* Más padding */
+    border-radius: 10px; 
+    margin-top: 30px; 
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-cancel-upcoming:hover {
+    background-color: #e0543e; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 99, 71, 0.4);
+}
+
+/* 🟢 Estilo para el botón de cancelación deshabilitado */
+.btn-cancel-disabled {
+    background-color: rgba(26, 35, 47, 0.5); /* Fondo oscuro semitransparente */
+    color: #888;
+    border: 1px solid #555;
+    padding: 14px 15px;
+    border-radius: 10px;
+    margin-top: 30px;
+    width: 100%;
+    font-weight: 600;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: none;
+}
+
+.no-booking-message {
+    text-align: center;
+    padding: 20px 0;
+}
+/* Removida la definición directa de h3, ahora usa .card-title-accent */
+
+/* ----------------------------------------- */
+/* === CALENDARIO PRÓXIMO / HISTORIAL === */
+/* ----------------------------------------- */
+/* Removida la definición directa de h3, ahora usa .card-title-accent */
+
+.booking-list {
+    list-style: none;
+    padding: 0;
+}
+
+.booking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0; 
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1); 
+    transition: background-color 0.2s; /* Transición para hover */
+}
+
+.booking-item:last-child {
+    border-bottom: none;
+}
+/* 🟢 Efecto Hover Sutil para ítems de lista */
+.booking-item:hover {
+    background-color: rgba(255, 255, 255, 0.03); 
+    padding-left: 5px; 
+}
+
+.booking-status-icon {
+    margin-right: 15px;
+    font-size: 1.4rem; 
+    /* Añadir transición para el icono */
+    transition: transform 0.2s; 
+}
+
+.booking-details {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.coach-name {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-left: 10px;
+}
+
+.booking-status {
+    padding: 7px 12px; 
+    border-radius: 8px; 
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: center;
+    /* Sombra interior para dar profundidad al estado */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); 
+}
+
+.booking-status.confirmada {
+    background: rgba(52, 199, 89, 0.1); 
+    color: #34c759;
+}
+.booking-status.completada {
+    background: rgba(137, 207, 240, 0.1);
+    color: #89CFF0;
+}
+.booking-status.cancelada {
+    background: rgba(255, 99, 71, 0.1);
+    color: #FF6347;
+}
+
+/* === ESTILOS PARA FORMULARIOS Y BOTONES (CRISTAL PULIDO / Auth) === */
+
+/* 🔄 AJUSTE CLAVE: Inputs con estilo Liquid Glass/Cristal Pulido */
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--text-light, white);
+    
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: border-color 0.2s, background-color 0.2s;
+    font-family: "Nunito", sans-serif; 
+}
+
+.auth-input:focus {
+    border-color: #89CFF0;
+    background: rgba(255, 255, 255, 0.1); 
+    /* Sombra de enfoque de iOS/Material Design */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(137, 207, 240, 0.5); 
+}
+
+/* Ajuste de color del texto en <select> para navegadores oscuros */
+.auth-input select {
+    appearance: none; 
+}
+.auth-input option {
+    background-color: var(--dark-bg, #1a232f); 
+    color: white;
+}
+
+/* 🟢 AJUSTE: Botón Principal (Mantenemos contraste y funcionalidad) */
+.auth-button {
+    background-color: #89CFF0;
+    color: #1a232f; 
+    border: 1px solid #89CFF0; 
+    padding: 12px 20px; 
+    border-radius: 10px; 
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+.auth-button:hover {
+    background-color: #5ab1db; 
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 🟢 AJUSTE: Botón Secundario (Cristal Pulido) */
+.auth-secondary-btn {
+    background-color: transparent;
+    border: 1px solid #FF6347;
+    color: #FF6347;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); 
+}
+.auth-secondary-btn:hover {
+    background-color: rgba(255, 99, 71, 0.15); 
+    color: white;
+    border-color: white;
+}
+
+/* ------------------------------------------- */
+/* === ESTILOS ESPECÍFICOS DEL FORMULARIO DE EDICIÓN === */
+/* ------------------------------------------- */
+
+.error-text {
+    color: #FF6347;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: left;
+    font-weight: 500; /* Ligeramente más legible */
+}
+
+/* 🟢 AJUSTE CLAVE: Contenedor como Tarjeta Liquid Glass destacada */
+.profile-edit-form-container {
+    max-width: 650px; /* Un poco más ancho para mejor distribución */
+    margin: 50px auto; 
+    text-align: center; 
+    padding: 40px; /* Más padding para aire */
+    border-radius: 25px; /* Bordes más redondeados */
+
+    /* Estilo Liquid Glass */
+    background: rgba(255, 255, 255, 0.08); /* Más prominente */
+    backdrop-filter: blur(25px) saturate(200%); /* Blur más intenso */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4); /* Sombra más profunda */
+    transition: all 0.4s ease-out; /* Transición general */
+}
+
+.profile-photo-edit-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-picture-edit {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #89CFF0;
+    margin-bottom: 15px;
+    /* Sombra de enfoque azul/cielo */
+    box-shadow: 0 0 0 4px rgba(137, 207, 240, 0.2), 0 0 15px rgba(137, 207, 240, 0.6); 
+    transition: all 0.3s;
+}
+
+/* 🟢 AJUSTE: Botón de Subir Foto (Destacado Dorado) */
+.btn-upload-photo {
+    background-color: transparent;
+    border: 1px solid #FFD700; 
+    color: #FFD700;
+    padding: 10px 20px; /* Más grande */
+    border-radius: 10px; /* Más redondeado */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    /* Sombra sutil */
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+}
+
+.btn-upload-photo:hover {
+    background-color: rgba(255, 215, 0, 0.2); /* Fondo más visible */
+    color: white;
+    border-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.medical-info-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Borde más visible */
+    padding-top: 25px;
+    margin-top: 30px; /* Más espacio */
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.profile-edit-form-container label {
+    display: block;
+    margin-top: 18px; /* Más espacio */
+    margin-bottom: 8px;
+    font-weight: 600; /* Más peso */
+    color: #f2f2f7; /* Color más blanco */
+}
+
+/* 🟢 Secciones de botones de acción del formulario */
+.form-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+/* === BOTONES DEL FORMULARIO DE EDICIÓN (Aseguramos definición) === */
+
+/* El botón principal de Guardar usará .auth-button (ya definido en el bloque anterior) */
+/* El botón secundario de Cancelar usará .auth-secondary-btn (ya definido en el bloque anterior) */
+
+/* Aseguramos que los botones de acción del formulario se vean bien dentro de .form-actions */
+.form-actions .auth-button, 
+.form-actions .auth-secondary-btn {
+    flex-grow: 1;
+    max-width: 50%;
+}
+
+/* ------------------------------------------- */
+/* === MEDIA QUERIES (RESPONSIVIDAD MEJORADA) === */
+/* ------------------------------------------- */
+@media (max-width: 992px) {
+    /* 🟢 AJUSTE GLOBAL: Reducir margen superior y ancho */
+    .profile-page-container {
+        margin: 50px auto;
+        padding: 0 15px; /* Menos padding en los lados */
+    }
+    
+    .main-title-glass {
+        font-size: 2rem; /* Título principal más pequeño */
+        margin-bottom: 20px;
+    }
+    
+    /* 🟢 AJUSTE DE GRID: De dos columnas a una sola columna */
+    .profile-grid {
+        grid-template-columns: 1fr; 
+        gap: 25px; /* Reducir el espacio entre tarjetas */
+    }
+    
+    /* 🟢 ORDEN DE COLUMNAS EN MÓVIL: Personal Info (1) -> Membresía (2) -> Clases (3) */
+    /* No hay clases de columna explícitas, asumimos que están en el orden deseado o las definimos: */
+    /* Asumiendo que la primera columna contiene Personal Info y Membresía */
+    
+    .profile-card {
+        padding: 25px; /* Reducir el padding de todas las tarjetas */
+        border-radius: 15px;
+    }
+    
+    /* === AJUSTES DE CONTENIDO === */
+    
+    /* Ajustes para la tarjeta de Membresía */
+    .credits-count-arcade {
+        font-size: 2.8rem; /* Reducir aún más en móvil */
+        margin: 10px 0 20px;
+    }
+    .credits-count-arcade svg {
+        font-size: 1.8rem;
+    }
+    .clock-face {
+        width: 90px;
+        height: 90px;
+    }
+    .days-number {
+        font-size: 2rem;
+    }
+    
+    /* Ajustes para la tarjeta de Próxima Clase */
+    .next-class-date {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+    .detail-row {
+        font-size: 1rem;
+        margin: 10px 0;
+    }
+    
+    /* Ajustes para Listas de Clases (Historial/Próximo Plan) */
+    .booking-item {
+        padding: 10px 0; 
+        flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+    }
+    .booking-details {
+        flex-basis: 100%; /* La fecha y hora ocupan toda la línea */
+        margin-top: 5px;
+        order: 2; /* Mover la fecha y el coach debajo del ícono de estado */
+    }
+    .booking-status {
+        order: 3; /* El estado se coloca debajo */
+        margin-top: 10px;
+        min-width: 100%; /* Ocupa todo el ancho si se envuelve */
+    }
+    .booking-status-icon {
+        order: 1; /* El ícono se queda arriba a la izquierda */
+        margin-right: 10px;
+    }
+
+    /* Ajuste para el formulario de edición en móviles */
+    .profile-edit-form-container {
+        padding: 25px;
+        margin: 20px auto;
+        border-radius: 15px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .form-actions .auth-button, 
+    .form-actions .auth-secondary-btn {
+        max-width: 100%;
+    }
+}
