@@ -1,0 +1,706 @@
+/* ------------------------------------------------------
+   ESTILO GLOBAL
+------------------------------------------------------- */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --blur: blur(12px);
+  --transition: 0.35s ease;
+
+  /* Temas por rol */
+  --cliente-color: #6ab7ff;
+  --coach-color: #9b6bff;
+  --admin-color: #ff6b6b;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #fff;
+}
+
+/* Ocultar navbar en login y register */
+.no-navbar ~ .navbar-container {
+  display: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   NAVBAR (Contenedor y Estilo Liquid Glass) 🧊
+------------------------------------------------------- */
+
+.navbar-container {
+  /* CORRECCIÓN CLAVE: El contenedor fijo empieza en el tope del viewport */
+  position: fixed;
+  top: 0; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 1100px;
+  z-index: 999;
+  /* Transición más rápida para el efecto de aparición */
+  transition: top 0.3s ease, transform 0.3s ease, width 0.3s ease;
+}
+
+.navbar {
+  /* Margen superior para el efecto de "flotante". 
+     Si el contenedor fixed tiene top: 0, este margen crea el espacio visible. */
+  margin-top: 20px; 
+  
+  width: 100%;
+  padding: 14px 24px; 
+  border-radius: 50px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  color: white;
+  transition: var(--transition);
+}
+
+.navbar.scrolled {
+  /* Al hacer scroll, eliminamos el margen superior y aplicamos el glassmorphism */
+  margin-top: 10px;
+  
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  /* Borde más sutil, como en macOS */
+  border: 1px solid var(--glass-border); 
+  /* Sombra más suave y moderna */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+  
+  /* Redondeamos las esquinas inferiores para el efecto "pegado" al scroll */
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+/* ------------------------------------------------------
+   SECCIONES
+------------------------------------------------------- */
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* El nav-center (antes nav-links) crece para centrarse y empujar los laterales */
+.nav-center {
+  flex-grow: 1; /* Permite que ocupe el espacio central */
+  justify-content: center; /* Centra los links */
+  gap: 20px; /* Separación de links ligeramente mayor */
+  margin-left: 15vh;
+}
+
+.nav-right {
+  gap: 12px; /* Espacio entre Perfil/Logout/Social */
+}
+
+/* Logo */
+.nav-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-right: 25px; /* Empuja un poco los links */
+}
+
+/* ------------------------------------------------------
+   LINKS DE NAVEGACIÓN
+------------------------------------------------------- */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.95rem; 
+  font-weight: 600; /* 🟢 Cambiado a 600 (Semibold) para un look más limpio que 'bolder' */
+  transition: var(--transition);
+  position: relative;
+  /* 🟢 Pequeño padding horizontal para que la zona de hover sea más generosa */
+  padding: 5px 0; 
+}
+
+.navbar a:hover {
+  /* Si el color es #89CFF0 (un azul claro), la opacidad 1 está bien */
+  opacity: 1; 
+  color: #89CFF0;
+  /* 🟢 Agregamos un transform sutil para diferenciarlo del link activo */
+  transform: translateY(-1px);
+}
+
+
+
+/* ------------------------------------------------------
+   BOTONES (Perfil + Logout)
+------------------------------------------------------- */
+.nav-btn {
+  /* Hacemos los botones más compactos y minimalistas */
+  padding: 7px 14px;
+  border-radius: 50px; /* Menos redondeados, más modernos */
+  font-weight: 500;
+  font-size: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: var(--transition);
+  cursor: pointer;
+  color: white; /* Aseguramos color de texto */
+  text-decoration: none; /* Aseguramos que los Links se vean como botones */
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15); /* Hover más suave */
+}
+
+.logout-btn {
+  /* Colores sutiles para el peligro */
+  color: #f7a39d; 
+  border-color: #f7a39d55;
+  margin-right: 0;
+}
+
+.logout-btn:hover {
+  background: #f7a39d33;
+}
+
+/* CSS Adicional para el icono de perfil */
+.nav-btn-profile.icon-only {
+  /* Hacemos el padding más simétrico para un ícono */
+  padding: 8px 10px; 
+  /* Si quieres que sea un círculo perfecto */
+  /* border-radius: 50%; */ 
+  display: flex; /* Asegura que el ícono esté centrado */
+  align-items: center;
+  justify-content: center;
+}
+/* Ajuste para que el hover se aplique al icono también */
+.nav-btn-profile.icon-only svg {
+  color: white; /* Asegura el color del icono */
+}
+
+.nav-btn-profile.icon-only svg:hover {
+  color: #89CFF0;
+}
+
+/* ------------------------------------------------------
+   REDES SOCIALES (SOCIAL ICONS)
+------------------------------------------------------- */
+.social-icons {
+  display: flex;
+  gap: 10px; /* Más compacto */
+  align-items: center;
+}
+
+.social-icons a {
+  font-size: 1.3rem; /* Sutil */
+  color: white;
+  opacity: 0.7; /* Opacidad inicial para un look más "gris" */
+  transition: var(--transition);
+}
+
+.social-icons a:hover {
+  color: #89CFF0;
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE (UX/UI para móviles)
+------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  /* Ocultamos los links de navegación en tablet/móvil para evitar saturación */
+  /* Lo ideal sería un menú hamburguesa, pero aquí lo ocultamos por simplicidad */
+  .nav-center {
+    display: none;
+  }
+
+  .nav-left {
+    flex-grow: 1; /* Ocupa el espacio que dejó el centro */
+    justify-content: flex-start;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .navbar-container {
+    top: 0; /* CORREGIDO a 0 en móvil también */
+    width: 96%;
+  }
+
+  .navbar {
+    margin-top: 10px; /* Menos espacio flotante en móvil */
+    padding: 10px 15px;
+    border-radius: 30px; /* Ajustamos redondeo en móvil */
+  }
+  
+  .navbar.scrolled {
+    margin-top: 0;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  /* Ocultamos Redes Sociales para priorizar acciones (Perfil/Logout) */
+  .social-icons {
+    display: none; 
+  }
+
+  .nav-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 50px;
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+    margin-right: 15px;
+  }
+}
+
+/* ------------------------------------------------------
+   BOTÓN DE CERRAR SESIÓN (Mantenido)
+------------------------------------------------------- */
+
+.logout-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  font-weight: bolder;
+  backdrop-filter: var(--blur);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background: rgba(233, 7, 7, 0.18);
+  border-color: rgba(255,255,255,0.32);
+  transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE NAV (Mantenido y adaptado)
+------------------------------------------------------- */
+@media (max-width: 780px) {
+  .navbar {
+    padding: 12px 16px;
+  }
+
+  /* Las clases .nav-links y .navbar-social ya no existen/se usan diferente, 
+     pero las mantengo por si las necesitas en otros archivos */
+  .nav-links {
+    gap: 10px;
+    overflow-x: auto;
+  }
+
+  .navbar a {
+    font-size: 0.9rem;
+  }
+
+  .navbar-social a {
+    font-size: 1.25rem;
+  }
+
+  .logout-btn {
+    padding: 7px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   AUTH PAGES (Login / Register)
+------------------------------------------------------- */
+
+/* --- Contenedor --- */
+.auth-container {
+  margin: 110px auto;
+  max-width: 420px; /* Ligeramente más estrecho, más elegante */
+  background: var(--glass-bg);
+  padding: 40px; /* Padding uniforme */
+  border-radius: 20px; /* Menos redondeado, más moderno */
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--blur);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Sombra más sutil */
+  animation: fadeIn 0.6s ease;
+  color: white; /* Aseguramos texto blanco en todo el contenedor */
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 1.8rem; /* Ligeramente más pequeño, más sutil */
+  margin-bottom: 30px;
+  font-weight: 600; /* Menos negrita que 700, más Apple */
+}
+
+/* --- Formulario y Elementos --- */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    opacity: 0.85; /* Sutil */
+}
+
+/* Inputs y Textareas */
+.auth-input {
+  width: 100%;
+  padding: 12px 15px; /* Padding ajustado */
+  border-radius: 12px;
+  margin-bottom: 20px; /* Espacio uniforme */
+  background: rgba(255, 255, 255, 0.08); /* Fondo más transparente */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde más sutil */
+  color: white;
+  outline: none;
+  font-size: 1rem;
+  transition: var(--transition);
+  /* Reseteo para textarea y select */
+  resize: vertical; 
+}
+
+.auth-input::placeholder {
+    color: rgba(255, 255, 255, 0.5); /* Placeholder más tenue */
+}
+
+.auth-input:focus {
+  background: rgba(255, 255, 255, 0.15); /* Efecto de focus más visible */
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Estilo para el select, haciéndolo consistente */
+.auth-input[name="condicion"] {
+    appearance: none; /* Elimina la flecha nativa */
+    padding-right: 30px; /* Espacio para una flecha personalizada si se desea */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23ffffff' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+
+/* --- Wrapper de Contraseña (Mejorado para Icono) --- */
+.password-wrapper {
+  position: relative;
+  margin-bottom: 20px; /* Espacio uniforme */
+}
+
+/* Ajuste del input dentro del wrapper para dejar espacio al icono */
+.password-wrapper .auth-input {
+  padding-right: 40px; 
+  margin-bottom: 0; /* Quitamos el margin-bottom del input, lo dejamos en el wrapper */
+}
+
+/* Ocultar el toggle-pass en el input de confirmación de contraseña */
+.password-wrapper:last-of-type .auth-input {
+    padding-right: 15px !important; /* Volvemos al padding normal */
+}
+
+.password-wrapper:last-of-type .toggle-pass {
+    display: none;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 12px; /* Posición ajustada para el icono */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.1rem; /* Tamaño de icono sutil */
+  opacity: 0.7;
+  user-select: none;
+  transition: var(--transition);
+  color: white;
+  background: none;
+  border: none;
+  padding: 5px; /* Área de clic más grande */
+}
+
+.toggle-pass:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* --- Checkbox Elegante --- */
+.checkbox-label {
+    display: flex;
+    align-items: flex-start; /* Alinea el texto con la caja */
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 25px; /* Separación después del checkbox */
+    font-weight: 400; 
+    font-size: 0.95rem;
+    cursor: pointer;
+    opacity: 1; 
+}
+
+.checkbox-label input[type="checkbox"] {
+    /* Estilo minimalista para el checkbox */
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+    background-color: white;
+    border-color: white;
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+    /* Marca de verificación */
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 4px;
+    height: 8px;
+    border: solid #111;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+
+/* --- Botones --- */
+/* Main button */
+.auth-button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px; /* Más espacio después del último input */
+  border-radius: 12px; /* Consistente con inputs */
+  background: white;
+  color: #111; /* Color oscuro sólido */
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3); /* Sombra más sutil */
+}
+
+/* Secondary button (Link/Register/Volver) */
+.auth-secondary-text {
+    text-align: center;
+    margin-top: 25px; /* Más espacio */
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.auth-secondary-btn {
+  padding: 6px 12px; 
+  border-radius: 8px; 
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-weight: 500;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  transition: var(--transition);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-top: 10px; /* Separación de otros botones */
+}
+
+.auth-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(0); 
+  box-shadow: none;
+}
+
+/* Estilo para el botón de "Volver al login" */
+.auth-back-btn {
+    margin-top: 15px;
+}
+
+
+/* --- Estilo de Error (Anterior, mantenido pero reemplazado por el popup) --- */
+/* Esta clase ya no se usa con el nuevo componente de errores */
+.error {
+    display: none; 
+}
+
+
+/* ------------------------------------------------------
+   ERROR NOTIFICATION POPUP (Nuevo estilo UX)
+------------------------------------------------------- */
+
+.error-notification-popup {
+  position: sticky; 
+  top: 0px; /* Ajustado al borde superior del contenedor para un mejor efecto sticky */
+  z-index: 10;
+  
+  /* Estilo Glassmorphism de Error */
+  background: rgba(255, 66, 66, 0.15); /* Fondo rojo sutil y transparente */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+  
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 25px; 
+  animation: fadeInDown 0.4s ease-out; 
+}
+
+.error-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.error-notification-header strong {
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    opacity: 0.7;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.error-notification-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0;
+    font-size: 0.9rem;
+}
+
+.error-notification-list li {
+    margin-bottom: 5px;
+    padding-left: 10px;
+    position: relative;
+}
+
+.error-notification-list li::before {
+    content: "•";
+    color: #ffcccc; /* Punto de lista sutil */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+/* Keyframes para la animación de entrada */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .auth-container {
+    width: 90%;
+    padding: 30px 25px;
+    margin-top: 50px;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   FOOTER
+------------------------------------------------------- */
+.footer {
+  width: 100%;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ------------------------------------------------------
+   ANIMACIONES
+------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
