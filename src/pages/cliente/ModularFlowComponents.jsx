@@ -1,218 +1,173 @@
-// ModularFlowComponents.jsx (NUEVO ARCHIVO - Contiene los 4 pasos del modal de compra/reserva)
-
+// ModularFlowComponents.jsx - ADECUADO PARA BOOZ + VERCEL + LIQUID GLASS iOS 26
 import React, { useState, useEffect } from 'react';
-// 🟢 Importaciones consolidadas: FaCreditCard ya está aquí.
-import { FaInfoCircle, FaCalendarAlt, FaCreditCard, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
+import { FaInfoCircle, FaCheckCircle, FaUserTie } from 'react-icons/fa';
 import { format } from "date-fns";
 import { es } from 'date-fns/locale';
-
-// 🟢 Importación del componente de formulario de pago
 import StripePaymentForm from './StripePaymentForm'; 
-
+// 🟢 IMPORTACIÓN DINÁMICA
+import API_BASE_URL from '../../apiConfig'; 
 
 // --------------------------------------------------------------------------
 // PASO 1: Elegir Paquete / Clase Muestra
 // --------------------------------------------------------------------------
 export const Step1PackageSelection = ({ onNext, isWeekend, onClose, date }) => {
-    
     const paquetes = [
         { id: 'paq_L-V', titulo: "Lunes/Miércoles/Viernes", precio: 800, clases: 12 },
         { id: 'paq_Ma-J', titulo: "Martes/Jueves", precio: 550, clases: 8 },
     ];
-    const claseMuestraCosto = 150;
+    const claseMuestraCosto = 95;
     const dateFormatted = format(date, 'EEEE dd MMM', { locale: es });
 
     return (
-        <div className="modal-step-card glass-card">
-            <h3 className="step-title">1. Elije - {dateFormatted}</h3>
-            <p className="modal-subtitle">
-                {isWeekend 
-                    ? "Elige reservar una clase única (pago) o la clase muestra."
-                    : "Acceso entre semana: Compra un paquete o la Clase Muestra."
-                }
-            </p>
-
-            {/* OPCIONES DE PAQUETES (Entre semana) */}
-            {!isWeekend && (
-                <div className="package-options-grid">
-                    {paquetes.map(p => (
-                        <div key={p.id} className="paquete-option-card" onClick={() => onNext({ selectionType: 'package', data: p, cost: p.precio, dateKey: format(date, 'yyyy-MM-dd') })}>
+        <div className="modal-step-card glass-card animate-ios-entry">
+            <h3 className="step-title">1. Elige tu acceso | {dateFormatted}</h3>
+            
+            <div className="package-options-grid">
+                {!isWeekend ? (
+                    paquetes.map(p => (
+                        <div key={p.id} className="paquete-option-card glass-button-ios" onClick={() => onNext({ selectionType: 'package', data: p, cost: p.precio, dateKey: format(date, 'yyyy-MM-dd') })}>
                             <h4>{p.titulo}</h4>
-                            <p className="package-price">${p.precio} MXN ({p.clases} Clases)</p>
-                            <button className="btn-select-package">Comprar Paquete</button>
+                            <p className="package-price">${p.precio} MXN</p>
+                            <span className="clases-badge">{p.clases} Clases</span>
                         </div>
-                    ))}
-                </div>
-            )}
-            
-            {/* OPCIÓN DE CLASE ÚNICA (Fin de semana) */}
-            {isWeekend && (
-                 <div className="paquete-option-card" onClick={() => onNext({ selectionType: 'single', data: { nombre: 'Clase Única' }, cost: 250, dateKey: format(date, 'yyyy-MM-dd') })}>
-                    <h4>Clase Única Fin de Semana</h4>
-                    <p className="package-price">Costo: $250 MXN. Elige tu camilla.</p>
-                    <button className="btn-select-package">Reservar Clase Única</button>
-                </div>
-            )}
+                    ))
+                ) : (
+                    <div className="paquete-option-card glass-button-ios highlight-gold" onClick={() => onNext({ selectionType: 'single', data: { nombre: 'Clase Única' }, cost: 250, dateKey: format(date, 'yyyy-MM-dd') })}>
+                        <h4>Clase Única Fin de Semana</h4>
+                        <p className="package-price">$250 MXN</p>
+                    </div>
+                )}
+            </div>
 
-            <hr className="divider-line" />
-            
-            {/* OPCIÓN CLASE MUESTRA (Gancho agresivo) */}
-            <div className="clase-muestra-box">
-                <FaInfoCircle size={20} style={{ color: '#a9b090', marginRight: '10px' }} />
-                <h4>¿Aún no te decides? ¡Pruébanos!</h4>
-                <p>Reserva tu **Clase Muestra (Horario 4:00 PM)** por solo **${claseMuestraCosto} MXN**.</p>
+            <div className="clase-muestra-box liquid-info">
+                <FaInfoCircle size={18} className="info-icon" />
+                <p>¿PRIMERA VEZ? PRUEBA UNA <strong>CLASE MUESTRA</strong></p>
                 <button 
-                    className="btn-clase-muestra" 
-                    onClick={() => onNext({ selectionType: 'sample', data: { nombre: 'Clase Muestra' }, cost: claseMuestraCosto, time: '4:00 PM', dateKey: format(date, 'yyyy-MM-dd') })}
+                    className="btn-sample-ios" 
+                    onClick={() => onNext({ selectionType: 'sample', data: { nombre: 'Clase Muestra' }, cost: claseMuestraCosto, dateKey: format(date, 'yyyy-MM-dd') })}
                 >
-                    Clase Muestra (${claseMuestraCosto})
+                    RESERVAR POR ${claseMuestraCosto}
                 </button>
             </div>
-            
-            <button className="btn-cerrar-modal-simple" onClick={onClose}>Cancelar</button>
+            <button className="btn-close-ios" onClick={onClose}>CANCELAR</button>
         </div>
     );
 };
 
 // --------------------------------------------------------------------------
-// PASO 2: Selección de Horario (y Camilla)
+// PASO 2: Selección de Horario (TARJETAS VISUALES + GRUPOS)
 // --------------------------------------------------------------------------
 export const Step2ScheduleSelection = ({ selection, onNext, availability, isWeekend, onClose }) => {
-    
-    const isCreditUse = selection.selectionType === 'credit';
-    const isSample = selection.selectionType === 'sample';
-    
-    // Filtramos la disponibilidad para la clase muestra si aplica
-    const availableHours = isSample 
-        ? availability.filter(item => item.hour === '4:00 PM')
-        : availability;
-
-    const [selectedHour, setSelectedHour] = useState(isSample ? availableHours[0] : null);
-    // 💡 NOTA: En un entorno real, las camillas se cargarían desde la API según selectedHour.
+    const [selectedClase, setSelectedClase] = useState(null);
     const [selectedBed, setSelectedBed] = useState(null); 
-    const [availableBeds] = useState(8); 
 
     const handleConfirm = () => {
-        if (!selectedHour) return alert("Selecciona un horario.");
-        
+        if (!selectedClase) return;
         const needsBed = isWeekend || selection.selectionType === 'single';
-        if (needsBed && !isCreditUse && !selectedBed) return alert("Selecciona una camilla.");
+        if (needsBed && !selectedBed) return alert("Por favor, selecciona una camilla.");
         
-        onNext({ ...selection, hour: selectedHour.hour, bed: needsBed ? selectedBed : null });
+        onNext({ 
+            ...selection, 
+            hour: selectedClase.hour, 
+            nombreClase: selectedClase.nombre, 
+            coach: selectedClase.coachName,
+            claseId: selectedClase.id,
+            bed: needsBed ? selectedBed : null 
+        });
     };
 
     return (
-        <div className="modal-step-card glass-card">
-            <h3 className="step-title">2. Selecciona Horario {isWeekend && 'y Camilla'}</h3>
-            <p className="modal-subtitle">
-                <FaCalendarAlt style={{ marginRight: '5px' }} /> 
-                {isCreditUse ? `Usarás 1 de tus ${selection.credits} créditos.` : `Compra o reserva ${selection.data.nombre}`}
-                {isSample && ` Horario fijo para la clase muestra.`}
-            </p>
-
-            <div className="horarios-grid">
-                {availableHours.map(item => (
-                    <button 
-                        key={item.hour}
-                        className={`btn-hour ${item.available === 0 ? 'full' : ''} ${selectedHour?.hour === item.hour ? 'selected' : ''}`}
-                        disabled={item.available === 0 || isSample && item.hour !== '4:00 PM'}
-                        onClick={() => setSelectedHour(item)}
-                    >
-                        {item.hour} ({item.available})
-                    </button>
-                ))}
+        <div className="modal-step-card glass-card animate-ios-entry">
+            <h3 className="step-title">2. Selecciona tu Grupo</h3>
+            
+            <div className="clases-grid-scroll">
+                {availability && availability.length > 0 ? (
+                    availability.map((clase) => (
+                        <div 
+                            key={clase.id}
+                            className={`clase-card-item liquid-button ${selectedClase?.id === clase.id ? 'active' : ''}`}
+                            style={{ 
+                                borderLeft: `5px solid ${clase.color || '#fff'}`,
+                                backgroundImage: clase.imageUrl ? `linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%), url(${clase.imageUrl})` : 'none',
+                            }}
+                            onClick={() => setSelectedClase(clase)}
+                        >
+                            <div className="card-header-ios">
+                                <span className="time-pill">{clase.hour}</span>
+                                {clase.coachName && (
+                                    <span className="coach-badge">
+                                        <FaUserTie size={10} /> {clase.coachName}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="card-body-ios">
+                                <h4>{clase.nombre}</h4>
+                                <p className="tematica-text" style={{ color: clase.color }}>{clase.tematica}</p>
+                            </div>
+                            {selectedClase?.id === clase.id && <FaCheckCircle className="selection-check" />}
+                        </div>
+                    ))
+                ) : (
+                    <div className="empty-state-ios">No hay clases programadas para este día.</div>
+                )}
             </div>
             
-            {/* LÓGICA DE SELECCIÓN DE CAMILLA (Solo Fin de Semana o Clase Única) */}
-            {(isWeekend || selection.selectionType === 'single') && selectedHour && (
-                <div className="bed-selection-area">
-                    <h4>Camillas disponibles (8 totales):</h4>
-                    <div className="camillas-simuladas">
-                        {Array.from({ length: availableBeds }, (_, i) => (
+            {(isWeekend || selection.selectionType === 'single') && selectedClase && (
+                <div className="bed-selection-ios animate-ios-slide">
+                    <h4>Camilla disponible:</h4>
+                    <div className="beds-ios-grid">
+                        {[1,2,3,4,5,6,7,8].map(i => (
                             <div 
                                 key={i} 
-                                className={`camilla-item ${selectedBed === i + 1 ? 'selected' : 'available'}`}
-                                onClick={() => setSelectedBed(i + 1)}
+                                className={`bed-pill ${selectedBed === i ? 'active' : ''}`}
+                                onClick={() => setSelectedBed(i)}
                             >
-                                Cama {i + 1}
+                                {i}
                             </div>
                         ))}
                     </div>
                 </div>
             )}
             
-            <div className="popup-actions">
-                <button 
-                    className="btn-confirmar" 
-                    onClick={handleConfirm} 
-                    disabled={!selectedHour || (isWeekend && !selectedBed && !isCreditUse)}
-                >
-                    {isCreditUse ? 'Usar Crédito y Reservar' : 'Continuar al Pago'}
+            <div className="popup-actions-ios">
+                <button className="btn-confirm-ios" onClick={handleConfirm} disabled={!selectedClase}>
+                    {selection.selectionType === 'credit' ? 'Confirmar Reserva' : 'Continuar al Pago'}
                 </button>
-                <button className="btn-cerrar" onClick={onClose}>Cancelar</button>
+                <button className="btn-cancel-ios" onClick={onClose}>Volver</button>
             </div>
         </div>
     );
 };
 
 // --------------------------------------------------------------------------
-// PASO 3: Pago (Con Stripe Modular)
+// PASO 3: Pago
 // --------------------------------------------------------------------------
 export const Step3Payment = ({ selection, onNext, onClose }) => {
-    
     const isCreditUse = selection.selectionType === 'credit';
-    if (isCreditUse) {
-        // Si usa crédito, salta directamente (Lógica inmutable)
-        console.log(`API CALL: Reservar con crédito para ${selection.hour} en ${selection.dateKey}`);
-        onNext({}); // Pasa directamente al paso 4 (Confirmación)
-        return null; 
-    }
 
-    const cost = selection.cost;
-    const isPackagePurchase = selection.selectionType === 'package';
-    
-    // 💡 Función de éxito de PAGO (llamada desde StripePaymentForm)
-    const handlePaymentSuccess = (paymentIntentId) => {
-        // En un caso real: Llamada a API final para registrar el ID de Pago y completar la transacción.
-        console.log(`API CALL: Pago exitoso con ID ${paymentIntentId}. Finalizando reserva/compra.`);
-        
-        // Pasa al paso 4 (Confirmación)
-        onNext(selection); // Pasa la selección completa al último paso para mostrar detalles
-    };
+    useEffect(() => { if (isCreditUse) onNext(selection); }, [isCreditUse]);
 
-    // 💡 Función de manejo de error (llamada desde StripePaymentForm)
-    const handlePaymentError = (errorMessage) => {
-        alert(`Error en el pago: ${errorMessage}. Por favor, intente de nuevo.`);
-    };
-
-    // Creamos el objeto `paquete` que el formulario espera
-    const stripePackageData = {
-        titulo: isPackagePurchase ? selection.data.titulo : selection.data.nombre,
-        precio: cost,
-        // Incluimos todos los detalles de la reserva/compra
-        details: selection
-    };
+    if (isCreditUse) return null;
 
     return (
-        <div className="modal-step-card glass-card">
+        <div className="modal-step-card glass-card animate-ios-entry">
             <h3 className="step-title">3. Finalizar Pago</h3>
-            <p className="modal-subtitle">
-                <FaCreditCard style={{ marginRight: '5px' }} /> 
-                {isPackagePurchase ? `Comprando Paquete ${stripePackageData.titulo}` : `${stripePackageData.titulo} a las ${selection.hour}`}
-            </p>
-            
-            {/* 🟢 INTEGRACIÓN DEL FORMULARIO DE STRIPE */}
-            <StripePaymentForm
-                paquete={stripePackageData}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-            />
-
-            <div className="popup-actions" style={{ marginTop: '20px' }}>
-                <button className="btn-cerrar" onClick={onClose} type="button" style={{ width: 'auto' }}>
-                    Cancelar Compra
-                </button>
+            <div className="payment-preview-ios">
+                <div className="preview-row">
+                    <span>Concepto:</span>
+                    <strong>{selection.nombreClase || "Acceso Booz"}</strong>
+                </div>
+                <div className="preview-row">
+                    <span>Total:</span>
+                    <strong className="price-tag">${selection.cost} MXN</strong>
+                </div>
             </div>
+            <StripePaymentForm
+                paquete={{ titulo: selection.nombreClase, precio: selection.cost }}
+                onSuccess={(id) => onNext({ ...selection, stripeId: id })}
+                onError={(err) => alert(err)}
+            />
+            <button className="btn-close-ios" onClick={onClose}>Cancelar Pago</button>
         </div>
     );
 };
@@ -221,44 +176,68 @@ export const Step3Payment = ({ selection, onNext, onClose }) => {
 // PASO 4: Confirmación
 // --------------------------------------------------------------------------
 export const Step4Confirmation = ({ selection, onClose, updateCredits }) => {
-    
-    // Lógica para reflejar en el perfil/base de datos
-    useEffect(() => {
-        // Si fue una reserva con crédito, se descuenta.
-        if (selection.selectionType === 'credit') {
-            updateCredits(); 
-        }
-        // 💡 Lógica Perfil: Enviar datos de 'selection' a la API para reflejar en el calendario mensual del cliente.
-        console.log("API CALL: Éxito! Actualizar perfil y calendario con:", selection);
-        
-    }, [selection, updateCredits]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Aseguramos que tenemos los datos correctos para el mensaje final
-    const finalSelection = selection.selectionType === 'package' ? selection : selection;
+    useEffect(() => {
+        const confirmReserva = async () => {
+            const storedUserRaw = localStorage.getItem("user");
+            if (!storedUserRaw) return setError("Sesión expirada. Por favor, reingresa.");
+            
+            const stored = JSON.parse(storedUserRaw);
+            const email = stored.email || stored.correo; // 🟢 Doble validación de propiedad email
+            
+            if (!email) return setError("Usuario no identificado.");
+
+            try {
+                // 🟢 ADECUACIÓN PARA VERCEL
+                const response = await fetch(`${API_BASE_URL}/reservas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, selection }),
+                });
+
+                if (response.ok) {
+                    if (selection.selectionType === 'credit') updateCredits();
+                    setLoading(false);
+                } else {
+                    const data = await response.json();
+                    setError(data.message || "Error al procesar la reserva.");
+                }
+            } catch (err) {
+                console.error(err);
+                setError("Error de red. Revisa tu conexión.");
+            }
+        };
+        confirmReserva();
+    }, []);
+
+    if (error) return (
+        <div className="modal-step-card glass-card error-ios">
+            <h3 style={{color: '#ff4b4b'}}>Lo sentimos</h3>
+            <p>{error}</p>
+            <button className="btn-confirm-ios" onClick={onClose}>Cerrar</button>
+        </div>
+    );
+
+    if (loading) return (
+        <div className="modal-step-card glass-card loading-ios">
+            <div className="ios-spinner-ring"></div>
+            <h3>Sincronizando con Booz Studio...</h3>
+        </div>
+    );
 
     return (
-        <div className="modal-step-card glass-card success-card">
-            <h2 className="step-title"><FaCheckCircle style={{ color: '#34c759', marginRight: '10px' }} /> ¡Éxito!</h2>
-            <h3>
-                {selection.selectionType === 'package' 
-                    ? 'Tu Paquete ha sido comprado' 
-                    : 'Tu Reserva ha sido confirmada'}
-            </h3>
-            <p className="final-message">
-                Tu horario de **{finalSelection.hour}** ({format(finalSelection.date, 'dd MMM', { locale: es })}) ha sido reservado. 
-                Toda la información y el calendario mensual se **refleja en tu Perfil**.
-            </p>
-            {finalSelection.selectionType === 'package' && (
-                <p className="final-message-detail">
-                    ¡Ahora tienes **{finalSelection.data.clases} créditos** disponibles!
-                </p>
-            )}
-            
-            <div className="popup-actions">
-                <button className="btn-confirmar" onClick={onClose}>
-                    Ver Mi Perfil / Calendario
-                </button>
+        <div className="modal-step-card glass-card success-ios animate-ios-entry">
+            <FaCheckCircle size={60} color="#34c759" className="success-icon-bounce" />
+            <h2 className="step-title">¡Todo listo!</h2>
+            <div className="success-receipt">
+                <p><strong>Grupo:</strong> {selection.nombreClase}</p>
+                <p><strong>Coach:</strong> {selection.coach || 'Staff Booz'}</p>
+                <p><strong>Horario:</strong> {selection.hour}</p>
+                {selection.bed && <p><strong>Camilla:</strong> #{selection.bed}</p>}
             </div>
+            <button className="btn-confirm-ios" onClick={onClose}>Volver al inicio</button>
         </div>
     );
 };

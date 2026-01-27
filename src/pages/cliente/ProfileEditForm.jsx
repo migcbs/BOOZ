@@ -1,149 +1,144 @@
-// ProfileEditForm.jsx
-
 import React, { useState } from 'react';
-import { FaSave, FaTimes, FaCamera } from 'react-icons/fa'; // Importamos FaCamera
+// Añadimos FaInstagram
+import { FaSave, FaTimes, FaCamera, FaUserCircle, FaStethoscope, FaInstagram } from 'react-icons/fa';
 import './Styles.css';
 
 export default function ProfileEditForm({ initialData, onSave, onCancel }) {
-    
-    // 🟢 Usamos los datos completos del usuario como estado inicial
-    const [form, setForm] = useState(initialData);
-    const [errors, setErrors] = useState({});
-    
-    // 🟢 Nuevo estado para la vista previa de la imagen
-    const [imagePreview, setImagePreview] = useState(initialData.profileImageUrl || "https://i.pravatar.cc/150?img=49");
+    const [form, setForm] = useState({
+        ...initialData,
+        fechaNacimiento: initialData.fechaNacimiento ? initialData.fechaNacimiento.split('T')[0] : "",
+        tipoSangre: initialData.tipoSangre || "",
+        alergias: initialData.alergias || "",
+        lesiones: initialData.lesiones || "",
+        instagram: initialData.instagram || "" // Nuevo campo
+    });
+
+    const [imagePreview, setImagePreview] = useState(initialData.profileImageUrl || null);
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setForm((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
-        // Limpia el error al empezar a escribir
-        setErrors(prev => ({ ...prev, [name]: '' })); 
+        const { name, value } = e.target;
+        setForm((p) => ({ ...p, [name]: value }));
     };
 
-    // 🟢 NUEVA FUNCIÓN: Manejar la selección de archivos
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // 1. Simular la previsualización local (lectura de archivo)
+            if (file.size > 5000000) {
+                alert("Imagen muy grande. Máximo 5MB.");
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImagePreview(reader.result);
+                setForm(p => ({ ...p, profileImageUrl: reader.result }));
             };
             reader.readAsDataURL(file);
-
-            // 2. Simular la subida y obtención de URL (Placeholder)
-            // En un entorno real, aquí se subiría a la nube y se obtendría la URL.
-            const newImageUrl = `https://i.pravatar.cc/150?u=${Date.now()}`; 
-            
-            // Actualizar el formulario con la nueva URL simulada
-            setForm((p) => ({ ...p, profileImageUrl: newImageUrl }));
         }
-    };
-
-    // Validación simplificada para la edición
-    const validate = () => {
-        const e = {};
-        if (!form.nombre.trim()) e.nombre = "El nombre es obligatorio.";
-        if (!form.apellido.trim()) e.apellido = "El apellido es obligatorio.";
-        if (!form.telefono.trim()) e.telefono = "El teléfono es obligatorio.";
-        if (!form.fechaNacimiento) e.fechaNacimiento = "La fecha de nacimiento es obligatoria.";
-        if (!form.contactoEmergencia.trim()) e.contactoEmergencia = "Contacto de emergencia requerido.";
-        
-        setErrors(e);
-        return Object.keys(e).length === 0;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (validate()) {
-            // Pasamos los datos actualizados a la función de guardado
-            onSave(form); 
-        } else {
-            alert("Por favor, corrige los errores en el formulario.");
-        }
+        onSave(form);
     };
 
     return (
-        <div className="auth-container profile-edit-form-container">
-            <h2 className="auth-title">Editar Datos Personales</h2>
-            
-            <form onSubmit={handleSubmit} noValidate>
-                
-                {/* 🟢 SECCIÓN DE EDICIÓN DE FOTO DE PERFIL */}
+        <div className="profile-edit-form-container animate-ios-entry">
+            <header className="edit-header-box">
+                <h2 className="profile-title">Mi Perfil <b>Booz</b></h2>
+                <p className="profile-subtitle">Configura tu identidad y datos de salud</p>
+            </header>
+
+            <form onSubmit={handleSubmit} className="profile-form">
                 <div className="profile-photo-edit-section">
-                    <img 
-                        src={imagePreview} 
-                        alt="Foto de Perfil" 
-                        className="profile-picture-edit"
-                    />
-                    <input 
-                        type="file" 
-                        id="profileImage" 
-                        accept="image/*" 
-                        onChange={handleImageChange} 
-                        style={{ display: 'none' }} 
-                    />
-                    <label htmlFor="profileImage" className="btn-upload-photo">
-                        <FaCamera /> Cambiar Foto
-                    </label>
+                    <div className="profile-image-container">
+                        {imagePreview ? (
+                            <img src={imagePreview} alt="Perfil" className="profile-preview-img" />
+                        ) : (
+                            <div className="profile-icon-placeholder"><FaUserCircle /></div>
+                        )}
+                        <label htmlFor="profileImage" className="camera-badge" title="Cambiar foto">
+                            <FaCamera size={16} />
+                        </label>
+                    </div>
+                    <input type="file" id="profileImage" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
                 </div>
                 
-                {/* --- DATOS PERSONALES --- */}
-                <label htmlFor="nombre">Nombre</label>
-                <input name="nombre" id="nombre" className="auth-input" value={form.nombre} onChange={handleChange} />
-                {errors.nombre && <p className="error-text">{errors.nombre}</p>}
+                <div className="form-section">
+                    <div className="input-row-grid">
+                        <div className="input-group">
+                            <label>Nombre</label>
+                            <input name="nombre" className="ios-input-sage" placeholder="Tu nombre" value={form.nombre} onChange={handleChange} required />
+                        </div>
+                        <div className="input-group">
+                            <label>Apellido</label>
+                            <input name="apellido" className="ios-input-sage" placeholder="Tu apellido" value={form.apellido} onChange={handleChange} required />
+                        </div>
+                    </div>
 
-                <label htmlFor="apellido">Apellido</label>
-                <input name="apellido" id="apellido" className="auth-input" value={form.apellido} onChange={handleChange} />
-                {errors.apellido && <p className="error-text">{errors.apellido}</p>}
+                    <div className="input-row-grid">
+                        <div className="input-group">
+                            <label>Teléfono Móvil</label>
+                            <input name="telefono" type="tel" className="ios-input-sage" placeholder="+52..." value={form.telefono} onChange={handleChange} />
+                        </div>
+                        <div className="input-group">
+                            <label>F. de Nacimiento</label>
+                            <input name="fechaNacimiento" type="date" className="ios-input-sage" value={form.fechaNacimiento} onChange={handleChange} />
+                        </div>
+                    </div>
 
-                <label htmlFor="telefono">Teléfono</label>
-                <input name="telefono" id="telefono" type="tel" className="auth-input" value={form.telefono} onChange={handleChange} />
-                {errors.telefono && <p className="error-text">{errors.telefono}</p>}
+                    {/* NUEVO CAMPO: INSTAGRAM */}
+                    <div className="input-group full-width-input">
+                        <label>Instagram</label>
+                        <div className="instagram-input-wrapper">
+                            <FaInstagram className="insta-icon-prefix" />
+                            <span className="at-symbol">@</span>
+                            <input 
+                                name="instagram" 
+                                className="ios-input-sage insta-field" 
+                                placeholder="usuario" 
+                                value={form.instagram} 
+                                onChange={handleChange} 
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                <label htmlFor="fechaNacimiento">Fecha de nacimiento</label>
-                <input name="fechaNacimiento" id="fechaNacimiento" type="date" className="auth-input" value={form.fechaNacimiento} onChange={handleChange} />
-                {errors.fechaNacimiento && <p className="error-text">{errors.fechaNacimiento}</p>}
-
-                {/* --- DATOS MÉDICOS --- */}
-                <div className="medical-info-section">
-                    <h3>Información Médica</h3>
-                    <label htmlFor="contactoEmergencia">Contacto de emergencia</label>
-                    <input name="contactoEmergencia" id="contactoEmergencia" className="auth-input" value={form.contactoEmergencia} onChange={handleChange} />
-                    {errors.contactoEmergencia && <p className="error-text">{errors.contactoEmergencia}</p>}
+                <div className="medical-section-glass">
+                    <div className="section-divider">
+                        <FaStethoscope /> <span>Información Médica Vital</span>
+                    </div>
                     
-                    <label htmlFor="enfermedades">Lesiones previas (detalles)</label>
-                    <textarea name="lesiones" id="lesiones" className="auth-input" rows="3" value={form.lesiones} onChange={handleChange} />
-                    
-                    <label htmlFor="condicion">Condición médica actual</label>
-                    <select name="condicion" id="condicion" className="auth-input" value={form.condicion} onChange={handleChange}>
-                      <option value="">Ninguna</option>
-                      <option value="hipertenso">Hipertenso</option>
-                      <option value="diabetico">Diabético</option>
-                      <option value="presion-baja">Presión baja</option>
-                      <option value="otro">Otro</option>
-                    </select>
+                    <div className="input-row-grid">
+                        <div className="input-group">
+                            <label>Tipo de Sangre</label>
+                            <select name="tipoSangre" className="ios-input-sage select-ios" value={form.tipoSangre} onChange={handleChange}>
+                                <option value="">Desconocido</option>
+                                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </div>
+                        <div className="input-group">
+                            <label>Contacto de Emergencia</label>
+                            <input name="contactoEmergencia" className="ios-input-sage" placeholder="Nombre y Tel." value={form.contactoEmergencia} onChange={handleChange} />
+                        </div>
+                    </div>
 
-                    {form.condicion === "otro" && (
-                      <>
-                        <label htmlFor="condicionOtro">Especificar otra condición</label>
-                        <input name="condicionOtro" id="condicionOtro" className="auth-input" value={form.condicionOtro} onChange={handleChange} />
-                      </>
-                    )}
+                    <div className="input-group">
+                        <label>Alergias Conocidas</label>
+                        <input name="alergias" className="ios-input-sage" placeholder="Ej. Penicilina, polen..." value={form.alergias} onChange={handleChange} />
+                    </div>
+
+                    <div className="input-group">
+                        <label>Lesiones o Condiciones</label>
+                        <textarea name="lesiones" className="ios-input-sage area" placeholder="¿Alguna lesión previa?" value={form.lesiones} onChange={handleChange} />
+                    </div>
                 </div>
                 
-                {/* --- BOTONES DE ACCIÓN --- */}
-                <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                    <button className="auth-button" type="submit" style={{ flex: 1 }}>
-                      <FaSave /> Guardar Cambios
+                <div className="form-actions">
+                    <button className="btn-save-sage" type="submit">
+                        <FaSave /> Guardar Perfil
                     </button>
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        className="auth-secondary-btn"
-                        style={{ flex: 1 }}
-                    >
-                        <FaTimes /> Cancelar
+                    <button type="button" onClick={onCancel} className="btn-cancel-glass">
+                        <FaTimes /> Volver
                     </button>
                 </div>
             </form>

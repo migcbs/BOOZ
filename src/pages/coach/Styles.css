@@ -1,0 +1,973 @@
+/* ============================================================
+   COACH PANEL - BOOZ LIQUID GLASS (COMPLETE UNIFIED 2026)
+   ============================================================ */
+
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-green: #34C759;
+    --ios-red: #FF3B30;
+    --ios-pink: #E1306C;
+    --glass-bg: rgba(255, 255, 255, 1);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --font-main: "Nunito", sans-serif;
+    --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.05);
+}
+
+.coach-container {
+    background-color: none; /* Apple Off-White */
+    min-height: 100vh;
+    padding: clamp(20px, 5vw, 40px);
+    font-family: var(--font-main);
+}
+
+
+/* --- Títulos y Header --- */
+.coach-header {
+    margin-bottom: 40px;
+}
+
+.coach-title {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 300;
+    color: #1d1d1f;
+    margin-bottom: 5px;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+}
+
+.coach-title b {
+    font-weight: 800;
+    color: var(--ios-blue);
+    text-transform: uppercase;
+}
+
+.coach-subtitle {
+    color: #86868b;
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.coach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 30px;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: var(--shadow-premium);
+    animation: ios-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover{
+    background-color: #fff;
+}
+
+.card-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 25px 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-subtitle svg{
+    color: #A9B090;
+}
+
+/* --- TABS: Paquete vs Suelta --- */
+.tab-header {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 4px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+    gap: 4px;
+}
+
+.tab-header button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    background: transparent;
+    color: #86868b;
+}
+
+.tab-header button.active {
+    background: white;
+    color: var(--ios-blue);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* --- Inputs Especializados Coach --- */
+.coach-input {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.coach-input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.1);
+}
+
+.coach-row-inputs {
+    display: flex;
+    gap: 12px;
+    text-transform: uppercase;
+}
+
+.coach-label-mini {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #86868b;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-top: 10px;
+}
+
+/* --- Visual Config (Color e Imagen) --- */
+.visual-field {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 8px 12px;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.visual-field svg {
+    color: var(--ios-blue);
+    font-size: 1.1rem;
+}
+
+.visual-field input[type="color"] {
+    border: none;
+    width: 30px;
+    height: 30px;
+    background: none;
+    cursor: pointer;
+}
+
+.visual-field input[type="text"] {
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    width: 100%;
+    outline: none;
+}
+
+/* --- Listado de Alumnos y Expedientes --- */
+.search-wrapper-coach {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.icon-search {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ios-blue);
+}
+
+.coach-input-search {
+    width: 100%;
+    padding: 12px 12px 12px 42px;
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    font-family: var(--font-main);
+    text-transform: uppercase;
+    
+}
+
+.client-list-container {
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.client-card-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,0.02);
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.client-card-mini:hover {
+    transform: translateX(5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+}
+
+.client-text strong {
+    display: block;
+    color: #1d1d1f;
+    font-size: 0.9rem;
+}
+
+.plan-active { color: var(--ios-green); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+.plan-none { color: #86868b; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+
+.client-btns { display: flex; gap: 8px; }
+
+.btn-icon-med, .btn-icon-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-icon-med { background: #f2f2f7; color: var(--ios-red); } /* Icono Estetoscopio */
+.btn-icon-med:hover { background: var(--ios-red); color: white; }
+
+.btn-icon-add { background: var(--ios-blue); color: white; font-size: 1.2rem; }
+.btn-icon-add:hover { background: var(--ios-green); transform: scale(1.1); }
+
+/* --- Botones Principales --- */
+.coach-btn-primary {
+    width: 100%;
+    padding: 18px;
+    margin-top: 20px;
+    background: #8FD9FB;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.coach-btn-primary:hover {
+    background: var(--ios-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(143, 217, 251, 0.3);
+}
+
+/* --- Modal Expediente (SweetAlert) --- */
+.expediente-modal hr {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* --- Scrollbar Custom --- */
+.client-list-container::-webkit-scrollbar { width: 5px; }
+.client-list-container::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+/* Animations */
+@keyframes ios-pop {
+    from { opacity: 0; transform: scale(0.97) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-ios-entry {
+    animation: ios-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Gestión de Clientes */
+.management-table-container {
+    overflow-x: auto;
+    margin-top: 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.booz-management-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.booz-management-table th {
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.03);
+    color: #86868b;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.booz-management-table td {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-mini {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #f2f2f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #86868b;
+}
+
+.avatar-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.full-name {
+    display: block;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: #86868b;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #e1f5fe;
+    color: #0288d1;
+}
+
+.status-badge.inactive {
+    background: #f2f2f7;
+    color: #86868b;
+}
+
+.medical-warning-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: help;
+}
+
+.medical-details-popover {
+    font-size: 0.75rem;
+    color: #424245;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon-action {
+    border: none;
+    background: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.1rem;
+}
+
+.btn-icon-action.edit { color: #0071e3; }
+.btn-icon-action.delete { color: #ff3b30; }
+
+.btn-icon-action:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+}
+
+/* Buscador */
+.ios-search-input {
+    background: #f2f2f7;
+    border: none;
+    padding: 10px 15px 10px 40px;
+    border-radius: 12px;
+    width: 300px;
+    outline: none;
+    transition: width 0.3s;
+}
+
+.ios-search-input:focus {
+    width: 350px;
+    background: #e8e8ed;
+}
+
+.search-bar-container {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #86868b;
+}
+
+/* Tooltip Médico */
+.medical-status-indicator {
+    position: relative;
+    font-size: 1.2rem;
+    cursor: help;
+}
+.medical-status-indicator.healthy { color: #34c759; }
+.medical-status-indicator.warning { color: #ff9500; }
+
+.med-tooltip {
+    visibility: hidden;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1d1d1f;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    font-size: 0.75rem;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.medical-status-indicator:hover .med-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Formulario en SweetAlert */
+.swal-edit-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+.swal-edit-form label {
+    font-size: 0.8rem;
+    margin-top: 10px;
+    color: #86868b;
+    font-weight: 600;
+}
+.swal2-input, .swal2-textarea {
+    margin: 5px 0 !important;
+    font-size: 0.9rem !important;
+    border-radius: 10px !important;
+}
+
+/* --- CONTENEDOR PRINCIPAL Y ANIMACIÓN --- */
+.coach-view-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.animate-ios-entry {
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- HEADER DE ESTADÍSTICAS --- */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    padding: 24px;
+    text-align: center;
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover { transform: translateY(-5px); }
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #86868b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-top: 8px;
+}
+
+.stat-value.green { color: #34c759; }
+.stat-value.orange { color: #ff9500; }
+
+/* --- HEADER DE GESTIÓN Y FILTROS --- */
+.management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.title-area h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 12px;
+}
+
+.filter-pills {
+    display: flex;
+    gap: 8px;
+    background: #f2f2f7;
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.filter-pills button {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #86868b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-pills button.active {
+    background: #fff;
+    color: #1d1d1f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* --- BUSCADOR --- */
+.search-box-wrapper {
+    position: relative;
+    width: 350px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #86868b;
+}
+
+.search-box-wrapper input {
+    width: 100%;
+    padding: 12px 12px 12px 42px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: #fbfbfd;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.search-box-wrapper input:focus {
+    background: #fff;
+    border-color: #0071e3;
+    box-shadow: 0 0 0 4px rgba(0,113,227,0.1);
+}
+
+/* --- TABLA BOOZ STYLE --- */
+.management-table-wrapper {
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+}
+
+.booz-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.booz-table th {
+    background: #fbfbfd;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.75rem;
+    color: #86868b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f2f2f7;
+}
+
+.booz-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f2f2f7;
+    vertical-align: middle;
+}
+
+.booz-table tr:last-child td { border-bottom: none; }
+
+/* --- CELDAS ESPECÍFICAS --- */
+.id-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar-main {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f2f2f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #86868b;
+    overflow: hidden;
+}
+
+.avatar-main img { width: 100%; height: 100%; object-fit: cover; }
+
+.name-bold { font-weight: 600; color: #1d1d1f; margin: 0; }
+.email-small { font-size: 0.8rem; color: #86868b; margin: 0; }
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #424245;
+}
+
+.insta-tag { color: #0071e3; font-weight: 500; }
+
+.credits-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: fit-content;
+    text-transform: uppercase;
+}
+
+.status-pill.active { background: #e3f9eb; color: #219653; }
+.status-pill.inactive { background: #f2f2f7; color: #86868b; }
+
+.credits-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* --- SALUD Y POPOVER --- */
+.health-badge {
+    position: relative;
+    font-size: 1.4rem;
+    display: inline-block;
+}
+
+.health-badge.safe { color: #34c759; }
+.health-badge.alert { color: #ff3b30; }
+
+.health-popover {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1d1d1f;
+    color: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    width: 220px;
+    font-size: 0.75rem;
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.3s;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.health-popover p { margin: 4px 0; line-height: 1.4; }
+
+.health-badge:hover .health-popover {
+    visibility: visible;
+    opacity: 1;
+    bottom: 120%;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.actions-row {
+    display: flex;
+    gap: 8px;
+}
+
+.actions-row button {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.btn-edit { background: #f2f2f7; color: #0071e3; }
+.btn-del { background: #fff1f0; color: #ff3b30; }
+
+.btn-edit:hover { background: #0071e3; color: #fff; }
+.btn-del:hover { background: #ff3b30; color: #fff; }
+
+/* --- LOADER --- */
+.loader-container-full {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+}
+
+.spinner-ios {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f2f2f7;
+    border-top: 3px solid #0071e3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- ESTILOS PARA SWEETALERT FORM GRID --- */
+.swal-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    text-align: left;
+    padding: 10px 0;
+}
+
+.swal-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.swal-group.full { grid-column: span 2; }
+
+.swal-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #86868b;
+    margin-left: 4px;
+}
+
+.swal2-input, .swal2-textarea, .swal2-select {
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    border: 1px solid #d2d2d7 !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+}
+
+.swal2-input:focus {
+    border-color: #0071e3 !important;
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.1) !important;
+}
+
+.dashboard-header-work {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.role-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 122, 255, 0.1);
+    color: #8FD9FB;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    width: fit-content;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.work-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1c1c1e;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-work-profile {
+    background: #f2f2f7;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-work-logout {
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-work-logout:hover {
+    background: #d12c24;
+}
+
+.role-icon{
+    color: #8FD9FB;
+}
+
+.coach-row-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+/* El "Botón" de subida */
+.coach-label-file-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(169, 176, 144, 0.1); /* Fondo suave del color Sage */
+    color: #A9B090;
+    padding: 12px 20px;
+    border-radius: 15px;
+    border: 2px dashed #A9B090; /* Estilo clásico de "upload" */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    flex-grow: 1; /* Para que ocupe el espacio disponible */
+}
+
+.coach-label-file-button:hover {
+    background: #A9B090;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(169, 176, 144, 0.3);
+}
+
+.coach-label-file-button:active {
+    transform: translateY(0);
+}
+
+/* Cuando ya se subió algo */
+.coach-label-file-button.active {
+    background: #8FD9FB;
+    border-style: solid;
+    border-color: #8FD9FB;
+    color: #fff;
+}
+
+.upload-icon {
+    font-size: 1.2rem;
+}
+
+/* Mejorando el Color Picker para que parezca un botón circular */
+.color-picker-wrapper {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.color-picker-custom {
+    width: 150%;
+    height: 150%;
+    margin: -25%; /* Truco para quitar los bordes nativos del input color */
+    cursor: pointer;
+}

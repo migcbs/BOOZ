@@ -18,6 +18,7 @@ h1, h2, h3 {
   margin-bottom: 10px;
   /* 🟢 Tipografía General: Nunito para Títulos */
   font-family: "Nunito", sans-serif; 
+  text-transform: uppercase;
 }
 
 button {
@@ -54,7 +55,7 @@ button {
 
 .banner {
   width: 100vw; 
-  height: calc(110vh - 100px); 
+  height: calc(112vh - 100px); 
   margin-top: 0; 
   
 
@@ -72,7 +73,7 @@ button {
   border-bottom-right-radius: 40px; 
   overflow: hidden; 
   
-  margin-bottom: -50px; 
+  margin-bottom: -0px; 
 }
 
 .banner-background {
@@ -97,7 +98,7 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.60); 
+    background: rgba(0, 0, 0, 0.80); 
     z-index: 2;
 }
 
@@ -132,7 +133,8 @@ button {
     font-weight: 600;
     border-radius: 50px; 
     cursor: pointer;
-    
+    text-transform: uppercase;
+    font-weight: bolder;
     background: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(8px); 
     border: 1px solid rgba(255, 255, 255, 0.3); 
@@ -181,7 +183,7 @@ button {
 @media (max-width: 768px) {
   /* Banner Móvil */
   .banner {
-      height: calc(100vh - 50px); 
+      height: calc(100vh - 10px); 
       border-bottom-left-radius: 25px;
       border-bottom-right-radius: 25px;
       
@@ -227,8 +229,10 @@ button {
   color: #a9b090; 
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
   text-transform: uppercase;
-  /* 🟢 Tipografía para Título: Nunito */
   font-family: "Nunito", sans-serif; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ----------------------------------- */
@@ -248,29 +252,11 @@ button {
     margin: 0;
 }
 
-.days-of-week {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 0 20px;
-    font-weight: 700;
-    color: #8e8e93; 
-    margin-bottom: 10px;
-}
-
-.day-name {
-    text-align: center;
-    padding: 5px 0;
-    font-size: 0.9rem;
-}
-
-/* Estilos de navegación de calendario (btn-glass) */
 .nav-btn-glass {
     background: rgba(255, 255, 255, 0.1); 
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #f2f2f7; 
+    color: #A9B090; 
     padding: 10px;
     border-radius: 50%;
     cursor: pointer;
@@ -280,8 +266,10 @@ button {
     justify-content: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
+
 .nav-btn-glass:hover {
     background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 /* ----------------------------------- */
@@ -299,18 +287,15 @@ button {
 
 .day-card {
   padding: 15px 10px 45px; 
-  height: 120px; 
+  height: 140px; 
   border-radius: 12px;
-  
   background: rgba(255, 255, 255, 0.05); 
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1); 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  
   text-align: center;
   transition: all 0.3s ease; 
-  cursor: default; 
-  
+  cursor: pointer; 
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -319,8 +304,15 @@ button {
 }
 
 .day-card:hover {
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Estilo específico para Fines de Semana */
+.day-card.weekend-card-style {
+    background: rgba(137, 207, 240, 0.08); /* Sutil tinte azul Booz */
+    border: 1px solid rgba(137, 207, 240, 0.2);
 }
 
 .day-card.grayed-out {
@@ -329,863 +321,671 @@ button {
 }
 
 .day-card.today-card {
-    border: 1px solid #89CFF0;
-    box-shadow: 0 0 8px rgba(137, 207, 240, 0.5); 
+    border: 2px solid #89CFF0;
+    box-shadow: 0 0 15px rgba(137, 207, 240, 0.4); 
 }
 
-/* Nombre y número de día */
-.desktop-day-name { 
-    font-size: 0.8rem; 
-    font-weight: 500; 
-    color: #8e8e93; 
-    margin-bottom: 0; 
+/* Info de día */
+.day-header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.desktop-day-number { 
+.day-number { 
     font-size: 1.8rem; 
-    font-weight: 600;
-    margin-top: 18px;
-    margin-bottom: 0; 
+    font-weight: 700;
     color: #a9b090; 
+    margin-top: 5px;
+}
+
+.day-name-mini {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #8e8e93;
+    letter-spacing: 1px;
 }
 
 /* ----------------------------------- */
-/* Indicadores de disponibilidad       */
+/* INDICADORES DE CLASES               */
 /* ----------------------------------- */
 
-.status-summary { 
-    display: none !important;
+.class-indicator-pill {
+    background: rgba(169, 176, 144, 0.2);
+    color: #a9b090;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-top: 8px;
+    border: 1px solid rgba(169, 176, 144, 0.3);
+}
+
+.day-with-class .class-indicator-pill {
+    background: rgba(137, 207, 240, 0.2);
+    color: #89CFF0;
+    border-color: rgba(137, 207, 240, 0.3);
 }
 
 /* ----------------------------------- */
-/* BOTÓN RESERVAR (Liquid Glass)       */
+/* BOTÓN RESERVAR / COMPRAR            */
 /* ----------------------------------- */
 
-.btn-reservar {
+.btn-reservar-ios {
   position: absolute;
-  bottom: 8px; 
+  bottom: 10px; 
   left: 50%;
   transform: translateX(-50%); 
-  
-  width: 90%; 
+  width: 85%; 
   cursor: pointer;
-
-  background: rgba(137, 207, 240, 0.7); 
-  color: white; 
-  padding: 6px 10px; 
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1); 
+  color: #a9b090; 
+  padding: 6px 5px; 
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.25s ease-out;
-  backdrop-filter: blur(8px); 
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  font-size: 0.75rem; 
+  font-weight: 700;
+  font-size: 0.65rem;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(5px);
+  text-transform: uppercase;
 }
 
-.btn-reservar:hover {
-  background: #89CFF0;
-  color: white; 
-  transform: translateX(-50%) scale(1.03); 
+/* Estado Activo (Cuando hay clases o es fin de semana) */
+.day-with-class .btn-reservar-ios,
+.btn-weekend {
+    background: rgba(137, 207, 240, 0.7) !important;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 4px 10px rgba(137, 207, 240, 0.3);
 }
 
-.btn-reservar:active {
-    transform: translateX(-50%) scale(0.95); 
-    box-shadow: none;
+.btn-reservar-ios:hover {
+  background: #89CFF0 !important;
+  color: white !important; 
+  transform: translateX(-50%) scale(1.05); 
 }
-
 
 /* ----------------------------------- */
 /* RESPONSIVE: VISTA SEMANAL (MÓVIL)   */
 /* ----------------------------------- */
 
 @media (max-width: 768px) {
-    .calendar-container { background-color: transparent; }
-
     .calendar-grid {
         grid-template-columns: 1fr;
         gap: 12px;
-        max-width: none; 
         padding: 0 15px;
     }
 
     .day-card {
         height: auto;
         padding: 15px 20px;
-        
-        display: flex; 
         flex-direction: row; 
         justify-content: space-between;
         align-items: center;
-        gap: 15px;
-        
-        background: rgba(44, 44, 46, 0.9); 
-        border: 1px solid rgba(255, 255, 255, 0.1); 
-        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
-        backdrop-filter: none;
-        
+        background: rgba(255, 255, 255, 0.05); 
         position: static;
     }
     
-    .btn-reservar {
+    .day-header-info {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .day-number {
+        margin-top: 0;
+        font-size: 1.5rem;
+    }
+
+    .btn-reservar-ios {
         position: static;
         transform: none; 
         width: auto;
-        
-        min-width: 90px;
+        min-width: 100px;
         padding: 10px 15px;
-        font-weight: 700;
-        font-size: 0.9rem; 
+        font-size: 0.8rem; 
     }
-    
-    .btn-reservar:hover {
+
+    .btn-reservar-ios:hover {
         transform: none;
     }
 
-    .mobile-day-info {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex-grow: 1; 
-        color: #f2f2f7;
+    .class-indicator-pill {
+        margin-top: 0;
     }
-    
-    .mobile-day-date {
-        color: #8e8e93;
-    }
-}
-
-/* ----------------------------------- */
-/* POPUP DE RESERVA (Liquid Glass)     */
-/* ----------------------------------- */
-
-
-/* ----------------------------------- */
-/* ESTILOS BASE DEL MODAL (Paso 1)     */
-/* ----------------------------------- */
-
-.modal-step-card {
-    max-width: 600px;
-    width: 90%;
-    background: rgba(255, 255, 255, 0.05); 
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 30px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    animation: scaleIn 0.3s ease-out; 
-    
-    /* 🟢 Tipografía General: Nunito */
-    font-family: "Nunito", sans-serif;
-}
-
-.step-title {
-    font-size: 2rem;
-    color: #89CFF0; 
-    margin-bottom: 10px;
-    /* 🟢 Tipografía para Título: Nunito */
-    font-family: "Nunito", sans-serif; 
-}
-
-.modal-subtitle {
-    color: #ccc;
-    font-size: 1rem;
-    margin-bottom: 25px;
-}
-
-/* ----------------------------------- */
-/* OPCIONES DE PAQUETES/CLASE ÚNICA    */
-/* ----------------------------------- */
-
-.package-options-grid {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.paquete-option-card {
-    background: rgba(255, 255, 255, 0.1); 
-    border: 2px solid transparent;
-    padding: 20px;
-    border-radius: 15px;
-    cursor: pointer;
-    flex: 1; 
-    transition: all 0.2s;
-    min-width: 150px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.paquete-option-card:hover {
-    background: rgba(137, 207, 240, 0.2);
-    border-color: #89CFF0; 
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-}
-
-.package-price {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #34c759; 
-    margin: 5px 0 15px;
-}
-
-.btn-select-package {
-    background-color: #89CFF0; 
-    color: #1a232f;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-select-package:hover {
-    background-color: #5ab1db;
-}
-
-/* ----------------------------------- */
-/* CLASE MUESTRA (Gancho agresivo)     */
-/* ----------------------------------- */
-
-.divider-line {
-    border: 0;
-    height: 1px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-    margin: 30px 0;
-}
-
-.clase-muestra-box {
-    background: rgba(137, 207, 240, 0.1);
-    border: 1px solid #89CFF0;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.btn-clase-muestra {
-    background-color: #FFD700; 
-    color: #1a232f; 
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    margin-top: 10px;
-    font-weight: 700;
-    transition: background 0.2s;
-    cursor: pointer;
-}
-.btn-clase-muestra:hover {
-    background-color: #e6c200;
-}
-
-/* ----------------------------------- */
-/* BOTÓN CANCELAR Y RESPONSIVE         */
-/* ----------------------------------- */
-
-.btn-cerrar-modal-simple {
-    background: transparent;
-    color: #ccc;
-    border: 1px solid #555;
-    padding: 12px 25px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    margin-top: 20px;
-    backdrop-filter: blur(8px);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-.btn-cerrar-modal-simple:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: white;
-    color: white;
-}
-
-@media (max-width: 600px) {
-    .modal-step-card {
-        padding: 20px;
-    }
-    .package-options-grid {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .paquete-option-card {
-        min-width: 100%;
-    }
-    .btn-cerrar-modal-simple {
-        width: 100%;
-    }
-}
-
-/* ----------------------------------- */
-/* ÁREA DE SELECCIÓN DE CAMILLAS (Paso 2) */
-/* ----------------------------------- */
-
-.bed-selection-area {
-    margin: 25px 0;
-    border-top: 1px dashed rgba(255, 255, 255, 0.3);
-    padding-top: 20px;
-}
-
-.camillas-simuladas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 15px;
-    padding: 10px 0;
-}
-
-.camilla-item {
-    background: rgba(255, 255, 255, 0.1); 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #f2f2f7;
-    backdrop-filter: blur(10px);
-    
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.9em;
-    font-weight: 600;
-    
-    cursor: pointer;
-    transition: all 0.2s;
-    user-select: none; 
-    min-width: 60px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.camilla-item:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
-}
-
-.camilla-item.selected {
-    background-color: #34c759; 
-    color: #1a232f; 
-    border-color: #34c759;
-    font-weight: 700;
-    box-shadow: 0 0 8px #34c759;
-}
-
-.camilla-item.reserved {
-    background: rgba(255, 99, 71, 0.1); 
-    border-color: rgba(255, 99, 71, 0.3);
-    color: #FF6347; 
-    cursor: not-allowed;
-    text-decoration: line-through;
-    opacity: 0.7;
-}
-
-.camilla-item.reserved:hover {
-    background: rgba(255, 99, 71, 0.1); 
-    transform: none;
-}
-
-/* ----------------------------------- */
-/* POPUP DE RESERVA (Liquid Glass - Parte 2)     */
-/* ----------------------------------- */
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.65); 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; 
-  animation: fadeInOverlay 0.3s ease-out;
-}
-
-.popup-card {
-  background: rgba(255, 255, 255, 0.1); 
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15); 
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); 
-  color: #f2f2f7; 
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1); 
-  
-  padding: 30px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 450px;
-  animation: popupIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  /* 🟢 Tipografía General: Nunito */
-  font-family: "Nunito", sans-serif;
-}
-
-.popup-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    color: white;
-    /* 🟢 Tipografía para Título: Nunito */
-    font-family: "Nunito", sans-serif; 
-}
-.popup-card h4 {
-    color: #89CFF0; 
-    /* 🟢 Tipografía para Subtítulo: Nunito */
-    font-family: "Nunito", sans-serif; 
-}
-.popup-card p {
-    color: #ccc; 
-}
-
-/* 🟢 Keyframes */
-@keyframes fadeInOverlay {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes popupIn {
-  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-/* Selección de Horario (Botones) */
-.hour-selection h4 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-.hour-buttons-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-}
-
-.btn-hour {
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1); 
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white; 
-    cursor: pointer;
-    transition: 0.2s;
-    font-weight: 500;
-    backdrop-filter: blur(5px);
-}
-.btn-hour:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-.btn-hour.selected {
-    background: #89CFF0; 
-    color: #1a1a1a;
-    border-color: #89CFF0;
-    backdrop-filter: none;
-}
-.btn-hour.full {
-    background: rgba(255, 0, 0, 0.15); 
-    color: #ff3b30; 
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    cursor: not-allowed;
-    text-shadow: none;
-    backdrop-filter: blur(5px);
-}
-.btn-hour.full:hover {
-    background: rgba(255, 0, 0, 0.25);
-}
-
-.available-count {
-    font-size: 0.8rem;
-    opacity: 0.8;
-    margin-left: 5px;
-}
-
-/* Selección de Camillas (Fines de semana) */
-.spot-selection-container h3 {
-    font-size: 1.1rem;
-    margin: 15px 0 10px;
-    color: white;
-}
-.spots-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 15px;
-}
-
-.spot-item {
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-    backdrop-filter: blur(5px);
-}
-
-.spot-item:hover:not(.reserved) {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.spot-item.reserved {
-    background: #FC7358;
-    color: white;
-    cursor: not-allowed;
-    opacity: 0.7; 
-    border-color: #FC7358;
-    backdrop-filter: none;
-}
-
-.spot-item.selected:not(.reserved) {
-    background: #89CFF0;
-    color: #1a1a1a;
-    border-color: #89CFF0;
-    backdrop-filter: none;
-}
-
-.spot-legend {
-    font-size: 0.85rem;
-    color: #ccc; 
-}
-
-/* ----------------------------------- */
-/* Botones finales (Liquid Glass)      */
-/* ----------------------------------- */
-.popup-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-.btn-confirmar, .btn-cerrar {
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-  border: none;
-  backdrop-filter: blur(8px); 
-}
-
-.btn-confirmar {
-  background: rgba(137, 207, 240, 0.7); 
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-.btn-confirmar:hover {
-    background: #89CFF0; 
-    backdrop-filter: none;
-}
-.btn-confirmar:disabled {
-  background: #26566d;
-  color: #ccc;
-  cursor: not-allowed;
-  backdrop-filter: blur(8px); 
-}
-
-.btn-cerrar {
-  background: rgba(252, 115, 88, 0.7); 
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-.btn-cerrar:hover {
-    background: #e74c3c;
-    backdrop-filter: none;
-}
-
-/* ----------------------------------- */
-/* MEDIA QUERY (Móvil)                 */
-/* ----------------------------------- */
-@media (max-width: 480px) {
-    .popup-card {
-        padding: 20px;
-    }
-    .popup-card h3 {
-        font-size: 1.3rem;
-    }
-    .spots-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* ----------------------------------- */
-/* BARRA DE PROGRESO (VISUAL MODERNO)  */
-/* ----------------------------------- */
-
-.progress-bar-container {
-    height: 35px;
-    border-radius: 10px;
-    margin-top: 10px;
-    position: relative;
-    overflow: hidden;
-
-    background: rgba(255, 255, 255, 0.1); 
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: rgba(137, 207, 240, 0.6); 
-    transition: width 0.4s ease-in-out;
-}
-
-.progress-bar-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: white; 
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    z-index: 2; 
-}
-
-/* Estilos condicionales */
-.progress-bar-container.low .progress-bar-fill {
-    background: rgba(255, 149, 0, 0.7); 
-}
-
-.progress-bar-container.full {
-    border-color: rgba(255, 59, 48, 0.5);
-}
-
-.progress-bar-container.full .progress-bar-fill {
-    background: rgba(255, 59, 48, 0.8); 
-}
-
-.spot-selection-container.weekday-summary {
-    margin-top: 20px;
-}
-
-/* ----------------------------------- */
-/* PAQUETES (Liquid Glass) - Parte 2 */
-/* ----------------------------------- */
-
-.paquetes-container {
-  text-align: center;
-  padding: 50px 0; 
-  /* 🟢 Tipografía General: Nunito */
-  font-family: "Nunito", sans-serif;
-}
-
-.paquetes-container h2 {
-    color: white; 
-    margin-bottom: 30px;
-    font-size: 2.5rem;
-    /* 🟢 Tipografía para Título: Nunito */
-    font-family: "Nunito", sans-serif; 
-}
-
-.paquetes-grid {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-  gap: 30px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.paquete-card {
-  background: rgba(255, 255, 255, 0.05); 
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px); 
-  
-  padding: 30px 20px; 
-  border-radius: 20px; 
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  color: white; 
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.paquete-card h3 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-    font-weight: 700;
-    /* 🟢 Tipografía para Subtítulo: Nunito */
-    font-family: "Nunito", sans-serif; 
-}
-
-.paquete-card:hover {
-  transform: scale(1.05); 
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
-  background: rgba(255, 255, 255, 0.1); 
-}
-
-.clases-count {
-    font-size: 1.2em;
-    color: #89CFF0; 
-    margin: 10px 0;
-    font-weight: 600;
-}
-
-.precio {
-  font-size: 3rem; 
-  font-weight: 800;
-  margin: 15px 0 25px 0;
-  color: #89CFF0; 
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.btn-comprar {
-  background: rgba(52, 203, 89, 0.8); 
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px); 
-  padding: 12px 25px;
-  border-radius: 12px; 
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.btn-comprar:hover {
-  background: #34c759; 
-  transform: translateY(-1px);
-  backdrop-filter: none;
-}
-
-/* ----------------------------------- */
-/* MODAL / POP-UP (Ventana Flotante - Parte 2) */
-/* ----------------------------------- */
-
-.modal-overlay {
-    position: fixed; 
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.85); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; 
-}
-
-.modal-card {
-    width: 90%;
-    max-width: 450px;
-    padding: 30px;
-    border-radius: 20px;
-    color: #fff;
-    text-align: left;
-    position: relative;
-    animation: fadeIn 0.3s ease-out;
-    /* 🟢 Tipografía General: Nunito */
-    font-family: "Nunito", sans-serif;
-}
-
-.glass-card {
-    background: rgba(255, 255, 255, 0.05); 
-    backdrop-filter: blur(25px); 
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.6);
-}
-
-.modal-card h3 {
-    /* 🟢 Tipografía para Título: Nunito */
-    font-family: "Nunito", sans-serif;
-}
-
-.modal-subtitle {
-    color: #ccc;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-}
-
-/* ----------------------------------- */
-/* FORMULARIO DE PAGO (Inputs - Parte 2) */
-/* ----------------------------------- */
-
-.payment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.input-field {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.3); 
-    color: #fff;
-    transition: border-color 0.2s, background-color 0.2s;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); 
-}
-
-.input-field::placeholder {
-    color: #999;
-}
-
-.input-field:focus {
-    outline: none;
-    border-color: #89CFF0; 
-    background-color: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 0 2px rgba(137, 207, 240, 0.4); 
-}
-
-.address-fields {
-    display: flex;
-    gap: 10px;
-}
-
-.half-field {
-    flex: 1;
-}
-
-.card-element-label {
-    font-size: 0.9em;
-    color: #ccc;
-    margin-top: 5px;
-}
-
-.card-element-wrapper {
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.3);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); 
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-.error-message {
-    color: #ffcdd2;
-    background-color: rgba(176, 0, 32, 0.4);
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 0.9em;
-    /* 🟢 Tipografía General: Nunito */
-    font-family: "Nunito", sans-serif;
-}
-
-.stripe-disclaimer {
-    font-size: 0.75em;
-    color: #999;
-    text-align: center;
-    margin-top: 15px;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.active-plan-status {
+    background: rgba(137, 207, 240, 0.1);
+    border: 1px dashed var(--ios-blue);
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.active-plan-status strong {
+    color: var(--ios-blue);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.active-plan-status p {
+    font-size: 0.75rem;
+    color: #8e8e93;
+    margin: 0;
+}
+
+/* ============================================================
+   BOOZ UNIFIED DESIGN SYSTEM - LIQUID GLASS 2026
+   REFINE: SUTILEZA, ENFOQUE TRANSACCIONAL Y SIMETRÍA
+   ============================================================ */
+
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-red: #FC7358;
+    --ios-green: #34C759;
+    --glass-bg: rgba(255, 255, 255, 1); 
+    --glass-border: rgba(255, 255, 255, 1);
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* 1. OVERLAY E INMERSIÓN */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-card-solid {
+    background: rgba(255, 255, 255, 0.96);;
+    border-radius: 32px;
+    width: 100%;
+    max-width: 440px; 
+    box-shadow: var(--shadow-premium);
+    overflow: hidden;
+    position: relative;
+    font-family: var(--font-main);
+    animation: ios-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 2. CABECERA TRANSACCIONAL */
+.modal-header-solid {
+    padding: 35px 30px 10px;
+    text-align: left;
+}
+
+.modal-header-solid h2 {
+    font-size: 1.8rem;
+    color: #8FD9FB;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.wallet-status-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #A9B090;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* 3. SECCIONES Y FILAS SUTILES */
+.section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #A9B090;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin: 25px 30px 12px;
+}
+
+/* Filas Unificadas */
+.clase-row, .paquete-row {
+    background: rgba(0,0,0,0.02);
+    border: 1px solid #A9B090;
+    padding: 14px 20px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 20px 10px;
+    text-transform: uppercase;
+}
+
+.clase-row.selected, .paquete-row.selected {
+    background: #fff;
+    border-color: #8FD9FB;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transform: scale(1.01);
+}
+
+/* Indicador de color para simetría */
+.clase-badge-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 15px;
+    background: var(--clase-color, var(--ios-blue));
+    flex-shrink: 0;
+}
+
+.clase-time {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #000;
+    width: 60px;
+}
+
+.clase-info-main {
+    flex-grow: 1;
+    margin-left: 15px;
+    padding-left: 15px;
+    border-left: 1px solid rgba(0,0,0,0.06);
+}
+
+/* 4. FOOTER Y BOTONES DEL MODAL */
+.modal-footer-solid {
+    padding: 20px 30px 30px;
+}
+
+.btn-primary-booz {
+    width: 100%;
+    background: #8FD9FB;
+    color: #fff;
+    padding: 18px;
+    border-radius: 20px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-cerrar {
+    width: 100%;
+    background: transparent;
+    color: #8e8e93;
+    padding: 16px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-cerrar:hover{
+    background-color: #FC7358;
+    color: #fff;
+}
+
+/* 5. DISEÑO DEL CALENDARIO (ESTRUCTURA DE TARJETA) */
+.day-card {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 12px;
+    min-height: 125px; /* Aumentado ligeramente para el botón */
+    display: flex;
+    flex-direction: column; 
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.day-card:hover {
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.day-header-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.day-number {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+.class-indicator-pill {
+    background: var(--ios-blue);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    width: fit-content;
+    margin-bottom: 10px;
+}
+
+/* BOTÓN DISPARADOR CALENDARIO: SIEMPRE VISIBLE */
+.btn-reservar-ios {
+    width: 100%;
+    margin-top: auto; /* Anclaje al fondo absoluto */
+    background: #8FD9FB;
+    color: #fff;
+    border: none;
+    padding: 9px 0;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Eliminado: opacity 0 y transform translateY */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-reservar-ios:active {
+    transform: scale(0.96);
+    background: #1c1c1e;
+}
+
+/* 6. ANIMACIONES Y CIERRE */
+@keyframes ios-pop {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.close-x-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* --- Cupos y Estado de Clase --- */
+.cupo-tag {
+    font-size: 0.7rem;
+    color: var(--ios-blue);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.clase-row.full {
+    background: #f2f2f7;
+    border-color: #d1d1d6;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- Grid de Camillas (Estilo Booz Liquid) --- */
+.camilla-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.camilla-node {
+    height: 50px;
+    border: 2px solid #e5e5ea;
+    border-radius: 14px;
+    background: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #333;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.camilla-node.active {
+    background: var(--ios-blue);
+    border-color: var(--ios-blue);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(143, 217, 251, 0.4);
+}
+
+.camilla-node.occupied {
+    background: #d1d1d6;
+    color: #8e8e93;
+    border-color: #c7c7cc;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+/* --- Expediente Coach Modal --- */
+.alumno-detalle-modal {
+    text-align: left;
+    padding: 10px;
+}
+
+.bday-banner {
+    background: linear-gradient(135deg, #FFD700 0%, #FF9500 100%);
+    color: white;
+    padding: 12px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: 800;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+}
+
+.health-info {
+    background: rgba(255, 59, 48, 0.05);
+    padding: 15px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 59, 48, 0.1);
+    margin: 15px 0;
+}
+
+/* --- CONTENEDOR DE SESIONES DENTRO DE LA TARJETA --- */
+.sessions-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    margin-top: 8px;
+    flex: 1; /* Empuja el botón al fondo */
+    overflow-y: auto; /* Permite scroll si hay demasiadas clases */
+    max-height: 80px; /* Evita que la tarjeta crezca infinito */
+    padding-right: 2px;
+}
+
+/* Scrollbar sutil para las sesiones */
+.sessions-preview::-webkit-scrollbar {
+    width: 3px;
+}
+.sessions-preview::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.session-dot-line {
+    font-size: 9px !important; /* Texto muy compacto */
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    border-left-width: 3px !important;
+    transition: var(--transition);
+}
+
+.session-dot-line:hover {
+    background: white;
+    transform: translateX(2px);
+}
+
+.more-sessions {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--ios-blue);
+    text-align: center;
+    padding: 2px 0;
+    text-transform: uppercase;
+}
+
+/* --- TARJETA DEL DÍA (REFINADA) --- */
+.day-card {
+    min-height: 160px; /* Ajustado para dar espacio a la lista */
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    justify-content: flex-start;
+}
+
+.day-card.has-sessions {
+    background: rgba(143, 217, 251, 0.05);
+    border-color: rgba(143, 217, 251, 0.2);
+}
+
+/* BOTÓN PULSE (Solo si hay clases) */
+.pulse-btn {
+    background: var(--ios-blue) !important;
+    animation: softPulse 2s infinite;
+}
+
+@keyframes softPulse {
+    0% { box-shadow: 0 0 0 0 rgba(143, 217, 251, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(143, 217, 251, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(143, 217, 251, 0); }
+}
+
+/* --- MOBILE ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    .day-card {
+        min-height: auto;
+        flex-direction: row !important;
+        align-items: center;
+        gap: 15px;
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+    .sessions-preview {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: none;
+        overflow: visible;
+    }
+    .session-dot-line {
+        padding: 4px 8px;
     }
 }
 
+/* --- HERO BANNER (PÓSTER) --- */
+.clase-hero-banner {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
 
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: transform 0.5s ease;
+}
 
+.clase-hero-banner:hover .hero-img {
+    transform: scale(1.05);
+}
 
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 25px;
+}
 
+.clase-type-tag {
+    background: var(--ios-blue);
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 6px;
+    width: fit-content;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    color: white !important;
+    font-size: 1.6rem !important;
+    margin: 0 !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* --- AJUSTES DE SCROLL PARA EL MODAL --- */
+.modal-body-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.modal-body-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.modal-body-scroll::-webkit-scrollbar-thumb {
+    background: #e5e5e7;
+    border-radius: 10px;
+}
+
+/* Responsividad para el Poster */
+@media (max-width: 768px) {
+    .clase-hero-banner {
+        height: 180px;
+    }
+    .hero-title {
+        font-size: 1.3rem !important;
+    }
+}
 
 
 
@@ -1454,759 +1254,1557 @@ button {
 
 
 
-/* ----------------------------------- */
-/* ESTILOS DE LA PÁGINA DE PERFIL      */
-/* ----------------------------------- */
+/* ============================================================
+   SISTEMA DE DISEÑO BOOZ 2026 - PERFIL ÚNICO & UX OPTIMIZADA
+   ============================================================ */
+
+:root {
+    --ios-blue: #007AFF;
+    --booz-sky: #8FD9FB;
+    --booz-sage: #A9B090;
+    --ios-red: #FF3B30;
+    --ios-green: #34C759;
+    --glass-bg: rgba(255, 255, 255, 1);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --font-main: "Nunito", sans-serif;
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 .profile-page-container {
     max-width: 1200px;
-    margin: 100px auto;
+    margin: 80px auto;
     padding: 0 20px;
-    color: white; 
-    /* 🟢 Tipografía General: Nunito */
-    font-family: "Nunito", sans-serif;
-    
-    /* CÓDIGO AÑADIDO (Mejora de fuente y transición) */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: color 0.3s ease;
-    z-index: 10;
+    font-family: var(--font-main);
+    color: #1d1d1f;
+    animation: fadeIn 0.6s ease-out;
 }
 
-.main-title-glass {
-    font-size: 2.5rem;
-    color: #89CFF0; 
-    margin-bottom: 30px;
-    font-family: "Nunito", sans-serif;
-    font-weight: 800;
-    /* 🌟 Sutil resplandor de texto para el enfoque Liquid Glass */
-    text-shadow: 0 0 10px rgba(137, 207, 240, 0.5);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* 🟢 NUEVAS CLASES PARA TÍTULOS Y SUBTÍTULOS */
-.card-title-accent {
-    font-size: 1.5rem;
-    color: #89CFF0; /* Color primario */
-    margin-bottom: 15px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.card-subtitle-small {
-    font-size: 0.9rem;
-    color: #ccc;
-    font-weight: 400;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-/* Fin Nuevas Clases */
-
-
+/* --- ESTRUCTURA GRID --- */
 .profile-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr; 
+    grid-template-columns: 1fr 1.6fr;
     gap: 30px;
 }
 
-/* 🔄 AJUSTE CLAVE: ESTILO CRISTAL PULIDO para .profile-card */
+/* --- TARJETA LIQUID GLASS (Estilo Base) --- */
 .profile-card {
-    margin-bottom: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.8);
     padding: 30px;
-    border-radius: 20px;
-    /* Fondo Glass más transparente para el efecto pulido */
-    background: rgba(255, 255, 255, 0.05); 
-    backdrop-filter: blur(20px) saturate(180%); 
-    /* Borde más claro y sutil */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* Sombra exterior suave para profundidad */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-    transition: transform 0.3s, box-shadow 0.3s;
-    
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+    margin-bottom: 25px;
     position: relative;
     overflow: hidden;
 }
 
-/* 🌟 Overlay de Reflejo para la sensación de "Liquid Glass" */
-.profile-card::before {
-    content: '';
+.profile-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+/* --- CABECERA Y FOTO --- */
+.profile-header-flex {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.profile-pic-booz {
+    width: 90px;
+    height: 90px;
+    border-radius: 25px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.profile-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--booz-sky);
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.user-role-badge {
+    background: rgba(143, 217, 251, 0.15);
+    color: var(--ios-blue);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: inline-block;
+}
+
+/* --- DETALLES DE CONTACTO Y MÉDICOS --- */
+.contact-details-mini {
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 20px 0;
+    text-transform: uppercase;
+}
+
+.contact-details-mini p {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: #555;
+    font-weight: 600;
+}
+
+.medical-summary-grid {
+    margin: 10px 0 20px;
+    background: rgba(169, 176, 144, 0.08);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(169, 176, 144, 0.1);
+    text-transform: uppercase;
+}
+
+.card-subtitle-small {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--booz-sage);
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.med-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.med-row span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+}
+
+.med-extra {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+    border-top: 1px solid rgba(0,0,0,0.03);
+    padding-top: 5px;
+}
+
+/* --- BOTONES DE ACCIÓN (UX MEJORADA) --- */
+
+/* Botón Editar Perfil Principal */
+.btn-edit-booz {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1.5px solid var(--booz-sky);
+    color: var(--booz-sky);
+    border-radius: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.btn-edit-booz:hover {
+    background: var(--booz-sky);
+    color: white;
+    box-shadow: 0 8px 20px rgba(143, 217, 251, 0.3);
+}
+
+/* Botón de Recargar/Gestionar Plan (Apple Style) */
+.btn-action-wallet {
+    width: 100%;
+    padding: 16px;
+    background: #8FD9FB;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-weight: 700;
+    margin-top: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.btn-action-wallet:hover {
+    background: #7bbcdb;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* --- BILLETERA --- */
+.wallet-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px 0;
+    text-transform: uppercase;
+}
+
+/* El contenedor padre para asegurar alineación */
+.days-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* El número (El valor principal) */
+.days-counter span {
+    font-size: 3.5rem; /* Un poco más grande para impacto */
+    font-weight: 900;
+    color: var(--booz-sage);
+    line-height: 0.9; /* Pegamos un poco más el texto */
+    letter-spacing: -2px; /* Estilo Apple: letras más juntas */
+    display: block;
+}
+
+/* La etiqueta (Días, Horas, etc.) */
+.days-counter label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--booz-gold); /* Usando el dorado que tienes en el expediente */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+    opacity: 0.8;
+    font-family: 'Nunito', sans-serif;
+}
+
+.credits-display .amount {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--ios-green);
+    line-height: 1;
+    color: #A9B090;
+}
+
+/* --- CLASES Y RESERVAS (UX PREMIUM) --- */
+.upcoming-card-premium {
+    background: linear-gradient(135deg, rgba(143, 217, 251, 0.1), rgba(255, 255, 255, 0.6));
+    border: 1.5px solid rgba(143, 217, 251, 0.3);
+}
+
+.upcoming-content {
+    border-radius: 24px;
+    overflow: hidden;
+    background: white;
+    margin-top: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.class-poster-preview {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.upcoming-details { padding: 25px; }
+
+.next-class-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: #8FD9FB; text-transform: uppercase; }
+
+.next-class-time{
+    text-transform: uppercase;
+    font-size: .8rem;
+    margin-bottom: 10px;
+}
+
+.badge-ios {
+    background: rgba(0, 122, 255, 0.1);
+    color: var(--ios-blue);
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-transform: uppercase;
+}
+
+
+
+.btn-cancel-reserva {
+    margin-top: 20px;
+    background: rgba(255, 59, 48, 0.05);
+    color: var(--ios-red);
+    border: 1.5px solid rgba(255, 59, 48, 0.15);
+    padding: 14px;
+    border-radius: 16px;
+    font-weight: 700;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.btn-cancel-reserva:hover { 
+    background: var(--ios-red); 
+    color: white; 
+    border-color: var(--ios-red);
+    
+}
+
+/* --- HISTORIAL --- */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 18px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.history-item:hover { background: white; transform: scale(1.02); }
+
+.history-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--booz-sky);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(143, 217, 251, 0.6);
+}
+
+/* --- FORMULARIO DE EDICIÓN --- */
+.profile-image-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+}
+
+.profile-preview-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--booz-sky);
+    padding: 3px;
+    background: white;
+}
+
+.camera-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--booz-sage);
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.ios-input-sage {
+    width: 100%;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 15px;
+    font-family: var(--font-main);
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.ios-input-sage:focus {
+    border-color: var(--booz-sky);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.1);
+}
+
+.medical-section-glass {
+    background: rgba(169, 176, 144, 0.08);
+    padding: 25px;
+    border-radius: 24px;
+    margin: 30px 0;
+    border: 1.5px dashed var(--booz-sage);
+}
+
+.btn-save-sage {
+    flex: 2;
+    background: var(--booz-sage);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-cancel-glass {
+    flex: 1;
+    background: rgba(0,0,0,0.05);
+    color: #666;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 16px;
+    border-radius: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 992px) {
+    .profile-grid { grid-template-columns: 1fr; }
+    .profile-page-container { margin: 40px auto; }
+}
+
+/* --- MEJORAS DE UX EN FORMULARIO --- */
+
+.edit-header-box {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-title b {
+    color: var(--booz-sage);
+}
+
+.profile-subtitle {
+    font-size: 0.9rem;
+    color: #86868b;
+    margin-top: 5px;
+}
+
+/* Grid de Inputs (2 columnas que se vuelven 1 en móvil) */
+.input-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Estilo para el Placeholder del Icono cuando no hay imagen */
+.profile-icon-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    color: #e5e5e7;
+    background: #f5f5f7;
+    border-radius: 50%;
+}
+
+/* Ajuste fino para el textarea */
+.ios-input-sage.area {
+    min-height: 100px;
+    resize: none;
+    line-height: 1.5;
+}
+
+/* Select estilo iOS */
+.select-ios {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* Media Query para el Grid en móviles */
+@media (max-width: 600px) {
+    .input-row-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- ESTILO INPUT INSTAGRAM --- */
+.instagram-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.insta-icon-prefix {
+    position: absolute;
+    left: 15px;
+    color: #E1306C; /* Color oficial de Instagram */
+    font-size: 1.2rem;
+}
+
+.at-symbol {
+    position: absolute;
+    left: 42px;
+    color: #86868b;
+    font-weight: 700;
+}
+
+.insta-field {
+    padding-left: 60px !important; /* Espacio para el icono y el @ */
+    color: #1d1d1f;
+    font-weight: 600;
+}
+
+.full-width-input {
+    grid-column: 1 / -1; /* Se asegura de ocupar todo el ancho del grid si es necesario */
+    margin-top: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- UI LIQUID GLASS iOS 26 --- */
+
+:root {
+    --ios-glass: rgba(255, 255, 255, 0.08);
+    --ios-border: rgba(255, 255, 255, 0.15);
+    --ios-blur: 25px;
+}
+
+/* Contenedor de la rejilla con scroll suave */
+.clases-grid-scroll {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 10px;
+    max-height: 50vh;
+    overflow-y: auto;
+    scrollbar-width: none; /* Ocultar scrollbar en Firefox */
+}
+
+.clases-grid-scroll::-webkit-scrollbar {
+    display: none; /* Ocultar scrollbar en Chrome/Safari */
+}
+
+/* Tarjeta Estilo Liquid Glass */
+.clase-card-item {
+    position: relative;
+    border-radius: 24px;
+    padding: 20px;
+    min-height: 140px;
+    background: var(--ios-glass);
+    backdrop-filter: blur(var(--ios-blur));
+    -webkit-backdrop-filter: blur(var(--ios-blur));
+    border: 1px solid var(--ios-border);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); /* Curva iOS */
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto Hover: Expansión suave */
+.clase-card-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Estado Activo / Seleccionado */
+.clase-card-item.active {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid #fff;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    transform: scale(0.98); /* Efecto de presión */
+}
+
+/* Badge de Tiempo Moderno */
+.clase-time-badge {
+    align-self: flex-start;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    backdrop-filter: blur(5px);
+}
+
+/* Textos dentro de la tarjeta */
+.clase-info-mini h4 {
+    margin: 10px 0 4px 0;
+    font-size: 1.2rem;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.clase-topic-small {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Animación de entrada para las camillas */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Indicador de "Seleccionado" (Checkmark flotante) */
+.clase-card-item.active::after {
+    content: '✓';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #fff;
+    color: #000;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+
+/* =============================================
+   ESTILOS DE TIENDA & MODAL BOOZ
+   ============================================= */
+
+/* Contenedor del Modal cuando se importa en Perfil */
+.tienda-modal-container {
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 40px;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Botón de cerrar para el Modal */
+.btn-close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.btn-close-modal:hover {
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+}
+
+/* Grid de la Tienda */
+.tienda-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Tarjetas de Paquetes */
+.tienda-card {
+    text-align: center;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.tienda-card:hover {
+    transform: translateY(-5px);
+}
+
+.tienda-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.tienda-price {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    margin: 10px 0;
+}
+
+.tienda-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    min-height: 40px;
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajustes para pantallas pequeñas (Móvil) */
+@media (max-width: 768px) {
+    .tienda-modal-container {
+        padding: 30px 15px;
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .tienda-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.amount-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.5);
+    border-radius: 15px;
+    padding: 10px 20px;
+    border: 2px solid var(--ios-sage);
+}
+
+.input-amount-large {
+    background: transparent;
+    border: none;
+    font-size: 2.5rem;
+    font-weight: 800;
+    width: 100%;
+    color: #333;
+    outline: none;
+}
+
+.fake-stripe-element {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    display: flex;
+    gap: 15px;
+    color: #888;
+}
+
+.btn-confirmar-pago {
+    background: #1d1d1f;
+    color: white;
+    padding: 18px;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border: none;
+}
+
+.secure-text {
+    font-size: 0.8rem;
+    color: #888;
+    text-align: center;
+}
+
+.input-group-booz {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.inner-input {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 12px 15px;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.inner-input:focus-within {
+    border-color: #8FD9FB;
+    box-shadow: 0 0 0 3px rgba(143, 217, 251, 0.2);
+}
+
+.inner-input input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+}
+
+.input-row-flex {
+    display: flex;
+    gap: 15px;
+}
+
+.secure-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    opacity: 0.7;
+}
+
+.amount-section {
+    background: rgba(143, 217, 251, 0.1);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px dashed #8FD9FB;
+}
+
+.btn-action-primary{
+     width: 100%;
+    padding: 16px;
+    background: #8FD9FB;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-weight: 700;
+    margin-top: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.btn-action-primary:hover {
+    background: #7bbcdb;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+
+
+
+/* ============================================================
+   WHATSAPP FLOATING SYSTEM - PREMIUM UX
+   ============================================================ */
+
+/* --- BOTÓN FLOTANTE --- */
+.floating-whatsapp-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: white; /* Fondo blanco puro para que el icono verde resalte */
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2000; /* Por encima de todo, incluso del menú mobile */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    transition: var(--transition);
+}
+
+.floating-whatsapp-btn:hover {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.2);
+}
+
+/* Ajuste para Mobile: lo subimos un poco para que no tape la Floating Island */
+@media (max-width: 768px) {
+    .floating-whatsapp-btn {
+        bottom: 110px; /* Arriba del menú flotante */
+        right: 20px;
+        width: 55px;
+        height: 55px;
+    }
+}
+
+/* --- OVERLAY & MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.whatsapp-modal-card {
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    padding: 40px !important; /* Overwrite del padding de glass-card */
+    animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-close-whatsapp-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: #f5f5f7;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #86868b;
+    transition: var(--transition);
+}
+
+.btn-close-whatsapp-modal:hover {
+    background: var(--ios-red);
+    color: white;
+}
+
+.whatsapp-modal-card h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: var(--sidebar-bg);
+}
+
+.modal-subtitle {
+    font-size: 14px;
+    color: #86868b;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* --- FORM INTERIOR --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 11px;
+    color: #86868b;
+    margin-left: 5px;
+}
+
+.input-field {
+    background: white;
+    border: 1px solid #e5e5e7;
+    padding: 15px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.input-field:focus {
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.15);
+    outline: none;
+}
+
+/* --- ACCIONES --- */
+.modal-actions-whatsapp {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-whatsapp-send {
+    background: #25D366; /* Color oficial WhatsApp */
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.2);
+}
+
+.btn-whatsapp-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(37, 211, 102, 0.3);
+    background: #20ba5a;
+}
+
+.btn-cerrar-modal-whatsapp {
+    background: transparent;
+    border: none;
+    color: #86868b;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 10px;
+    transition: var(--transition);
+}
+
+.btn-cerrar-modal-whatsapp:hover {
+    color: var(--sidebar-bg);
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --- PROXIMA CLASE CON POSTER --- */
+.upcoming-card-premium.has-poster {
+    padding: 0 !important; /* Quitamos padding para que la imagen toque los bordes */
+    overflow: hidden;
+}
+
+.upcoming-hero-image {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.upcoming-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.8);
+}
+
+.hero-tag {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--ios-blue);
+    color: #8FD9FB;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+.upcoming-card-body {
+    padding: 25px;
+}
+
+.next-class-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #8FD9FB;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.next-class-meta p {
+    font-size: 14px;
+    color: #86868b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.upcoming-badges-row {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.badge-ios-pill {
+    background: rgba(143, 217, 251, 0.1);
+    color: var(--ios-blue);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+}
+
+.badge-ios-pill.secondary {
+    background: rgba(0,0,0,0.05);
+    color: #86868b;
+}
+
+.btn-cancel-reserva-minimal {
+    background: transparent;
+    border: none;
+    color: #ff3b30;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.btn-cancel-reserva-minimal:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .upcoming-hero-image { height: 140px; }
+    .next-class-name { font-size: 1.3rem; }
+}
+
+/* Contenedor principal cuando hay póster */
+.upcoming-card-premium.has-poster {
+    padding: 0 !important;
+    border: none;
+    background: #000;
+}
+
+.poster-preview-container {
+    width: 100%;
+    height: 280px; /* Altura generosa para que el póster luzca */
+    position: relative;
+    overflow: hidden;
+}
+
+.upcoming-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Esto hace que la imagen llene el espacio sin deformarse */
+    display: block;
+}
+
+.poster-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    /* Degradado de negro a transparente para que el texto resalte */
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.poster-class-title {
+    color: white !important;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 5px 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.poster-class-date {
+    color: var(--ios-blue);
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-badge {
+    background: var(--ios-blue);
+    color: #8FD9FB;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 900;
+    width: fit-content;
+}
+
+.upcoming-actions-area {
+    padding: 20px;
+    background: white; /* Fondo blanco debajo de la imagen para los botones */
+}
+
+.btn-cancel-link {
+    background: none;
+    border: none;
+    color: #ff3b30;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    padding: 0;
+}
+
+.upcoming-hero-image {
+    width: 100%;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px 15px 0 0;
+}
+.poster-img-full {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.poster-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+}
+.poster-class-title { color: white !important; font-size: 1.5rem; margin: 0; }
+.poster-class-meta { color: #8FD9FB; font-size: 0.9rem; margin: 5px 0 0 0; }
+
+/* --- NUEVA SECCIÓN DE PÓSTER Y EVENTO --- */
+
+/* Contenedor del Póster en el Perfil */
+.upcoming-card-premium {
+    overflow: hidden;
+    padding: 0 !important; /* El póster debe tocar los bordes */
+    position: relative;
+}
+
+.upcoming-hero-image {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-img-full {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Degradado sobre el póster para que el texto sea legible */
+.poster-overlay-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+}
+
+.poster-text-content {
+    color: white;
+}
+
+.hero-tag-pill {
+    background: var(--ios-blue, #8FD9FB);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.poster-class-title {
+    margin: 8px 0 4px 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.poster-class-meta {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Cuerpo de la información */
+.upcoming-body {
+    padding: 20px;
+}
+
+.upcoming-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Botón de Calendario */
+.btn-add-calendar {
+    background: rgba(0, 122, 255, 0.1);
+    color: #8FD9FB;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-add-calendar:hover {
+    background: #8FD9FB;
+    color: white;
+}
+
+/* Grid de Datos (Hora, Camilla, Paquete) */
+.upcoming-data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.data-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.data-item.full {
+    grid-column: 1 / -1;
+}
+
+.item-icon {
+    color: #8FD9FB;
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.data-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: #8e8e93;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.data-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color, #333);
+}
+
+/* Botón de Cancelar */
+.btn-cancel-reserva-full {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    background: transparent;
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-cancel-reserva-full:hover {
+    background: rgba(255, 59, 48, 0.05);
+    border-color: #ff3b30;
+}
+
+/* Loader */
+.loader-booz {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-weight: 700;
+    color: #8FD9FB;
+    letter-spacing: 1px;
+}
+
+.banner-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 20px;
-    background: linear-gradient(
-        135deg, 
-        rgba(255, 255, 255, 0.05), 
-        rgba(255, 255, 255, 0) 50%
-    );
-    pointer-events: none; 
-    z-index: 1;
+    overflow: hidden; /* Importante para que el video no se salga */
 }
 
-.profile-card:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    transform: translateY(-4px); 
-}
-
-/* === INFORMACIÓN PERSONAL === */
-.personal-info-card {
-    text-align: center;
-    /* Asegura que el título personalizado sea el único con h2 en esta tarjeta */
-    margin-bottom: 10; 
-}
-
-.profile-picture {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #89CFF0;
-    margin-bottom: 15px;
-    /* Sutil elevación para el foco */
-    box-shadow: 0 0 15px rgba(137, 207, 240, 0.4); 
-}
-
-.profile-name {
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-    font-family: "Nunito", sans-serif; 
-    font-weight: 700;
-}
-
-.member-since {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-bottom: 15px;
-}
-
-/* 🟢 Datos de Contacto y Médicos */
-.contact-details, .medical-summary {
-    border-top: 1px dashed rgba(255, 255, 255, 0.15);
-    padding-top: 15px;
-    margin-top: 15px;
-}
-
-.contact-details p {
-    margin: 10px 0; /* Espaciado más limpio */
-    font-size: 1rem;
-    text-align: left;
-    display: flex;
-    align-items: center; /* Alineación vertical centrada para íconos */
-    gap: 10px; 
-    color: #f2f2f7;
-    font-weight: 300;
-}
-
-/* 🟢 Estilos para el resumen médico */
-.medical-summary p {
-    margin: 8px 0;
-    text-align: left;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    color: #ccc;
-}
-.medical-summary strong {
-    color: white;
-    font-weight: 500;
-}
-
-.btn-edit-profile {
-    background-color: transparent;
-    border: 1px solid #89CFF0; 
-    color: #89CFF0;
-    padding: 10px 20px; 
-    border-radius: 10px; 
-    margin-top: 25px; 
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-    /* Sutil efecto de cristal en el botón */
-    box-shadow: 0 4px 10px rgba(137, 207, 240, 0.2);
-}
-.btn-edit-profile:hover {
-    background-color: rgba(137, 207, 240, 0.15);
-    color: white;
-    border-color: white;
-    box-shadow: 0 6px 15px rgba(137, 207, 240, 0.4); /* Sombra más fuerte al pasar el mouse */
-}
-
-
-/* -------------------------------------- */
-/* === RESUMEN DE MEMBRESÍA (SUTIL) === */
-/* -------------------------------------- */
-/* Removida la definición directa de h3, ahora usa .card-title-accent */
-.membership-card {
-    /* Mantenemos el estilo de la tarjeta principal */
-}
-
-.package-name {
-    /* AJUSTE: Más sutil */
-    font-weight: 500; /* Original: 600 */
-    margin-bottom: 20px; /* Original: 25px */
-    font-size: 1.05rem; /* Original: 1.1rem */
-    color: #f2f2f7;
-}
-
-/* 🟢 AJUSTADO SUTIL: Estilo de Créditos Arcade */
-.credits-count-arcade {
-    font-size: 3rem; /* Original: 3.5rem */
-    font-weight: 700; /* Original: 800 */
-    color: #FFD700; 
-    margin: 10px 0 25px; /* Original: 15px 0 30px */
-    /* AJUSTE: Sombra de glow más suave */
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); /* Original: 0 0 15px rgba(255, 215, 0, 0.6) */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.credits-count-arcade svg {
-    font-size: 2rem; /* Original: 2.5rem */
-    margin-left: 8px; /* Original: 10px */
-    transition: transform 0.3s;
-}
-.credits-count-arcade:hover svg {
-    /* AJUSTE: Animación más sutil */
-    transform: rotate(0deg) scale(1.05); /* Original: rotate(-10deg) scale(1.1) */
-}
-
-/* 🟢 AJUSTADO SUTIL: Widget de Reloj para Días Restantes (Pulido) */
-.clock-widget-container {
-    text-align: center;
-    margin-bottom: 25px; /* Original: 30px */
-    padding: 12px; /* Original: 15px */
-    border-radius: 12px; /* Original: 15px */
-    /* AJUSTE: Fondo más transparente */
-    background: rgba(52, 199, 89, 0.03); /* Original: rgba(52, 199, 89, 0.05) */
-    backdrop-filter: blur(10px); /* Original: blur(15px) */
-    border: 1px solid rgba(52, 199, 89, 0.1); /* Original: 1px solid rgba(52, 199, 89, 0.2) */
-}
-.clock-face {
-    width: 110px; /* Original: 130px */
-    height: 110px;
-    margin: 0 auto 8px; /* Original: 0 auto 10px */
-    border-radius: 50%;
-    border: 2px solid #34c759; /* Original: 3px solid #34c759 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    /* AJUSTE: Fondo de reloj más transparente */
-    background: rgba(52, 199, 89, 0.08); /* Original: rgba(52, 199, 89, 0.1) */
-    box-shadow: 0 0 5px rgba(52, 199, 89, 0.3); /* Original: 0 0 10px rgba(52, 199, 89, 0.5) */
-}
-.days-number {
-    font-size: 2.5rem; /* Original: 3.2rem */
-    font-weight: 800; /* Original: 900 */
-    color: white;
-    line-height: 1;
-}
-.days-label {
-    font-size: 0.6rem;
-    color: #ccc;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-.expiration-note {
-    font-size: 0.8rem; /* Original: 0.9rem */
-    color: #b0b0b0; /* Original: #ccc */
-    font-style: italic;
-    font-weight: 300;
-}
-
-
-.btn-buy-more {
-    background-color: #89CFF0;
-    font-weight: bolder;
-    color: #1a232f; 
-    border: none;
-    padding: 12px 15px; /* Original: 14px 15px */
-    border-radius: 8px; /* Original: 10px */
-    font-weight: 600; /* Original: 700 */
-    cursor: pointer;
+.banner-video {
     width: 100%;
-    transition: all 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    /* AJUSTE: Sombra más sutil */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Original: 0 4px 10px rgba(0, 0, 0, 0.2) */
-}
-.btn-buy-more:hover {
-    background-color: #5ab1db; 
-    transform: translateY(-1px); /* Original: translateY(-3px) */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Original: 0 8px 15px rgba(0, 0, 0, 0.3) */
+    height: 100%;
+    object-fit: cover; /* Esto hace que el video actúe como "background-size: cover" */
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* 🟢 AJUSTADO SUTIL: Botón de Cancelación de Membresía */
-.btn-cancel-membership {
-    background-color: transparent;
-    border: 1px solid #FF6347;
-    color: #FF6347; 
-    padding: 8px 15px; /* Original: 10px 15px */
-    border-radius: 8px; /* Original: 10px */
-    font-weight: 500; /* Original: 600 */
-    cursor: pointer;
+.image-darkener {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    transition: all 0.2s;
-    margin-top: 10px; /* Original: 15px */
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Ajusta la opacidad para que el botón resalte */
+    z-index: 1; /* Por encima del video, debajo del botón */
+}
+
+/* Contenedor que ocupa toda la pantalla */
+.loader-container-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 0.9rem; /* Original: 0.95rem */
-}
-.btn-cancel-membership:hover {
-    /* AJUSTE: Fondo de hover más suave */
-    background-color: rgba(255, 99, 71, 0.05); /* Original: rgba(255, 99, 71, 0.1) */
-    color: white;
-    border-color: white;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical */
+    background-color: #ffffff; /* Fondo limpio */
+    z-index: 9999;           /* Por encima de todo */
 }
 
-
-/* === PRÓXIMA RESERVA (Destacado) === */
-.upcoming-card {
-    background: rgba(137, 207, 240, 0.1); /* Fondo más acentuado */
-    border: 1px solid rgba(137, 207, 240, 0.3); 
-    /* Box shadow más sutil aquí ya que el fondo es más fuerte */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-.upcoming-card:hover {
-    transform: scale(1.01) translateY(-4px); /* Animación de destaque */
-}
-
-/* Removida la definición directa de h2, ahora usa .card-title-accent */
-
-.next-class-date {
-    font-size: 1.6rem; 
-    font-weight: 700;
-    margin-bottom: 25px; 
-    color: #f2f2f7;
-    /* Sutil glow de texto */
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-}
-
-.detail-row {
-    font-size: 1.1rem;
-    margin: 15px 0; /* Espaciado limpio */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #ccc;
-    font-weight: 300;
-}
-.detail-row strong {
-    color: white;
-}
-
-.btn-cancel-upcoming {
-    background-color: #FF6347; 
-    color: white;
-    border: none;
-    padding: 14px 15px; /* Más padding */
-    border-radius: 10px; 
-    margin-top: 30px; 
-    cursor: pointer;
-    width: 100%;
-    font-weight: 600;
-    transition: all 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-cancel-upcoming:hover {
-    background-color: #e0543e; 
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 99, 71, 0.4);
-}
-
-/* 🟢 Estilo para el botón de cancelación deshabilitado */
-.btn-cancel-disabled {
-    background-color: rgba(26, 35, 47, 0.5); /* Fondo oscuro semitransparente */
-    color: #888;
-    border: 1px solid #555;
-    padding: 14px 15px;
-    border-radius: 10px;
-    margin-top: 30px;
-    width: 100%;
-    font-weight: 600;
-    cursor: not-allowed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: none;
-}
-
-.no-booking-message {
-    text-align: center;
-    padding: 20px 0;
-}
-/* Removida la definición directa de h3, ahora usa .card-title-accent */
-
-/* ----------------------------------------- */
-/* === CALENDARIO PRÓXIMO / HISTORIAL === */
-/* ----------------------------------------- */
-/* Removida la definición directa de h3, ahora usa .card-title-accent */
-
-.booking-list {
-    list-style: none;
-    padding: 0;
-}
-
-.booking-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0; 
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1); 
-    transition: background-color 0.2s; /* Transición para hover */
-}
-
-.booking-item:last-child {
-    border-bottom: none;
-}
-/* 🟢 Efecto Hover Sutil para ítems de lista */
-.booking-item:hover {
-    background-color: rgba(255, 255, 255, 0.03); 
-    padding-left: 5px; 
-}
-
-.booking-status-icon {
-    margin-right: 15px;
-    font-size: 1.4rem; 
-    /* Añadir transición para el icono */
-    transition: transform 0.2s; 
-}
-
-.booking-details {
-    flex-grow: 1;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.coach-name {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-left: 10px;
-}
-
-.booking-status {
-    padding: 7px 12px; 
-    border-radius: 8px; 
-    font-size: 0.85rem;
-    font-weight: 700;
-    min-width: 90px;
-    text-align: center;
-    /* Sombra interior para dar profundidad al estado */
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); 
-}
-
-.booking-status.confirmada {
-    background: rgba(52, 199, 89, 0.1); 
-    color: #34c759;
-}
-.booking-status.completada {
-    background: rgba(137, 207, 240, 0.1);
-    color: #89CFF0;
-}
-.booking-status.cancelada {
-    background: rgba(255, 99, 71, 0.1);
-    color: #FF6347;
-}
-
-/* === ESTILOS PARA FORMULARIOS Y BOTONES (CRISTAL PULIDO / Auth) === */
-
-/* 🔄 AJUSTE CLAVE: Inputs con estilo Liquid Glass/Cristal Pulido */
-.auth-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    font-size: 1rem;
-    color: var(--text-light, white);
-    
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(10px);
-    outline: none;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    transition: border-color 0.2s, background-color 0.2s;
-    font-family: "Nunito", sans-serif; 
-}
-
-.auth-input:focus {
-    border-color: #89CFF0;
-    background: rgba(255, 255, 255, 0.1); 
-    /* Sombra de enfoque de iOS/Material Design */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(137, 207, 240, 0.5); 
-}
-
-/* Ajuste de color del texto en <select> para navegadores oscuros */
-.auth-input select {
-    appearance: none; 
-}
-.auth-input option {
-    background-color: var(--dark-bg, #1a232f); 
-    color: white;
-}
-
-/* 🟢 AJUSTE: Botón Principal (Mantenemos contraste y funcionalidad) */
-.auth-button {
-    background-color: #89CFF0;
-    color: #1a232f; 
-    border: 1px solid #89CFF0; 
-    padding: 12px 20px; 
-    border-radius: 10px; 
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-}
-.auth-button:hover {
-    background-color: #5ab1db; 
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* 🟢 AJUSTE: Botón Secundario (Cristal Pulido) */
-.auth-secondary-btn {
-    background-color: transparent;
-    border: 1px solid #FF6347;
-    color: #FF6347;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); 
-}
-.auth-secondary-btn:hover {
-    background-color: rgba(255, 99, 71, 0.15); 
-    color: white;
-    border-color: white;
-}
-
-/* ------------------------------------------- */
-/* === ESTILOS ESPECÍFICOS DEL FORMULARIO DE EDICIÓN === */
-/* ------------------------------------------- */
-
-.error-text {
-    color: #FF6347;
-    font-size: 0.9rem;
-    margin-top: 5px;
-    text-align: left;
-    font-weight: 500; /* Ligeramente más legible */
-}
-
-/* 🟢 AJUSTE CLAVE: Contenedor como Tarjeta Liquid Glass destacada */
-.profile-edit-form-container {
-    max-width: 650px; /* Un poco más ancho para mejor distribución */
-    margin: 50px auto; 
-    text-align: center; 
-    padding: 40px; /* Más padding para aire */
-    border-radius: 25px; /* Bordes más redondeados */
-
-    /* Estilo Liquid Glass */
-    background: rgba(255, 255, 255, 0.08); /* Más prominente */
-    backdrop-filter: blur(25px) saturate(200%); /* Blur más intenso */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4); /* Sombra más profunda */
-    transition: all 0.4s ease-out; /* Transición general */
-}
-
-.profile-photo-edit-section {
+/* Alineación vertical de los elementos internos */
+.loader-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
-}
-
-.profile-picture-edit {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #89CFF0;
-    margin-bottom: 15px;
-    /* Sombra de enfoque azul/cielo */
-    box-shadow: 0 0 0 4px rgba(137, 207, 240, 0.2), 0 0 15px rgba(137, 207, 240, 0.6); 
-    transition: all 0.3s;
-}
-
-/* 🟢 AJUSTE: Botón de Subir Foto (Destacado Dorado) */
-.btn-upload-photo {
-    background-color: transparent;
-    border: 1px solid #FFD700; 
-    color: #FFD700;
-    padding: 10px 20px; /* Más grande */
-    border-radius: 10px; /* Más redondeado */
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1rem;
-    /* Sombra sutil */
-    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-}
-
-.btn-upload-photo:hover {
-    background-color: rgba(255, 215, 0, 0.2); /* Fondo más visible */
-    color: white;
-    border-color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-}
-
-.medical-info-section {
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Borde más visible */
-    padding-top: 25px;
-    margin-top: 30px; /* Más espacio */
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.profile-edit-form-container label {
-    display: block;
-    margin-top: 18px; /* Más espacio */
-    margin-bottom: 8px;
-    font-weight: 600; /* Más peso */
-    color: #f2f2f7; /* Color más blanco */
-}
-
-/* 🟢 Secciones de botones de acción del formulario */
-.form-actions {
-    display: flex;
     gap: 20px;
-    margin-top: 30px;
-    justify-content: center;
 }
 
-/* === BOTONES DEL FORMULARIO DE EDICIÓN (Aseguramos definición) === */
-
-/* El botón principal de Guardar usará .auth-button (ya definido en el bloque anterior) */
-/* El botón secundario de Cancelar usará .auth-secondary-btn (ya definido en el bloque anterior) */
-
-/* Aseguramos que los botones de acción del formulario se vean bien dentro de .form-actions */
-.form-actions .auth-button, 
-.form-actions .auth-secondary-btn {
-    flex-grow: 1;
-    max-width: 50%;
+/* Animación del Isologo */
+.loader-logo-spin {
+    margin-top: 30vh;
+    width: 150px;
+    height: auto;
+    /* Un pulso sutil en lugar de un giro loco para mantener la elegancia */
+    animation: pulse-logo 2s infinite ease-in-out;
 }
 
-/* ------------------------------------------- */
-/* === MEDIA QUERIES (RESPONSIVIDAD MEJORADA) === */
-/* ------------------------------------------- */
-@media (max-width: 992px) {
-    /* 🟢 AJUSTE GLOBAL: Reducir margen superior y ancho */
-    .profile-page-container {
-        margin: 50px auto;
-        padding: 0 15px; /* Menos padding en los lados */
-    }
-    
-    .main-title-glass {
-        font-size: 2rem; /* Título principal más pequeño */
-        margin-bottom: 20px;
-    }
-    
-    /* 🟢 AJUSTE DE GRID: De dos columnas a una sola columna */
-    .profile-grid {
-        grid-template-columns: 1fr; 
-        gap: 25px; /* Reducir el espacio entre tarjetas */
-    }
-    
-    /* 🟢 ORDEN DE COLUMNAS EN MÓVIL: Personal Info (1) -> Membresía (2) -> Clases (3) */
-    /* No hay clases de columna explícitas, asumimos que están en el orden deseado o las definimos: */
-    /* Asumiendo que la primera columna contiene Personal Info y Membresía */
-    
-    .profile-card {
-        padding: 25px; /* Reducir el padding de todas las tarjetas */
-        border-radius: 15px;
-    }
-    
-    /* === AJUSTES DE CONTENIDO === */
-    
-    /* Ajustes para la tarjeta de Membresía */
-    .credits-count-arcade {
-        font-size: 2.8rem; /* Reducir aún más en móvil */
-        margin: 10px 0 20px;
-    }
-    .credits-count-arcade svg {
-        font-size: 1.8rem;
-    }
-    .clock-face {
-        width: 90px;
-        height: 90px;
-    }
-    .days-number {
-        font-size: 2rem;
-    }
-    
-    /* Ajustes para la tarjeta de Próxima Clase */
-    .next-class-date {
-        font-size: 1.4rem;
-        margin-bottom: 20px;
-    }
-    .detail-row {
-        font-size: 1rem;
-        margin: 10px 0;
-    }
-    
-    /* Ajustes para Listas de Clases (Historial/Próximo Plan) */
-    .booking-item {
-        padding: 10px 0; 
-        flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
-    }
-    .booking-details {
-        flex-basis: 100%; /* La fecha y hora ocupan toda la línea */
-        margin-top: 5px;
-        order: 2; /* Mover la fecha y el coach debajo del ícono de estado */
-    }
-    .booking-status {
-        order: 3; /* El estado se coloca debajo */
-        margin-top: 10px;
-        min-width: 100%; /* Ocupa todo el ancho si se envuelve */
-    }
-    .booking-status-icon {
-        order: 1; /* El ícono se queda arriba a la izquierda */
-        margin-right: 10px;
-    }
+/* Texto de sincronización */
+.loader-booz {
+    font-family: 'SF Pro Display', -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #86868b;
+    letter-spacing: -0.02em;
+}
 
-    /* Ajuste para el formulario de edición en móviles */
-    .profile-edit-form-container {
-        padding: 25px;
-        margin: 20px auto;
-        border-radius: 15px;
+/* --- ANIMACIONES --- */
+@keyframes pulse-logo {
+    0% {
+        transform: scale(0.95);
+        filter: opacity(0.5) blur(1px);
     }
-    
-    .form-actions {
-        flex-direction: column;
-        gap: 15px;
+    50% {
+        transform: scale(1.05);
+        filter: opacity(1) blur(0px);
     }
-    .form-actions .auth-button, 
-    .form-actions .auth-secondary-btn {
-        max-width: 100%;
+    100% {
+        transform: scale(0.95);
+        filter: opacity(0.5) blur(1px);
     }
 }
