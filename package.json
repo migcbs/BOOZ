@@ -28,9 +28,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server.js",
-    "seed": "prisma db seed",
+    "seed": "node prisma/seed.js",
     "dev": "npm run seed && npm run server",
-    "vercel-build": "prisma generate && prisma migrate deploy && npm run seed && npm run build"
+    "install": "npm install --legacy-peer-deps",
+    "vercel-build": "prisma generate && prisma migrate deploy && node prisma/seed.js && npm run build"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -53,6 +54,7 @@
     ]
   },
   "devDependencies": {
-    "prisma": "^6.19.0"
+    "prisma": "^6.19.0",
+    "typescript": "^4.9.5"
   }
 }
