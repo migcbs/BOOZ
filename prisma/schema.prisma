@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+enum Role {
+  cliente
+  coach
+  admin
+}
+
+enum TipoSuscripcion {
+  REGULAR    // Clientes de clases sueltas
+  SUSCRIPTO  // Clientes con Paquete 1 o 2 activo
+}
+
+enum TipoPaquete {
+  LMV        // Lunes, Miércoles, Viernes
+  MJ         // Martes y Jueves
+  SUELTA     // Fines de semana o clase única
+}
+
+model User {
+  id                 String          @id @default(uuid())
+  email              String          @unique
+  password           String?
+  role               String          @default("cliente")
+
+  // --- Información Personal ---
+  nombre             String
+  apellido           String
+  telefono           String?
+  fechaNacimiento    DateTime?
+  contactoEmergencia String?
+  profileImageUrl    String?         @db.Text
+  instagram          String?         // Red social para expediente
+
+  // --- Información Médica ---
+  tipoSangre         String?
+  alergias           String?
+  lesiones           String?         @db.Text
+
+  // --- Lógica de Negocio ---
+  tipoCliente        TipoSuscripcion @default(REGULAR)
+  creditosDisponibles Int             @default(0)
+  suscripcionActiva  Boolean         @default(false)
+  planNombre         String?         // Ej: "Paquete 1 (6:00 AM)"
+  paqueteTipo        TipoPaquete?    // Para saber si es LMV o MJ
+  vencimientoPlan    DateTime?       // 30 días después de la compra
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  reservas           Class[]
+}
+
+model Class {
+  id            String      @id @default(uuid())
+  
+  // --- Identificación de Grupo ---
+  nombre        String      // Ej: "Grupo Alfa" o "Morning Flow"
+  tematica      String?     // Ej: "Resistencia" o "Flexibilidad"
+  descripcion   String?     @db.Text
+  paqueteRef    TipoPaquete @default(SUELTA) // Define si es del Paquete 1, 2 o Suelta
+  
+  // --- Horario y Fecha ---
+  fecha         DateTime    // ISO Date que incluye hora exacta
+  
+  // --- Personalización Visual (Coach) ---
+  color         String?     @default("#89CFF0")
+  imageUrl      String?     @db.Text // Póster de la clase
+  
+  // --- Lógica de Cupos y Camillas ---
+  numeroCamilla Int?        // Solo para Sábados/Domingos (1-8)
+  
+  // --- Relación con Usuario ---
+  // Si userId está presente, la clase está "ocupada" por ese cliente.
+  // Las clases maestras (plantillas) tienen userId = null.
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime    @default(now())
+
+  @@index([fecha]) // Optimización para búsquedas en el calendario
+}

@@ -1,487 +1,317 @@
-// Perfil.jsx
-
 import React, { useState, useEffect } from 'react';
-import { FaUserCircle, FaCreditCard, FaCalendarCheck, FaDumbbell, FaEnvelope, FaMapMarkerAlt, FaEdit, FaTimesCircle, FaCheckCircle, FaAngleRight, FaCalendarTimes, FaPhone, FaBirthdayCake, FaUserMd, FaBolt } from 'react-icons/fa';
-import { format, parseISO, differenceInDays, isBefore, subHours, getDay, addDays } from 'date-fns';
+import { 
+    FaUserCircle, FaCreditCard, FaCalendarCheck, FaEnvelope, 
+    FaEdit, FaCheckCircle, FaAngleRight, FaPhone, FaBirthdayCake, 
+    FaUserMd, FaBolt, FaInstagram, FaTimesCircle, FaStethoscope,
+    FaClock, FaMapMarkerAlt, 
+    FaBed, FaTicketAlt, FaCalendarPlus 
+} from 'react-icons/fa';
+import { format, parseISO, isBefore, differenceInDays, subHours, isAfter } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import ProfileEditForm from './ProfileEditForm';
+import Tienda from './Tienda'; 
 import './Styles.css';
+// 🟢 IMPORTACIÓN DINÁMICA
+import API_BASE_URL from '../../apiConfig'; 
 
-// --------------------------------------------------------------------------
-// 🟢 DATOS MOCK Y HELPERS
-// --------------------------------------------------------------------------
-
-// 🟢 DATOS MOCK
-const MOCK_MEMBERSHIP_DATA = {
-    credits: 5000, 
-    packageName: "Paquete Anual - Acceso Total (5000 MXN)",
-    expirationDate: "2026-01-01", 
-};
-const MOCK_BOOKINGS = [
-    { id: 101, date: "2025-12-06", hour: "10:00 AM", coach: "Coach Ana (Finde)", bed: 3, status: "Confirmada", type: "Clase Fin de Semana" }, 
-    { id: 102, date: "2025-12-09", hour: "6:00 PM", coach: "Coach Luis", bed: 5, status: "Confirmada", type: "Clase Regular" }, 
-    { id: 103, date: "2025-11-20", hour: "4:00 PM", coach: "Coach Ana", bed: 1, status: "Completada", type: "Clase Muestra" },
-    { id: 104, date: "2025-12-10", hour: "7:00 AM", coach: "Coach Luis", bed: null, status: "Cancelada", type: "Clase Regular" }
-];
-const PACKAGE_DAY_MAP = {
-    'LUNES_MIÉRCOLES_VIERNES': [1, 3, 5],
-    'MARTES_JUEVES': [2, 4],
-};
-
-
-// Helper para encontrar la próxima clase confirmada
 const getUpcomingBooking = (bookings) => {
+    if (!bookings || bookings.length === 0) return null;
     const today = new Date();
     const upcoming = bookings
-        .filter(b => b.status === "Confirmada")
-        .map(b => {
-            // Simplificación de formato de hora para parseISO
-            let timePart = b.hour.toLowerCase().replace(/ /g, '');
-            // Se asume que el backend ajusta el ISO string, aquí solo se intenta construir el formato básico
-            const dateTimeString = `${b.date}T${timePart.replace('am', '').replace('pm', '')}`; 
-            
-            return {
-                ...b,
-                // Usamos la fecha y hora completa para una comparación precisa
-                dateTime: parseISO(b.date + 'T00:00:00') 
-            };
-        })
-        .filter(b => b.dateTime && isBefore(today, b.dateTime)) // Solo futuras
+        .map(b => ({ ...b, dateTime: typeof b.fecha === 'string' ? parseISO(b.fecha) : new Date(b.fecha) }))
+        .filter(b => isAfter(b.dateTime, today)) 
         .sort((a, b) => a.dateTime - b.dateTime);
-        
     return upcoming.length > 0 ? upcoming[0] : null;
 };
 
-// Helper para calcular las próximas N clases del paquete + reservas individuales confirmadas
-const getNextPackageClasses = (planType, confirmedBookings, count = 5) => {
-    const today = new Date();
-    const planDays = PACKAGE_DAY_MAP[planType] || [];
-    let upcomingClasses = [];
-    
-    // 1. Calcular las próximas clases regulares del paquete (máximo 30 iteraciones)
-    let currentDate = new Date(today);
-    let iterations = 0;
-    while (upcomingClasses.length < count && iterations < 30) {
-        currentDate = addDays(currentDate, 1); 
-        const currentDayOfWeek = getDay(currentDate); 
+export default function Perfil() {
+    const navigate = useNavigate();
+    const [fullUser, setFullUser] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [showTienda, setShowTienda] = useState(false); 
+    const [loading, setLoading] = useState(true);
 
-        if (planDays.includes(currentDayOfWeek)) {
-            // Se asume la hora de la clase base
-            const classTime = "19:00"; 
-            const dateISO = format(currentDate, 'yyyy-MM-dd');
-            upcomingClasses.push({
-                date: parseISO(`${dateISO}T${classTime}:00`),
-                type: 'Clase Base (Paquete)',
-                coach: 'Coach Asignado (7:00 PM)', 
-                status: 'Confirmada',
+    const loadProfileData = async () => {
+        const sessionUser = JSON.parse(localStorage.getItem('user'));
+        const email = sessionUser?.email || sessionUser?.correo;
+        
+        if (!email) return navigate('/login');
+
+        try {
+            // 🟢 ACTUALIZACIÓN PARA VERCEL
+            const response = await fetch(`${API_BASE_URL}/user/${encodeURIComponent(email)}`);
+            if (response.ok) {
+                const data = await response.json();
+                setFullUser(data);
+                // Mantenemos el localStorage fresco para otros componentes
+                localStorage.setItem('user', JSON.stringify(data));
+            }
+        } catch (error) { 
+            console.error("Error cargando perfil:", error); 
+        } finally { 
+            setLoading(false); 
+        }
+    };
+
+    useEffect(() => { loadProfileData(); }, []);
+
+    const downloadICS = (booking) => {
+        const date = booking.dateTime;
+        const startDate = format(date, "yyyyMMdd'T'HHmmss");
+        const endDate = format(new Date(date.getTime() + 60 * 60 * 1000), "yyyyMMdd'T'HHmmss");
+
+        const icsContent = [
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "BEGIN:VEVENT",
+            `DTSTART:${startDate}`,
+            `DTEND:${endDate}`,
+            `SUMMARY:Clase Booz: ${booking.nombre}`,
+            `DESCRIPTION:Temática: ${booking.tematica || 'General'}. Camilla: ${booking.numeroCamilla || 'N/A'}`,
+            "LOCATION:Booz Studio Central",
+            "END:VEVENT",
+            "END:VCALENDAR"
+        ].join("\n");
+
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute('download', `clase-booz-${format(date, 'yyyy-MM-dd')}.ics`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleSaveProfile = async (updatedData) => {
+        try {
+            // 🟢 ACTUALIZACIÓN PARA VERCEL
+            const response = await fetch(`${API_BASE_URL}/user/update`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setFullUser(result.user);
+                localStorage.setItem('user', JSON.stringify(result.user));
+                setIsEditing(false);
+                Swal.fire({ icon: 'success', title: 'Perfil Actualizado', timer: 1500 });
+            }
+        } catch (error) {
+            Swal.fire('Error', 'No se pudieron guardar los cambios en el servidor.', 'error');
+        }
+    };
+
+    const handleCancelarReserva = async (reservaId, fechaClase) => {
+        const ahora = new Date();
+        const claseDate = typeof fechaClase === 'string' ? parseISO(fechaClase) : new Date(fechaClase);
+        const limiteCancelacion = subHours(claseDate, 24);
+
+        if (isAfter(ahora, limiteCancelacion)) {
+            return Swal.fire({
+                icon: 'error',
+                title: 'Cancelación Bloqueada',
+                text: 'Faltan menos de 24 horas para la clase. Por política de Booz no es posible reembolsar el crédito.',
+                confirmButtonColor: '#FC7358'
             });
         }
-        iterations++;
-    }
-    
-    // 2. Filtrar e integrar reservas de fin de semana (Sábado=6, Domingo=0) confirmadas y futuras
-    const confirmedWeekends = confirmedBookings
-        .map(b => {
-            const dateISO = b.date;
-            let time24h = b.hour; // Simplificación, asumiendo hora 24h
-            if (b.hour.includes('AM') || b.hour.includes('PM')) {
-                // Aquí iría la lógica real de conversión AM/PM a 24h
-                time24h = b.hour.split(' ')[0] + ':00';
-            }
 
-            return {
-                ...b,
-                dateTime: parseISO(`${dateISO}T${time24h}:00`),
-                dateObj: parseISO(dateISO)
-            };
-        })
-        .filter(b => 
-            b.status === "Confirmada" && 
-            (getDay(b.dateObj) === 0 || getDay(b.dateObj) === 6) && 
-            isBefore(today, b.dateTime) 
-        )
-        .map(b => ({
-            date: b.dateTime, 
-            type: 'Reserva Fin de Semana',
-            coach: b.coach,
-            status: 'Confirmada',
-        }));
+        const confirm = await Swal.fire({
+            title: '¿Liberar tu lugar?',
+            text: "Se te devolverá tu crédito automáticamente.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'Volver',
+            confirmButtonColor: '#FC7358'
+        });
 
-    // 3. Combinar, ordenar y eliminar duplicados (solo las primeras 'count')
-    const combined = [...upcomingClasses, ...confirmedWeekends];
-    combined.sort((a, b) => a.date - b.date);
-    
-    const uniqueDates = [];
-    return combined.filter(item => {
-        // Usar un identificador de fecha/hora único
-        const dateKey = item.date.toISOString();
-        if (!uniqueDates.includes(dateKey)) {
-            uniqueDates.push(dateKey);
-            return true;
-        }
-        return false;
-    }).slice(0, count); 
-};
-
-
-// 🟢 SUBCOMPONENTE: Contador de Reloj
-const ClockWidget = ({ days, expirationDate }) => (
-    <div className="clock-widget-container">
-        <div className="clock-face">
-            <div className="days-label card-subtitle-small">DÍAS RESTANTES</div>
-            <div className="days-number">{days}</div>
-        </div>
-        <p className="expiration-note">Expira: {format(expirationDate, 'dd/MMM/yyyy', { locale: es })}</p>
-    </div>
-);
-
-// 🟢 SUBCOMPONENTE: Resumen de Información Personal
-const PersonalSummary = ({ user, setIsEditing }) => (
-    <div className="profile-card glass-card personal-info-card">
-        <img 
-            src={user.profileImageUrl || "https://i.pravatar.cc/150?img=49"} 
-            alt="Foto de Perfil" 
-            className="profile-picture"
-        />
-        <h2 className="profile-name">{user.nombre} {user.apellido}</h2>
-        
-        <div className="contact-details">
-            <p><FaEnvelope /> {user.correo}</p>
-            <p><FaPhone /> {user.telefono}</p>
-            <p><FaBirthdayCake /> {format(parseISO(user.fechaNacimiento), 'dd MMMM yyyy', { locale: es })}</p>
-            <p><FaMapMarkerAlt /> Coatepec, Ver.</p> 
-        </div>
-
-        <div className="medical-summary">
-            <p className="card-subtitle-small">DATOS ADICIONALES</p>
-            <p><FaUserMd /> <strong>Contacto de Emergencia:</strong> {user.contactoEmergencia}</p>
-            <p><strong>Condición Médica:</strong> {user.condicion === 'otro' ? user.condicionOtro : user.condicion || 'Ninguna'}</p>
-            <p><strong>Lesiones Previas:</strong> {user.lesiones || 'Ninguna'}</p>
-        </div>
-        
-        <button className="btn-edit-profile" onClick={() => setIsEditing(true)}>
-            <FaEdit />
-        </button>
-    </div>
-);
-
-// 🟢 SUBCOMPONENTE: Resumen de Membresía
-const MembershipSummary = ({ membershipData, daysRemaining, expirationDate, handleBuyMoreOrReserve, handleCancelMembership }) => (
-    <div className="profile-card glass-card membership-card">
-        <h3 className="card-title-accent"><FaCreditCard /> Resumen</h3>
-        
-        {/* 🟢 Refinamiento: Eliminamos los asteriscos. Usamos <strong> para sutil negrita, o simplemente dejamos texto */}
-        <p className="package-name">
-            <strong>{membershipData.packageName}</strong>
-        </p>
-        
-        <p className="credits-count-arcade">
-            {membershipData.credits.toLocaleString('es-MX', { minimumFractionDigits: 0 })} 
-            <FaDumbbell style={{ color: '#FFD700', marginLeft: '10px' }} />
-        </p>
-        
-        <ClockWidget days={daysRemaining} expirationDate={expirationDate} />
-        
-        <button className="btn-buy-more" onClick={handleBuyMoreOrReserve}>
-            Comprar Más Créditos <FaAngleRight />
-        </button>
-
-        {membershipData.packageName !== "Paquete Anual - Cancelación Pendiente" && (
-            <button className="btn-cancel-membership" onClick={handleCancelMembership}>
-                <FaCalendarTimes /> Cancelar mi Paquete Actual
-            </button>
-        )}
-    </div>
-);
-
-// 🟢 SUBCOMPONENTE: Próxima Reserva Destacada
-const UpcomingBookingCard = ({ booking, handleCancelBooking, canCancel, handleBuyMoreOrReserve }) => {
-    if (!booking) {
-        return (
-            <div className="profile-card upcoming-card glass-card">
-                <div className="no-booking-message">
-                    <FaCalendarCheck size={30} style={{ marginBottom: '10px', color: '#89CFF0' }}/>
-                    <h3 className="card-title-accent">¡No tienes clases confirmadas!</h3>
-                    <p>Reserva tu lugar ahora para no perder tu entrenamiento.</p>
-                    
-                    <button className="btn-buy-more" onClick={handleBuyMoreOrReserve} style={{ marginTop: '20px' }}>
-                        Reservar Clase Ahora <FaAngleRight />
-                    </button>
-                </div>
-            </div>
-        );
-    }
-    
-    return (
-        <div className="profile-card upcoming-card glass-card">
-    <h2 className="card-title-accent"><FaCalendarCheck /> ¡Tu Próxima Clase!</h2>
-    
-    <p className="next-class-date">
-        {/* 🟢 Reemplazado **...** por <strong> */}
-        <strong>{format(booking.dateTime, 'EEEE, dd MMMM, hh:mm a', { locale: es })}</strong>
-    </p>
-    <p className="detail-row">
-        <FaDumbbell /> <strong>Tipo:</strong> {booking.type}
-    </p>
-    <p className="detail-row">
-        <FaUserMd /> <strong>Coach:</strong> {booking.coach}
-    </p>
-    
-    {canCancel(booking.dateTime) ? (
-        <button 
-            className="btn-cancel-upcoming" 
-            onClick={() => handleCancelBooking(booking.id, booking.dateTime)}
-        >
-            <FaTimesCircle /> Cancelar Reserva
-        </button>
-    ) : (
-        <button className="btn-cancel-disabled" disabled>
-            <FaCalendarTimes /> Cancelación Cerrada 
-        </button>
-    )}
-</div>
-    );
-};
-
-
-
-// 🟢 SUBCOMPONENTE: Historial de Clases
-const HistoryCard = ({ bookings }) => (
-    <div className="profile-card glass-card history-card">
-        <h3 className="card-title-accent">Historial de Clases Pasadas</h3>
-        <ul className="booking-list">
-            {bookings
-                .filter(b => b.status === "Completada" || b.status === "Cancelada")
-                .map(b => (
-                    <li key={b.id} className="booking-item">
-                        <span className="booking-status-icon">
-                            {b.status === 'Completada' ? <FaCheckCircle style={{ color: '#34c759' }} /> : 
-                            <FaTimesCircle style={{ color: '#FF6347' }} />}
-                        </span>
-                        <span className="booking-details">
-                            {/* Cambio de **{fecha}** a <strong>{fecha}</strong> */}
-                            <strong>{format(parseISO(b.date), 'dd MMM', { locale: es })}</strong> - {b.hour}
-                            <span className="coach-name"> / {b.coach}</span>
-                        </span>
-                        <span className={`booking-status ${b.status.toLowerCase()}`}>{b.status}</span>
-                    </li>
-                ))
-            }
-        </ul>
-    </div>
-);
-
-// 🟢 SUBCOMPONENTE: Calendario Próximo
-const NextScheduleCard = ({ nextClassesSchedule, handleBuyMoreOrReserve }) => (
-    <div className="profile-card glass-card next-schedule-card">
-        <h3 className="card-title-accent"><FaCalendarCheck /> Próximas Clases</h3>
-        
-        <ul className="booking-list">
-            {nextClassesSchedule.map((c, index) => (
-                <li key={index} className="booking-item">
-                    <span className="booking-status-icon" style={{ color: c.type.includes('Fin de Semana') ? '#FFD700' : '#89CFF0' }}>
-                        <FaBolt />
-                    </span>
-                    <span className="booking-details">
-                        {/* 🟢 Reemplazado **...** por <strong> */}
-                        <strong>{format(c.date, 'EEEE, dd MMMM, hh:mm a', { locale: es })}</strong>
-                        <span className="coach-name"> / {c.coach}</span>
-                        <span style={{ fontSize: '0.8rem', color: '#ccc', marginLeft: '10px' }}> ({c.type})</span>
-                    </span>
-                </li>
-            ))}
-        </ul>
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-            <button className="btn-edit-profile" onClick={handleBuyMoreOrReserve}>
-                Ver Calendario Completo
-            </button>
-        </div>
-    </div>
-);
-
-
-// --------------------------------------------------------------------------
-// COMPONENTE PRINCIPAL: PÁGINA DE PERFIL DEL CLIENTE
-// --------------------------------------------------------------------------
-export default function Perfil() {
-    
-    const navigate = useNavigate();
-    
-    const [fullUser, setFullUser] = useState(null);
-    const [membershipData, setMembershipData] = useState(MOCK_MEMBERSHIP_DATA);
-    const [bookings, setBookings] = useState(MOCK_BOOKINGS); 
-    const [isEditing, setIsEditing] = useState(false); 
-
-    // 🟢 FUNCIÓN DE CARGA DE DATOS AL INICIO
-    useEffect(() => {
-        const sessionUser = JSON.parse(localStorage.getItem('user'));
-        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
-
-        if (sessionUser) {
-            const userFullData = allUsers.find(u => u.correo === sessionUser.correo);
-            if (userFullData) {
-                setFullUser(userFullData);
-            } else {
-                console.error("No se encontraron datos completos para el usuario en sesión.");
-            }
-        } else {
-            navigate('/login');
-        }
-    }, [navigate]);
-
-    if (!fullUser) {
-        return <div className="profile-page-container">Cargando datos del perfil...</div>;
-    }
-
-    const upcomingBooking = getUpcomingBooking(bookings);
-
-    // 🟢 Función para guardar los cambios del formulario de edición
-    const handleSaveProfile = (updatedUserData) => {
-        setFullUser(updatedUserData);
-        
-        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        const updatedUsers = allUsers.map(u => 
-            u.correo === updatedUserData.correo ? updatedUserData : u
-        );
-        localStorage.setItem('users', JSON.stringify(updatedUsers));
-        
-        setIsEditing(false);
-        alert("¡Perfil actualizado con éxito!");
-    };
-
-
-    // 🟢 Función para verificar si la cancelación es permitida (S/D y +24h)
-    const canCancel = (bookingDateTime) => {
-        const twentyFourHoursBefore = subHours(bookingDateTime, 24);
-        const now = new Date();
-        const dayOfWeek = getDay(bookingDateTime);
-
-        const isWeekendClass = dayOfWeek === 0 || dayOfWeek === 6;
-        const isOutside24HourWindow = isBefore(now, twentyFourHoursBefore);
-
-        return isWeekendClass && isOutside24HourWindow;
-    };
-
-
-    const handleCancelBooking = (bookingId, bookingDateTime) => {
-        
-        if (!canCancel(bookingDateTime)) {
-            alert("No es posible cancelar. Las clases de fin de semana solo permiten cancelación hasta 24 horas antes.");
-            return;
-        }
-
-        if (!window.confirm(`¿Estás seguro de que deseas cancelar la reserva ${bookingId}? Se regresarán los créditos a tu cuenta.`)) return;
-
-        const newBookings = bookings.map(b => 
-            b.id === bookingId ? { ...b, status: 'Cancelada' } : b
-        );
-        
-        setBookings(newBookings);
-        setMembershipData(prev => ({
-            ...prev,
-            credits: prev.credits + 1 
-        }));
-        
-        alert(`Reserva ${bookingId} cancelada exitosamente. Se ha restaurado 1 crédito.`);
-    };
-    
-    // 🟢 FUNCIÓN: Cancelación de Membresía
-    const handleCancelMembership = () => {
-        if (!window.confirm("ADVERTENCIA: ¿Estás seguro de que deseas cancelar tu Paquete Actual? Perderás los beneficios al expirar el plan.")) return;
-        
-        setMembershipData(prev => ({
-            ...prev,
-            packageName: "Paquete Anual - Cancelación Pendiente",
-        }));
-        
-        alert("¡Tu paquete ha sido marcado para cancelación! Seguirás teniendo acceso hasta la fecha de expiración.");
-    };
-
-
-    // Botón de Compra/Reserva que navega al Calendario
-    const handleBuyMoreOrReserve = () => {
-        navigate('/cliente/home');
-        // Pequeño timeout para asegurar que la navegación comience antes del scroll
-        window.setTimeout(() => {
-            const element = document.getElementById('calendario-section');
-            if (element) {
-                window.scrollTo({
-                    top: element.offsetTop - 100,
-                    behavior: 'smooth',
+        if (confirm.isConfirmed) {
+            try {
+                // 🟢 ACTUALIZACIÓN PARA VERCEL
+                const response = await fetch(`${API_BASE_URL}/reservas/cancelar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reservaId, userEmail: fullUser.email })
                 });
+                if (response.ok) {
+                    await Swal.fire('Cancelada', 'Tu lugar se ha liberado y tu crédito ha vuelto a tu billetera.', 'success');
+                    loadProfileData(); 
+                }
+            } catch (e) { 
+                Swal.fire('Error', 'Servidor no disponible.', 'error'); 
             }
-        }, 50);
+        }
     };
 
-    // CÁLCULO DE DÍAS RESTANTES
-    const expirationDate = parseISO(membershipData.expirationDate);
-    const today = new Date();
-    const daysRemaining = differenceInDays(expirationDate, today);
-
-    // 🟢 CALENDARIO PERSONALIZADO: 
-    const userPlanType = 'LUNES_MIÉRCOLES_VIERNES'; 
-    const confirmedBookings = bookings.filter(b => b.status === "Confirmada");
-    const nextClassesSchedule = getNextPackageClasses(userPlanType, confirmedBookings, 5); 
-
-    // 🟢 Si estamos editando, renderizamos el formulario de edición
-    if (isEditing) {
-        return (
-            <div className="profile-page-container">
-                <ProfileEditForm 
-                    initialData={fullUser} 
-                    onSave={handleSaveProfile} 
-                    onCancel={() => setIsEditing(false)} 
-                />
+    if (loading) return (
+        <div className="loader-container-full">
+            <div className="loader-content">
+                <img src="/isologo.png" alt="Booz Logo" className="loader-logo-spin" />
             </div>
-        );
-    }
-    
-    // 🟢 RENDERIZADO NORMAL DEL PERFIL
+        </div>
+    );
+
+    if (!fullUser) return <div className="profile-page-container">No se encontró el usuario.</div>;
+
+    const upcomingBooking = getUpcomingBooking(fullUser.reservas || []);
+
     return (
-        <div className="profile-page-container">
-          
-            
-            <div className="profile-grid">
-                
-                {/* === COLUMNA IZQUIERDA: RESUMEN Y ACCIÓN RÁPIDA (Orden Móvil 2) === */}
-                <div className="summary-column">
+        <div className="profile-page-container animate-ios-entry">
+            {showTienda && (
+                <Tienda isModal={showTienda} onClose={() => setShowTienda(false)} userEmail={fullUser.email} />
+            )}
+
+            {isEditing ? (
+                <ProfileEditForm initialData={fullUser} onSave={handleSaveProfile} onCancel={() => setIsEditing(false)} />
+            ) : (
+                <div className="profile-grid">
                     
-                    {/* Tarjeta 1: Información Personal */}
-                    <PersonalSummary user={fullUser} setIsEditing={setIsEditing} />
+                    {/* COLUMNA IZQUIERDA: RESUMEN Y WALLET */}
+                    <div className="summary-column">
+                        <div className="profile-card glass-card personal-info-card">
+                            <div className="profile-header-flex">
+                                {fullUser.profileImageUrl ? (
+                                    <img src={fullUser.profileImageUrl} alt="Perfil" className="profile-pic-booz" />
+                                ) : (
+                                    <div className="avatar-placeholder"><FaUserCircle /></div>
+                                )}
+                                <div className="name-box">
+                                    <h2 className="profile-name">{fullUser.nombre} {fullUser.apellido}</h2>
+                                    <span className="user-role-badge">MIEMBRO BOOZ</span>
+                                </div>
+                            </div>
+                            
+                            <div className="contact-details-mini">
+                                <p><FaEnvelope /> {fullUser.email}</p>
+                                <p><FaPhone /> {fullUser.telefono || 'Sin teléfono'}</p>
+                                <p><FaBirthdayCake /> {fullUser.fechaNacimiento ? format(parseISO(fullUser.fechaNacimiento), 'dd MMM yyyy', { locale: es }) : 'N/A'}</p>
+                            </div>
 
-                    {/* Tarjeta 2: Resumen de Créditos/Paquete */}
-                    <MembershipSummary 
-                        membershipData={membershipData}
-                        daysRemaining={daysRemaining}
-                        expirationDate={expirationDate}
-                        handleBuyMoreOrReserve={handleBuyMoreOrReserve}
-                        handleCancelMembership={handleCancelMembership}
-                    />
+                            <div className="medical-summary-grid">
+                                <p className="card-subtitle-small"><FaStethoscope /> FICHA MÉDICA</p>
+                                <div className="med-row">
+                                    <span><FaBolt /> {fullUser.tipoSangre || 'N/A'}</span>
+                                    <span><FaUserMd /> {fullUser.contactoEmergencia || 'N/A'}</span>
+                                </div>
+                            </div>
+                            
+                            <button className="btn-edit-booz" onClick={() => setIsEditing(true)}>
+                                <FaEdit /> Editar Perfil
+                            </button>
+                        </div>
 
+                        <div className="profile-card glass-card membership-card">
+                            <h3 className="card-title-accent"><FaCreditCard /> Mi Billetera</h3>
+                            <div className="wallet-content">
+                                <div className="credits-display">
+                                    <p className="amount">${fullUser.creditosDisponibles || 0}</p>
+                                    <p className="label">Saldo Disponible (MXN)</p>
+                                </div>
+                                <button className="btn-action-wallet" onClick={() => setShowTienda(true)}>
+                                    Recargar Créditos <FaAngleRight />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* COLUMNA DERECHA: RESERVAS Y ACTIVIDAD */}
+                    <div className="bookings-column">
+                        <div className={`profile-card upcoming-card-premium glass-card ${upcomingBooking?.posterUrl ? 'has-poster' : ''}`}>
+                            
+                            {upcomingBooking?.posterUrl && (
+                                <div className="upcoming-hero-image">
+                                    <img src={upcomingBooking.posterUrl} alt="Poster" className="poster-img-full" />
+                                    <div className="poster-overlay-gradient">
+                                        <div className="poster-text-content">
+                                            <span className="hero-tag-pill">PRÓXIMA SESIÓN</span>
+                                            <h3 className="poster-class-title">{upcomingBooking.nombre}</h3>
+                                            <p className="poster-class-meta">
+                                                <FaClock /> {format(upcomingBooking.dateTime, "EEEE dd 'de' MMMM · HH:mm 'hrs'", { locale: es })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="upcoming-body">
+                                <div className="upcoming-header-info">
+                                    <h3 className="card-title-accent"><FaCalendarCheck /> Datos del Evento</h3>
+                                    {upcomingBooking && (
+                                        <button className="btn-add-calendar" onClick={() => downloadICS(upcomingBooking)}>
+                                            <FaCalendarPlus /> Calendario
+                                        </button>
+                                    )}
+                                </div>
+
+                                {upcomingBooking ? (
+                                    <div className="upcoming-data-grid">
+                                        <div className="data-item full">
+                                            <FaClock className="item-icon" />
+                                            <div>
+                                                <label>Fecha y Hora</label>
+                                                <p>{format(upcomingBooking.dateTime, "EEEE dd 'de' MMMM · HH:mm 'hrs'", { locale: es })}</p>
+                                            </div>
+                                        </div>
+                                        <div className="data-item">
+                                            <FaBed className="item-icon" />
+                                            <div>
+                                                <label>Camilla</label>
+                                                <p>{upcomingBooking.numeroCamilla || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="data-item">
+                                            <FaTicketAlt className="item-icon" />
+                                            <div>
+                                                <label>Paquete</label>
+                                                <p>{upcomingBooking.paqueteId || 'Individual'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="data-item full">
+                                            <FaMapMarkerAlt className="item-icon" />
+                                            <div>
+                                                <label>Ubicación</label>
+                                                <p>Booz Studio Central</p>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            className="btn-cancel-reserva-full" 
+                                            onClick={() => handleCancelarReserva(upcomingBooking.id, upcomingBooking.fecha)}
+                                        >
+                                            <FaTimesCircle /> Cancelar Reservación
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="empty-state">
+                                        <p>No tienes clases programadas actualmente.</p>
+                                        <button className="btn-action-primary" onClick={() => navigate('/cliente/inicio')}>Ver Horarios Disponibles</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="profile-card glass-card history-card">
+                            <h3 className="card-title-accent">Actividad Reciente</h3>
+                            <div className="history-list">
+                                {fullUser.reservas?.filter(r => isBefore(parseISO(r.fecha), new Date())).slice(0, 5).map(res => (
+                                    <div key={res.id} className="history-item">
+                                        <div className="history-dot"></div>
+                                        <div className="history-info">
+                                            <strong>{res.nombre}</strong>
+                                            <span>{format(parseISO(res.fecha), 'dd MMM, HH:mm', { locale: es })}</span>
+                                        </div>
+                                        <FaCheckCircle className="icon-done" style={{marginLeft: 'auto', color: '#34C759'}} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                {/* === COLUMNA DERECHA: RESERVAS (Orden Móvil 1) === */}
-                <div className="bookings-column">
-                    
-                    {/* Tarjeta 3: Próxima Reserva (Destacado) */}
-                    <UpcomingBookingCard
-                        booking={upcomingBooking}
-                        handleCancelBooking={handleCancelBooking}
-                        canCancel={canCancel}
-                        handleBuyMoreOrReserve={handleBuyMoreOrReserve}
-                    />
-                    
-                    {/* Tarjeta 4: Calendario Personalizado de Clases Próximas */}
-                    <NextScheduleCard 
-                        nextClassesSchedule={nextClassesSchedule} 
-                        handleBuyMoreOrReserve={handleBuyMoreOrReserve}
-                    />
-                    
-                    {/* Tarjeta 5: Historial de Clases Pasadas */}
-                    <HistoryCard bookings={bookings} />
-                </div>
-            </div>
+            )}
         </div>
     );
 }

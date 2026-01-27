@@ -72,7 +72,7 @@ export default function WhatsAppButton() {
                 <AiOutlineClose size={20} /> {/* Ícono de cerrar sutil */}
             </button>
             
-            <h3>Reserva o Solicita Info</h3>
+            <h3>Solicita Información</h3>
             <p className="modal-subtitle">Te enviaremos al chat de WhatsApp con el mensaje listo.</p>
 
             <div className="form-group">

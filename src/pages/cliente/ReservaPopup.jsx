@@ -1,239 +1,192 @@
-// ReservaPopup.jsx
-
 import React, { useState, useEffect } from 'react';
-// 🟢 IMPORTACIÓN AÑADIDA: Necesaria para el formato de fecha en español
-import { format } from "date-fns";
+import { format, getDay, isAfter, parseISO } from "date-fns";
 import { es } from 'date-fns/locale'; 
-
-import "./Styles.css"; // Asegúrate de que esta ruta sea correcta para tu CSS
-
-// ====================================================================
-// 1. COMPONENTE INTERNO: ProgressBar
-// Muestra la ocupación y el estado de disponibilidad (full, low, ok).
-// ====================================================================
-
-/**
- * Componente visual de la barra de progreso que cambia de color y texto
- * según la disponibilidad.
- * @param {number} available - Slots disponibles.
- * @param {number} maxSlots - Slots totales.
- */
-function ProgressBar({ available, maxSlots }) {
-    if (maxSlots === 0) {
-        return <div className="progress-bar-container full">
-            <span className="progress-bar-label">NO DISPONIBLE</span>
-        </div>;
-    }
-    
-    // Si la disponibilidad es menor a 0 (ej. cuando se selecciona una camilla 
-    // y quedan 0, el disponible 'visual' es -1), lo limitamos a 0 para el cálculo.
-    const actualAvailable = Math.max(0, available); 
-    const reserved = maxSlots - actualAvailable;
-    const percentage = (reserved / maxSlots) * 100;
-
-    let statusClass = '';
-    let statusText = '';
-
-    // Lógica para determinar el estado (se usa 'actualAvailable' para la clase)
-    if (actualAvailable === 0) {
-        statusClass = 'full';
-        statusText = 'COMPLETO';
-    } else if (actualAvailable <= maxSlots * 0.25) { // Menos del 25% disponible
-        statusClass = 'low';
-        statusText = `¡QUEDAN ${actualAvailable} LUGARES!`;
-    } else {
-        statusClass = 'ok';
-        statusText = `OCUPACIÓN: ${reserved} / ${maxSlots}`;
-    }
-
-    return (
-      <div className={`progress-bar-container ${statusClass}`}>
-        <div 
-          className="progress-bar-fill" 
-          style={{ width: `${percentage}%` }}
-        ></div>
-        <span className="progress-bar-label">{statusText}</span>
-      </div>
-    );
-}
-
-// ====================================================================
-// 2. COMPONENTE PRINCIPAL: ReservaPopup
-// ====================================================================
+import { FaWallet, FaTimes, FaUsers, FaBed, FaCheckCircle, FaClock } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import "./Styles.css"; 
+// 🟢 IMPORTACIÓN DINÁMICA
+import API_BASE_URL from '../../apiConfig'; 
 
 export default function ReservaPopup({ dayData, close }) {
-  // Desestructuramos las props
-  const { date, dayName, isWeekend, availability } = dayData; 
-  
-  const [selectedHour, setSelectedHour] = useState(null);
-  const [selectedSpot, setSelectedSpot] = useState(null); 
-  const [confirmationMessage, setConfirmationMessage] = useState(null);
-  
-  const isWeekday = !isWeekend;
-  
-  // Efecto para asegurar que la camilla se reinicie al cambiar de hora
+  const [clases, setClases] = useState([]);
+  const [selectedClase, setSelectedClase] = useState(null);
+  const [selectedPaquete, setSelectedPaquete] = useState(null);
+  const [camilla, setCamilla] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const dayOfWeek = getDay(dayData.date); 
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+  // Verificar suscripción vigente
+  const tienePlanActivo = user?.suscripcionActiva && 
+                         user?.vencimientoPlan && 
+                         isAfter(new Date(user.vencimientoPlan), new Date());
+
   useEffect(() => {
-    setSelectedSpot(null);
-  }, [selectedHour]);
-  
-  const handleConfirm = () => {
-    if (!selectedHour || !isReservable) return;
+    // Si tiene plan activo y no es fin de semana, pre-seleccionamos su tipo de paquete
+    if (tienePlanActivo && !isWeekend && user.paqueteTipo) {
+        setSelectedPaquete({ id: user.paqueteTipo, costo: 0 });
+    }
 
-    let reservationDetails = {
-      date: date.toISOString().split('T')[0],
-      hour: selectedHour.hour,
-      type: isWeekday ? 'Paquete' : 'Camilla'
+    const fetchClases = async () => {
+        try {
+            // 🟢 ACTUALIZACIÓN PARA VERCEL
+            const res = await fetch(`${API_BASE_URL}/clases/disponibles`);
+            const data = await res.json();
+            const fechaTarget = format(dayData.date, 'yyyy-MM-dd');
+            
+            // Filtro riguroso por fecha
+            const delDia = data.filter(c => {
+                const fechaClase = format(new Date(c.fecha), 'yyyy-MM-dd');
+                return fechaClase === fechaTarget;
+            });
+
+            setClases(delDia);
+            if (delDia.length === 1) setSelectedClase(delDia[0]);
+        } catch (err) {
+            console.error("Error al cargar clases:", err);
+            Swal.fire("Error", "No se pudieron cargar las clases del día", "error");
+        }
     };
-    
-    if (isWeekend) {
-      reservationDetails.spot = selectedSpot;
-    }
-    
-    console.log("Reserva Confirmada:", reservationDetails);
-    
-    let message = `Reserva confirmada para el día ${dayName}, ${format(date, 'dd MMM', { locale: es })} a las ${selectedHour.hour}.`;
-    if (isWeekend && selectedSpot) {
-      message += ` En la camilla número ${selectedSpot}.`;
-    }
-    setConfirmationMessage(message);
-    
-    // Aquí se ejecutaría el cierre (simulado) después de la confirmación
-    setTimeout(close, 2000); 
-  };
-  
-  // ----------------------------------------------------
-  // LÓGICA DE VISUALIZACIÓN DE CAMAS/ESPACIOS 
-  // ----------------------------------------------------
-  const renderSpotsSelection = () => {
-    if (!selectedHour) return null;
-    
-    // Si es fin de semana, mostramos camillas Y la barra de progreso
-    if (isWeekend) {
-      const maxSpots = selectedHour.maxSlots;
-      const available = selectedHour.available;
+
+    fetchClases();
+  }, [dayData.date, tienePlanActivo, isWeekend, user.paqueteTipo]);
+
+  const confirmar = async () => {
+    if (!selectedClase) return Swal.fire("Aviso", "Selecciona un horario", "info");
+    if (!selectedPaquete) return Swal.fire("Aviso", "Selecciona un paquete o clase suelta", "info");
+    if (isWeekend && !camilla) return Swal.fire("Aviso", "Selecciona una camilla para fin de semana", "warning");
+
+    setLoading(true);
+    try {
+      // 🟢 ACTUALIZACIÓN PARA VERCEL
+      const res = await fetch(`${API_BASE_URL}/reservas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email || user.correo,
+          paqueteId: selectedPaquete.id.toUpperCase(), 
+          numeroCamilla: camilla,
+          selection: {
+            dateKey: format(new Date(selectedClase.fecha), 'yyyy-MM-dd'),
+            hour: format(new Date(selectedClase.fecha), 'HH:mm'),
+            nombreClase: selectedClase.nombre,
+            tematica: selectedClase.tematica
+          }
+        })
+      });
+
+      const data = await res.json();
       
-      /* 🟢 CLAVE REACTIVIDAD: Ajustamos la disponibilidad VIRTUAL para la barra.
-         Si el usuario ha seleccionado una camilla, reducimos en 1 la disponibilidad
-         para que la barra se actualice visualmente.
-      */
-      let displayAvailable = available;
-      if (selectedSpot !== null && available > 0) {
-          // Si el usuario eligió una camilla, la disponibilidad efectiva es una menos
-          displayAvailable = available - 1; 
+      if (res.ok && data.success) {
+        // Actualizamos el usuario localmente para reflejar el nuevo saldo/reserva
+        localStorage.setItem("user", JSON.stringify(data.userUpdated));
+        await Swal.fire({
+            icon: 'success',
+            title: '¡Reservado!',
+            text: 'Tu lugar ha sido asegurado correctamente en Booz Studio',
+            confirmButtonColor: '#8FD9FB'
+        });
+        close();
+        window.location.reload();
+      } else {
+        throw new Error(data.message || "Error desconocido");
       }
-      
-      const reservedSpots = maxSpots - available;
-      
-      // Creación del array de camillas para el grid
-      const spots = Array.from({ length: maxSpots }, (_, i) => ({
-        id: i + 1,
-        isReserved: i < reservedSpots
-      }));
-      
-      return (
-        <div className="spot-selection-container">
-          
-          <h4>Disponibilidad de Camillas:</h4>
-          <ProgressBar
-              available={displayAvailable} 
-              maxSlots={maxSpots}
-          />
-          
-          <h3 style={{ marginTop: '20px' }}>2. Selecciona tu Camilla:</h3>
-          <div className="spots-grid">
-            {spots.map(spot => (
-              <div
-                key={spot.id}
-                className={`spot-item ${spot.isReserved ? 'reserved' : ''} ${selectedSpot === spot.id ? 'selected' : ''}`}
-                onClick={() => {
-                    if (spot.isReserved) return;
-                    // Esto dispara el re-renderizado y actualiza la ProgressBar
-                    setSelectedSpot(selectedSpot === spot.id ? null : spot.id);
-                }}
-                aria-label={spot.isReserved ? `Camilla ${spot.id} reservada` : `Seleccionar Camilla ${spot.id}`}
-              >
-                {spot.id}
-              </div>
-            ))}
-          </div>
-          
-        </div>
-      );
+    } catch (e) {
+      Swal.fire("Error", e.message || "Error de conexión", "error");
+    } finally { 
+      setLoading(false); 
     }
-    
-    // Si es entre semana (solo resumen)
-    return (
-        <div className="spot-selection-container weekday-summary">
-            <h4>2. Resumen de Cupo del Paquete:</h4>
-            <ProgressBar 
-                available={selectedHour.available}
-                maxSlots={selectedHour.maxSlots}
-            />
-        </div>
-    );
   };
-
-  // Se puede reservar si: se eligió hora Y (es día de semana O se eligió camilla).
-  const isReservable = selectedHour && (isWeekday || selectedSpot);
-  
-  // ----------------------------------------------------
-  // 3. RENDERIZADO FINAL Y MENSAJE DE CONFIRMACIÓN
-  // ----------------------------------------------------
-  if (confirmationMessage) {
-      return (
-          <div className="popup-overlay">
-              <div className="popup-card success-card">
-                  <h2>¡Reserva Exitosa! 🎉</h2>
-                  <p>{confirmationMessage}</p>
-                  {/* Este botón podría cerrar el popup de inmediato, o esperar el setTimeout */}
-                  <button className="btn-cerrar" onClick={close}>Cerrar</button> 
-              </div>
-          </div>
-      );
-  }
-
 
   return (
     <div className="popup-overlay">
-      <div className="popup-card glass-card">
+      <div className="popup-card-solid animate-ios-pop">
+        <button className="close-x-btn" onClick={close}><FaTimes /></button>
         
-        {/* 🟢 Uso de format y es CORREGIDO */}
-        <h3>Reserva para: {dayName}, {format(date, 'dd MMM', { locale: es })}</h3>
-        
-        {/* 1. SELECCIÓN DE HORARIO */}
-        <div className="hour-selection">
-          <h4>1. Elige un Horario ({isWeekend ? 'Camilla' : 'Cupo'}):</h4>
-          <div className="hour-buttons-grid">
-            {availability.map(item => (
-              <button 
-                key={item.hour}
-                className={`btn-hour ${item.available === 0 ? 'full' : ''} ${selectedHour?.hour === item.hour ? 'selected' : ''}`}
-                disabled={item.available === 0}
-                onClick={() => {
-                    // Al seleccionar hora, se actualiza el estado y la ProgressBar se re-renderiza.
-                    setSelectedHour(item); 
-                }}
-              >
-                {item.hour} 
-                <span className="available-count">({item.available})</span>
-              </button>
-            ))}
+        <div className="modal-header-solid">
+          <span className="date-badge-mini">{isWeekend ? "FIN DE SEMANA" : "CLASE SEMANAL"}</span>
+          <h2>{format(dayData.date, "EEEE dd 'de' MMMM", { locale: es })}</h2>
+        </div>
+
+        <div className="modal-body-scroll">
+          <h4 className="section-title"><FaClock /> 1. Horarios Disponibles</h4>
+          <div className="clases-stack">
+            {clases.length > 0 ? clases.map(c => (
+                <div key={c.id} 
+                     className={`clase-row ${selectedClase?.id === c.id ? 'selected' : ''}`}
+                     onClick={() => setSelectedClase(c)}>
+                  <div className="clase-info-main">
+                    <strong>{c.nombre}</strong>
+                    <span className="tematica-txt">{c.tematica || 'Sesión General'}</span>
+                  </div>
+                  <div className="clase-time">{format(new Date(c.fecha), 'HH:mm')}</div>
+                </div>
+            )) : <div className="no-clases-msg">No hay sesiones disponibles para esta fecha.</div>}
+          </div>
+
+          {isWeekend && selectedClase && (
+            <div className="camilla-section animate-ios-entry">
+              <h4 className="section-title"><FaBed /> 2. Camilla Asignada</h4>
+              <div className="camilla-selector-grid">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                    <button key={n} 
+                            className={`camilla-node ${camilla === n ? 'active' : ''}`}
+                            onClick={() => setCamilla(n)}>{n}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <h4 className="section-title"><FaWallet /> {isWeekend ? '3.' : '2.'} Método de Acceso</h4>
+          <div className="paquetes-stack">
+            {isWeekend ? (
+              <div className={`paquete-row selected`} onClick={() => setSelectedPaquete({id: 'SUELTA', costo: 95})}>
+                <div className="pkg-text"><span>Pago por sesión individual</span></div>
+                <div className="pkg-price-tag">$95</div>
+              </div>
+            ) : (
+              <>
+                {tienePlanActivo ? (
+                  <div className="active-plan-status animate-ios-entry">
+                    <div className="active-info">
+                      <FaCheckCircle color="#8FD9FB" size={20} />
+                      <div>
+                        <strong>Plan {user.planNombre || user.paqueteTipo} activo</strong>
+                        <p>Válido hasta: {format(new Date(user.vencimientoPlan), 'dd/MM/yyyy')}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className={`paquete-row ${selectedPaquete?.id === 'LMV' ? 'selected' : ''}`}
+                         onClick={() => setSelectedPaquete({id: 'LMV', costo: 1099})}>
+                      <div className="pkg-text"><span>Lunes / Miércoles / Viernes</span></div>
+                      <div className="pkg-price-tag">$1099</div>
+                    </div>
+                    <div className={`paquete-row ${selectedPaquete?.id === 'MJ' ? 'selected' : ''}`}
+                         onClick={() => setSelectedPaquete({id: 'MJ', costo: 699})}>
+                      <div className="pkg-text"><span>Martes / Jueves</span></div>
+                      <div className="pkg-price-tag">$699</div>
+                    </div>
+                    <div className={`paquete-row ${selectedPaquete?.id === 'SUELTA' ? 'selected' : ''}`}
+                         onClick={() => setSelectedPaquete({id: 'SUELTA', costo: 95})}>
+                      <div className="pkg-text"><span>Acceso individual</span></div>
+                      <div className="pkg-price-tag">$95</div>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
-        
-        {/* 2. SELECCIÓN DE CAMILLA / Resumen de Cupo */}
-        {selectedHour && renderSpotsSelection()}
 
-        <div className="popup-actions">
-          <button 
-            className="btn-confirmar" 
-            onClick={handleConfirm}
-            disabled={!isReservable}
-          >
-            Confirmar Reserva
-          </button>
-          <button className="btn-cerrar" onClick={close}>
-            Cerrar
+        <div className="modal-footer-solid">
+          <button className="btn-primary-booz" 
+                  onClick={confirmar} 
+                  disabled={loading || !selectedClase || !selectedPaquete}>
+            {loading ? "Sincronizando..." : "Confirmar Mi Lugar"}
           </button>
         </div>
       </div>
