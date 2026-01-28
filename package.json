@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "prisma": "^6.19.0",
     "@prisma/client": "^6.19.0",
     "@stripe/react-stripe-js": "^5.4.0",
     "@stripe/stripe-js": "^8.5.2",
@@ -22,7 +23,7 @@
     "sweetalert2": "^11.26.17",
     "web-vitals": "^2.1.4"
   },
- "scripts": {
+  "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -30,7 +31,7 @@
     "server": "node server.js",
     "seed": "node prisma/seed.js",
     "dev": "npm run seed && npm run server",
-    "vercel-build": "prisma generate && prisma migrate deploy && node prisma/seed.js && npm run build"
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy && node prisma/seed.js && npm run build"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -53,7 +54,6 @@
     ]
   },
   "devDependencies": {
-    "prisma": "^6.19.0",
     "typescript": "^4.9.5"
   }
 }
