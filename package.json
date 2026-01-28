@@ -31,8 +31,7 @@
     "server": "node server.js",
     "seed": "node prisma/seed.js",
     "dev": "npm run seed && npm run server",
-    "vercel-build": "npx prisma generate --schema=./prisma/schema.prisma && npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma && node prisma/seed.js && npm run build"
-  },
+    "vercel-build": "npx prisma generate && npx prisma db push --accept-data-loss && node prisma/seed.js && npm run build"  },
   "prisma": {
     "seed": "node prisma/seed.js"
   },
