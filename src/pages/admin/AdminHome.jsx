@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import './Styles.css';
 // 🟢 IMPORTACIÓN DEL CONFIG
 import API_BASE_URL from '../../apiConfig';
+
 export default function AdminHome() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('dashboard');
