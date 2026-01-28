@@ -22,7 +22,7 @@
     "sweetalert2": "^11.26.17",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
+ "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -30,7 +30,6 @@
     "server": "node server.js",
     "seed": "node prisma/seed.js",
     "dev": "npm run seed && npm run server",
-    "install": "npm install --legacy-peer-deps",
     "vercel-build": "prisma generate && prisma migrate deploy && node prisma/seed.js && npm run build"
   },
   "prisma": {
