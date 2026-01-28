@@ -5,6 +5,8 @@
   "dependencies": {
     "prisma": "^6.19.0",
     "@prisma/client": "^6.19.0",
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0",
     "@stripe/react-stripe-js": "^5.4.0",
     "@stripe/stripe-js": "^8.5.2",
     "@testing-library/dom": "^10.4.1",
@@ -31,7 +33,8 @@
     "server": "node server.js",
     "seed": "node prisma/seed.js",
     "dev": "npm run seed && npm run server",
-    "vercel-build": "npx prisma generate --schema=./prisma/schema.prisma && npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma && (node prisma/seed.js || echo 'Seed skipped') && CI=false npm run build"  },
+    "vercel-build": "npx prisma generate --schema=./prisma/schema.prisma && npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma && (node prisma/seed.js || echo 'Seed skipped') && CI=false npm run build"
+  },
   "prisma": {
     "seed": "node prisma/seed.js"
   },
