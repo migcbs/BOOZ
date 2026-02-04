@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ErrorNotification from "./ErrorNotification"; 
-import "./Styles.css";
+import "./Register.css";
 // 🟢 Importamos la configuración dinámica
 import API_BASE_URL from '../apiConfig.js'; 
 

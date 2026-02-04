@@ -1,0 +1,134 @@
+/* ------------------------------------------------------
+   ESTABLECIMIENTO DE MARCA - BOOZ :ROOT
+------------------------------------------------------- */
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-red: #FC7358;
+    --ios-green: #34C759;
+    --glass-bg: #FFFFFF; 
+    --glass-border: rgba(255, 255, 255, 1);
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.1);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-container {
+    font-family: var(--font-main);
+    max-width: 420px;
+    width: 100%; /* 🟢 Ocupa el ancho disponible */
+    padding: 40px 30px;
+    background: var(--glass-bg);
+    border-radius: 35px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-premium);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+    animation: ios-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-title {
+    color: var(--ios-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+}
+
+.error-badge {
+    background: rgba(252, 115, 88, 0.1);
+    color: var(--ios-red);
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid rgba(252, 115, 88, 0.2);
+}
+
+.input-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #888;
+    margin-bottom: 8px;
+    margin-left: 5px;
+    text-transform: uppercase;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 15px 18px;
+    border-radius: 16px;
+    background: #F2F2F7; /* Gris claro tipo iOS */
+    border: 2px solid transparent;
+    font-size: 16px; 
+    font-family: var(--font-main);
+    transition: var(--transition);
+    outline: none;
+}
+
+.auth-input:focus {
+    background: white;
+    border-color: var(--ios-blue);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ios-blue);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 16px;
+    background: var(--ios-blue);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(143, 217, 251, 0.3);
+    transition: var(--transition);
+    margin-top: 10px;
+}
+
+.auth-button:active { transform: scale(0.97); }
+
+.auth-footer { margin-top: 25px; text-align: center; }
+.auth-secondary-text { font-size: 0.9rem; color: #999; font-weight: 600; }
+.auth-link-highlight { color: var(--ios-blue); text-decoration: none; font-weight: 800; }
+
+/* ------------------------------------------------------
+   RESPONSIVIDAD MÓVIL
+------------------------------------------------------- */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 30px 20px;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Sombra más suave en móvil */
+    }
+}

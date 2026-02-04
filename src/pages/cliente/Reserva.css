@@ -1,0 +1,298 @@
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-red: #FC7358;
+    --ios-green: #34C759;
+    --glass-bg: rgba(255, 255, 255, 1); 
+    --glass-border: rgba(255, 255, 255, 1);
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 40px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* ----------------------------------- */
+/* OVERLAY Y ENTRADA                   */
+/* ----------------------------------- */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    padding: 20px;
+}
+
+.popup-card-solid {
+    background: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    border-radius: 35px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-premium);
+    overflow: hidden;
+}
+
+/* ----------------------------------- */
+/* HEADER DEL MODAL                    */
+/* ----------------------------------- */
+.modal-header-solid {
+    padding: 40px 30px 20px;
+    text-align: center;
+}
+
+.date-badge-mini {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--ios-blue);
+    background: rgba(143, 217, 251, 0.1);
+    padding: 6px 15px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.modal-header-solid h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.close-x-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: #f2f2f7;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #8e8e93;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.close-x-btn:hover {
+    background: #e5e5e7;
+    color: #1d1d1f;
+}
+
+/* ----------------------------------- */
+/* CUERPO SCRROLLEABLE                 */
+/* ----------------------------------- */
+.modal-body-scroll {
+    padding: 0 30px 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    margin: 25px 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title svg {
+    color: var(--ios-blue);
+}
+
+/* ----------------------------------- */
+/* FILAS DE SELECCIÓN (STACKS)         */
+/* ----------------------------------- */
+.clases-stack, .paquetes-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.clase-row, .paquete-row {
+    background: #f5f5f7;
+    padding: 18px 22px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clase-row:hover, .paquete-row:hover {
+    background: #ebebed;
+    transform: scale(1.02);
+}
+
+.clase-row.selected, .paquete-row.selected {
+    background: #ffffff;
+    border-color: var(--ios-blue);
+    box-shadow: 0 10px 25px rgba(143, 217, 251, 0.2);
+}
+
+.clase-info-main strong {
+    display: block;
+    font-size: 1rem;
+    color: #1d1d1f;
+}
+
+.tematica-txt {
+    font-size: 0.8rem;
+    color: #8e8e93;
+    font-weight: 600;
+}
+
+.clase-time, .pkg-price-tag {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ios-blue);
+}
+
+/* ----------------------------------- */
+/* CAMILLAS (GRID)                     */
+/* ----------------------------------- */
+.camilla-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.camilla-node {
+    height: 50px;
+    border-radius: 15px;
+    border: 1px solid #e5e5e7;
+    background: white;
+    font-weight: 800;
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.camilla-node:hover {
+    border-color: var(--ios-blue);
+}
+
+.camilla-node.active {
+    background: var(--ios-blue);
+    color: white;
+    border-color: var(--ios-blue);
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(143, 217, 251, 0.4);
+}
+
+/* ----------------------------------- */
+/* STATUS PLAN ACTIVO                  */
+/* ----------------------------------- */
+.active-plan-status {
+    background: rgba(52, 199, 89, 0.1); /* Verde iOS sutil */
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px dashed var(--ios-green);
+}
+
+.active-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.active-info strong {
+    color: #1d1d1f;
+    display: block;
+}
+
+.active-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #8e8e93;
+}
+
+/* ----------------------------------- */
+/* FOOTER Y BOTÓN                      */
+/* ----------------------------------- */
+.modal-footer-solid {
+    padding: 20px 30px 40px;
+    background: white;
+}
+
+.btn-primary-booz {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    border: none;
+    background: #8FD9FB; /* Negro Apple */
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary-booz:hover:not(:disabled) {
+    background: var(--ios-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(143, 217, 251, 0.4);
+}
+
+.btn-primary-booz:disabled {
+    background: #e5e5e7;
+    color: #aeaeb2;
+    cursor: not-allowed;
+}
+
+/* ----------------------------------- */
+/* ANIMACIONES                         */
+/* ----------------------------------- */
+.animate-ios-pop {
+    animation: iosPop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+@keyframes iosPop {
+    from { opacity: 0; transform: scale(0.8) translateY(50px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-ios-entry {
+    animation: fadeInSlide 0.4s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------- */
+/* RESPONSIVE                          */
+/* ----------------------------------- */
+@media (max-width: 600px) {
+    .popup-card-solid {
+        max-height: 100vh;
+        border-radius: 30px 30px 0 0;
+        position: fixed;
+        bottom: 0;
+    }
+    
+    .popup-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+}

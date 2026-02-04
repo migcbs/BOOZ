@@ -1,0 +1,228 @@
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-red: #FC7358;
+    --ios-green: #34C759;
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. CONTENEDOR PADRE: Centra todo el calendario en la pantalla */
+.calendar-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrado horizontal del bloque completo */
+    background: none; 
+    font-family: var(--font-main);
+    box-sizing: border-box;
+}
+
+/* 2. HEADER: Tres columnas simétricas para que el título sea el centro real */
+.calendar-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 80px; /* Columnas laterales fijas para no empujar el centro */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 60px;
+    color: var(--ios-sage);
+}
+
+.calendar-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el texto dentro de su columna */
+    text-align: center;
+}
+
+.calendar-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 900;
+    color: var(--ios-sage);
+    letter-spacing: -1px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.credits-info {
+    font-size: 0.9rem;
+    color: #86868b;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* Botones de navegación centrados en sus slots laterales */
+.nav-btn-glass {
+    justify-self: center;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.05);
+    color: #86868b;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn-glass:hover {
+    transform: scale(1.1);
+    background: #f5f5f7;
+}
+
+/* 3. GRID: Centrado respecto al contenedor */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 25px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* 4. TARJETAS: Alineación interna centrada */
+.day-card {
+    background: white;
+    min-height: 240px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente contenido interno */
+    justify-content: flex-start;
+    text-align: center; /* Centra el texto */
+    border-radius: 28px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.day-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-premium);
+}
+
+.day-card.has-sessions {
+    border-color: rgba(143, 217, 251, 0.4);
+}
+
+/* Cabecera del día centrada */
+.day-header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.day-name-mini {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #aeaeb2;
+    text-transform: uppercase;
+}
+
+.day-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    margin-top: 5px;
+}
+
+/* Color azul solo si hay sesiones para mayor claridad visual */
+.has-sessions .day-number {
+    color: var(--ios-blue);
+}
+
+.today-card .day-number {
+    color: var(--ios-red) !important;
+}
+
+/* 5. SESIONES: Lista centrada */
+.sessions-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los items de sesión */
+    gap: 8px;
+    width: 100%;
+}
+
+.session-dot-line {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    color: #1d1d1f;
+    border-left: 3px solid var(--ios-blue);
+    background: rgba(143, 217, 251, 0.05);
+    border-radius: 4px;
+    font-weight: 700;
+    width: fit-content; /* El fondo solo ocupa lo que el texto necesite */
+    max-width: 100%;
+}
+
+/* 6. BOTÓN: Centrado perfecto */
+.btn-reservar-ios {
+    margin-top: auto;
+    width: 90%;
+    max-width: 160px; /* Ancho controlado para que se vea elegante */
+    padding: 12px;
+    border-radius: 16px;
+    border: none;
+    background: #f2f2f7; 
+    color: #aeaeb2;
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    align-self: center; /* Asegura el centrado si el padre es flex */
+}
+
+.has-sessions .btn-reservar-ios {
+    background: var(--ios-blue);
+    color: white !important;
+    box-shadow: 0 6px 15px rgba(143, 217, 251, 0.3);
+}
+
+/* ----------------------------------- */
+/* RESPONSIVE                          */
+/* ----------------------------------- */
+@media (max-width: 1200px) {
+    .calendar-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .calendar-header {
+        grid-template-columns: 1fr; /* En móvil el título arriba y flechas abajo o a los lados */
+        gap: 20px;
+    }
+    
+    .nav-btn-glass { display: none; } /* Ocultar flechas o reubicarlas según diseño móvil */
+
+    .calendar-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .day-card {
+        width: 100%;
+        max-width: 400px;
+        min-height: auto;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 20px;
+    }
+
+    .day-header-info {
+        margin-bottom: 0;
+        align-items: flex-start;
+    }
+
+    .btn-reservar-ios {
+        width: auto;
+        margin-top: 0;
+    }
+}

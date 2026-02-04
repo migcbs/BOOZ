@@ -1,38 +1,67 @@
-.App {
-  text-align: center;
+/* ------------------------------------------------------
+   RESETEO Y BLINDAJE GLOBAL - BOOZ UI
+------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  background-color: #F8F5E9; /* Fondo crema característico */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app-viewport {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; /* 🟢 Centra el Login verticalmente si no hay mucho contenido */
+  padding: 20px;
+  margin-top: 60px; /* Espacio para el Navbar */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* ------------------------------------------------------
+   RESPONSIVE AJUSTES
+------------------------------------------------------- */
+@media (min-width: 768px) {
+  .main-content {
+    padding: 0px;
+    margin-top: -30px;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0px;
+    margin-top: -30px;
+    justify-content: flex-start; /* En móviles pequeños empieza desde arriba */
   }
+}
+
+/* Scrollbar Estético */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+::-webkit-scrollbar-thumb { background: #A9B090; border-radius: 10px; }
+
+/* Animaciones Globales */
+@keyframes ios-pop {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }

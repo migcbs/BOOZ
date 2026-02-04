@@ -1,0 +1,237 @@
+/* ------------------------------------------------------
+   ESTABLECIMIENTO DE MARCA - BOOZ :ROOT
+------------------------------------------------------- */
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-sage: #A9B090;
+    --ios-gold: #B49044;
+    --ios-red: #FC7358;
+    --ios-green: #34C759;
+    --glass-bg: #FFFFFF; 
+    --glass-border: rgba(255, 255, 255, 1);
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.1);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------
+   CONTENEDOR DE REGISTRO (MÁS ANCHO QUE EL LOGIN)
+------------------------------------------------------- */
+.auth-container {
+    font-family: var(--font-main);
+    max-width: 500px; /* Un poco más ancho para acomodar mejor los campos */
+    width: 90%;
+    margin: 40px auto 80px auto;
+    padding: 45px 35px;
+    background: var(--glass-bg);
+    border-radius: 40px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-premium);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+    /* La animación de entrada que definimos en App.css */
+    animation: ios-pop 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-title {
+    color: var(--ios-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 35px;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+}
+
+/* ------------------------------------------------------
+   GRUPOS DE ENTRADA (LÓGICA FLUIDA)
+------------------------------------------------------- */
+.input-group {
+    margin-bottom: 22px;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #888;
+    margin-bottom: 8px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 18px;
+    background: #F2F2F7; /* Gris suave iOS */
+    border: 2px solid transparent;
+    font-size: 16px; /* 🟢 Evita zoom automático en Safari */
+    font-family: var(--font-main);
+    color: #333;
+    transition: var(--transition);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    background: white;
+    border-color: var(--ios-blue);
+    box-shadow: 0 8px 20px rgba(143, 217, 251, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Estilo especial para el input de fecha */
+.auth-input[type="date"] {
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------
+   PASSWORD WRAPPER
+------------------------------------------------------- */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ios-blue);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    z-index: 5;
+    transition: var(--transition);
+}
+
+.toggle-pass:active {
+    transform: translateY(-50%) scale(0.8);
+}
+
+/* ------------------------------------------------------
+   CHECKBOX PREMIUM (BOOZ STYLE)
+------------------------------------------------------- */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 15px 0 30px 5px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.checkbox-label input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #E5E5EA;
+    border-radius: 8px;
+    background: #F2F2F7;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+    background-color: var(--ios-blue);
+    border-color: var(--ios-blue);
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 16px;
+    font-weight: 900;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkbox-text {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* ------------------------------------------------------
+   BOTÓN DE ACCIÓN
+------------------------------------------------------- */
+.auth-button {
+    width: 100%;
+    padding: 18px;
+    background: var(--ios-blue);
+    color: white;
+    border: none;
+    border-radius: 22px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(143, 217, 251, 0.35);
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.auth-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(143, 217, 251, 0.45);
+    filter: brightness(1.05);
+}
+
+.auth-button:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* ------------------------------------------------------
+   RESPONSIVIDAD MÓVIL
+------------------------------------------------------- */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 94%;
+        padding: 30px 20px;
+        border-radius: 30px;
+        margin-top: 20px;
+    }
+
+    .auth-title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    .auth-input {
+        padding: 14px 16px;
+    }
+
+    .checkbox-text {
+        font-size: 0.8rem;
+    }
+}
+
+/* Estilo para los errores del popup (si los hereda) */
+.error-notification-popup {
+    animation: ios-pop 0.4s ease-out;
+    margin-bottom: 20px;
+}
