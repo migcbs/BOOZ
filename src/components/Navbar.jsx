@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"; 
 import { Link, useLocation, useNavigate } from "react-router-dom"; 
 import { FaFacebookF, FaInstagram, FaTiktok, FaUserCircle } from "react-icons/fa";
-
+import "./Navbar.css";
 // 🟢 FUNCIÓN CLAVE: Permite el scroll suave a las secciones del Single Page Design.
 const scrollToSection = (id) => {
   const element = document.getElementById(id);

@@ -3,7 +3,7 @@ import { format, getDay, isAfter, parseISO } from "date-fns";
 import { es } from 'date-fns/locale'; 
 import { FaWallet, FaTimes, FaUsers, FaBed, FaCheckCircle, FaClock } from 'react-icons/fa';
 import Swal from 'sweetalert2';
-import "./Styles.css"; 
+import "./Reserva.css"; 
 // 🟢 IMPORTACIÓN DINÁMICA
 import API_BASE_URL from '../../apiConfig'; 
 

@@ -1,0 +1,641 @@
+/* ------------------------------------------------------
+   ESTILO GLOBAL - BOOZ (Optimizado Mobile)
+------------------------------------------------------- */
+:root {
+  /* ... tus colores se mantienen igual ... */
+  --bg-creme: #F8F5E9;
+  --accent-blue: #8FD9FB;
+  --accent-sage: #A9B090;
+  --accent-gold: #B49044;
+  --accent-tan: #D9C8B0;
+  
+  --glass-bg: rgba(255, 255, 255, 1); 
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: rgba(180, 145, 68, 0.1);
+  
+  /* AJUSTE MOBILE: Reducimos el desenfoque y el radio para pantallas pequeñas */
+  --blur: blur(12px); 
+  --radius-ios: 20px; /* Un poco más pequeño para móviles */
+  --transition: cubic-bezier(0.23, 1, 0.32, 1);
+  --text-main: #3D3D3D;
+}
+
+/* Media Query para Escritorio: Aquí escalamos hacia arriba */
+@media (min-width: 769px) {
+  :root {
+    --radius-ios: 24px;
+    --blur: blur(16px);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-creme);
+  /* Cambiamos el gradiente fijo por uno que no estrese al procesador móvil */
+  background: radial-gradient(circle at top right, #FFFFFF, var(--bg-creme));
+  min-height: 100vh;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  /* Evita el scroll horizontal accidental en móviles */
+  overflow-x: hidden; 
+}
+
+/* ------------------------------------------------------
+   TARJETAS LIQUID GLASS (Ajuste Táctil)
+------------------------------------------------------- */
+.glass-card-light {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur) saturate(150%);
+  -webkit-backdrop-filter: var(--blur) saturate(150%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-ios);
+  box-shadow: 0 8px 20px var(--glass-shadow); /* Sombra más ligera en móvil */
+  transition: transform 0.4s var(--transition), box-shadow 0.4s var(--transition);
+  
+  /* Asegura que el contenido no se salga del radio */
+  overflow: hidden; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* SOLO aplicamos hover si el dispositivo tiene puntero (Mouse) */
+@media (hover: hover) {
+  .glass-card-light:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(180, 145, 68, 0.15);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* Ajuste de padding para tarjetas en móviles */
+@media (max-width: 480px) {
+  .glass-card-light {
+    border-radius: 16px; /* Radio más eficiente en pantallas mini */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   NAVBAR (Contenedor y Estilo Liquid Glass) 🧊
+------------------------------------------------------- */
+
+.navbar-container {
+  position: fixed;
+  top: 0; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 1100px;
+  z-index: 999;
+  transition: top 0.3s ease, transform 0.3s ease, width 0.3s ease;
+}
+
+.navbar {
+  margin-top: 20px; 
+  width: 100%;
+  padding: 14px 24px; 
+  border-radius: 50px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  color: #8FD9FB;
+  transition: var(--transition);
+  box-sizing: border-box; /* Asegura que el padding no desborde */
+}
+
+.navbar.scrolled {
+  margin-top: 10px;
+  color: #8FD9FB;
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+/* ------------------------------------------------------
+   SECCIONES
+------------------------------------------------------- */
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  flex-grow: 1;
+  justify-content: center;
+  gap: 20px;
+  /* Responsivo: Usamos margen automático en lugar de vh para no romper el centro */
+  margin: 0 auto; 
+}
+
+.nav-right {
+  gap: 12px;
+}
+
+.nav-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0; /* Evita que el logo se comprima */
+}
+
+/* ------------------------------------------------------
+   LINKS DE NAVEGACIÓN
+------------------------------------------------------- */
+.navbar a {
+  color: #8FD9FB;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.95rem; 
+  font-weight: 600;
+  transition: var(--transition);
+  position: relative;
+  padding: 5px 0;
+  white-space: nowrap;
+}
+
+.navbar a:hover {
+  opacity: 1; 
+  color: #89CFF0;
+  transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------
+   BOTONES (Perfil + Logout)
+------------------------------------------------------- */
+.nav-btn {
+  padding: 7px 14px;
+  border-radius: 50px;
+  font-weight: 500;
+  /* Ajustado: 0.5rem era demasiado pequeño para leer en móviles */
+  font-size: 0.75rem; 
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: var(--transition);
+  cursor: pointer;
+  color: #8FD9FB;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Perfil icono */
+.nav-btn-profile.icon-only {
+  padding: 8px 10px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn-profile.icon-only svg {
+  color: #8FD9FB;
+}
+
+/* ------------------------------------------------------
+   REDES SOCIALES (SOCIAL ICONS)
+------------------------------------------------------- */
+.social-icons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.social-icons a {
+  font-size: 1.3rem;
+  color: #89CFF0;
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE (Auditado para Mobile)
+------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .nav-center {
+    display: none; /* Se oculta para dar espacio a logo y acciones */
+  }
+
+  .nav-left {
+    flex-grow: 1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    top: 0;
+    width: 96%;
+  }
+
+  .navbar {
+    margin-top: 15px; /* Ajuste sutil de aire superior */
+    padding: 10px 15px;
+    border-radius: 30px;
+  }
+  
+  .navbar.scrolled {
+    margin-top: 10px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  .social-icons {
+    display: none; 
+  }
+
+  .nav-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem; /* Legible pero compacto */
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+  }
+}
+
+/* ------------------------------------------------------
+   BOTÓN DE CERRAR SESIÓN (Específico)
+------------------------------------------------------- */
+
+.logout-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  font-weight: 600;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #8FD9FB;
+  font-size: 0.85rem; /* Ajustado para consistencia móvil */
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background: rgba(233, 7, 7, 0.18);
+  border-color: rgba(255,255,255,0.32);
+  transform: translateY(-1px);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   VARIABLES (Autónomo para este bloque)
+------------------------------------------------------- */
+:root {
+  --ios-blue: #8FD9FB;
+  --ios-sage: #A9B090;
+  --ios-red: #FC7358;
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --font-main: "Inter", -apple-system, sans-serif;
+}
+
+/* ============================================================
+   AUTH PAGES (Login / Register) - BOOZ LIQUID GLASS UNIFIED
+   ============================================================ */
+
+/* --- Contenedor Principal --- */
+.auth-container {
+    margin: clamp(80px, 12vh, 120px) auto; /* Ajustado para no chocar con el navbar */
+    max-width: 420px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(30px) saturate(190%);
+    -webkit-backdrop-filter: blur(30px) saturate(190%);
+    padding: clamp(25px, 6vw, 40px);
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+    animation: ios-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.auth-title {
+    text-align: center;
+    font-size: clamp(1.4rem, 5vw, 1.8rem); /* Fluido para móviles */
+    margin-bottom: 30px;
+    font-weight: 800;
+    color: var(--ios-blue);
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+}
+
+/* --- Formulario y Labels --- */
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-container label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #666;
+    text-transform: uppercase;
+    padding-left: 5px;
+    opacity: 0.9;
+}
+
+/* --- Inputs Premium (Diseño Táctil) --- */
+.auth-input {
+    width: 100%;
+    padding: 16px 18px; /* Ligeramente más alto para dedos en móvil */
+    border-radius: 16px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--glass-border);
+    color: #333;
+    outline: none;
+    font-size: 16px; /* Evita zoom automático en iOS Safari */
+    font-family: var(--font-main);
+    transition: var(--transition);
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.auth-input::placeholder {
+    color: #bbb;
+}
+
+.auth-input:focus {
+    background: white;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.15);
+}
+
+/* Select con flecha Booz Personalizada */
+.auth-input[name="condicion"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238FD9FB' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 18px;
+}
+
+/* --- Wrapper de Contraseña --- */
+.password-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.password-wrapper .auth-input {
+    padding-right: 50px;
+    margin-bottom: 0;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--ios-blue);
+    padding: 10px; /* Clic target aumentado */
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+    z-index: 5;
+}
+
+/* --- Checkbox Estilo Booz --- */
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 10px 0 25px 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--glass-border);
+    border-radius: 6px;
+    background: white;
+    position: relative;
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+    background-color: var(--ios-blue);
+    border-color: var(--ios-blue);
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 900;
+}
+
+/* --- Botones (Acciones) --- */
+.auth-button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 10px;
+    border-radius: 18px;
+    background: var(--ios-blue);
+    color: white;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(143, 217, 251, 0.3);
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.auth-button:active {
+    transform: scale(0.98);
+}
+
+.auth-secondary-text {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #777;
+    font-weight: 600;
+}
+
+.auth-secondary-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 24px;
+    border-radius: 14px;
+    background: rgba(169, 176, 144, 0.1);
+    color: var(--ios-sage);
+    font-weight: 700;
+    border: 1px solid rgba(169, 176, 144, 0.2);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+/* --- NOTIFICATION POPUP --- */
+.error-notification-popup {
+    position: relative;
+    background: rgba(252, 115, 88, 0.12);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(252, 115, 88, 0.3);
+    color: var(--ios-red);
+    padding: 18px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    animation: ios-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Animaciones --- */
+@keyframes ios-pop {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- MEDIA QUERIES PARA RESPONSIVIDAD TOTAL --- */
+
+/* Pantallas pequeñas (Móviles) */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 94%;
+        padding: 25px 18px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+        border-radius: 25px;
+    }
+    
+    .auth-title { 
+        margin-bottom: 20px;
+    }
+
+    .auth-input {
+        padding: 14px 15px;
+        margin-bottom: 15px;
+    }
+
+    .auth-button {
+        padding: 14px;
+        font-size: 0.9rem;
+    }
+
+    .checkbox-label {
+        font-size: 0.85rem;
+    }
+}
+
+/* Tablets o pantallas intermedias */
+@media (min-width: 481px) and (max-width: 768px) {
+    .auth-container {
+        max-width: 380px;
+    }
+}
+
+/* Hover solo para escritorio */
+@media (hover: hover) {
+    .auth-button:hover {
+        transform: translateY(-3px);
+        filter: brightness(1.05);
+        box-shadow: 0 15px 30px rgba(143, 217, 251, 0.4);
+    }
+    .auth-secondary-btn:hover {
+        background: var(--ios-sage);
+        color: white;
+    }
+    .toggle-pass:hover {
+        transform: translateY(-50%) scale(1.15);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   FOOTER
+------------------------------------------------------- */
+.footer {
+  width: 100%;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ------------------------------------------------------
+   ANIMACIONES
+------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

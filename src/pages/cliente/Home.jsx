@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "./Styles.css";
+import "./Home.css";
 
 // Importamos el video
 import LocalBannerVideo from './assets/banner.mp4'; 

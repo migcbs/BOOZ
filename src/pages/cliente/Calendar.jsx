@@ -3,7 +3,7 @@ import { startOfMonth, startOfWeek, addDays, format, isSameMonth, isToday, getDa
 import { es } from 'date-fns/locale';
 import { FaChevronLeft, FaChevronRight, FaCalendarCheck } from "react-icons/fa"; 
 import ReservaPopup from "./ReservaPopup";
-import "./Styles.css";
+import "./Calendar.css";
 // 🟢 IMPORTACIÓN DINÁMICA (Ajustada a 2 niveles si estás en src/pages/cliente)
 import API_BASE_URL from '../../apiConfig'; 
 

@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css"; // Importación del CSS global de control
+
+// Componentes Globales
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -23,9 +26,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Contenedor principal que fuerza el tamaño del viewport móvil */}
+      <div className="app-viewport">
+        
+        {/* El Navbar ya tiene su propia lógica fixed en Navbar.css */}
         <Navbar />
-        <main style={{ flex: 1, padding: "20px" }}>
+
+        {/* El Main recibe el control de ancho y scroll */}
+        <main className="main-content">
           <Routes>
             {/* Redirección inicial */}
             <Route path="/" element={<Navigate to="/login" replace />} /> 
@@ -47,7 +55,6 @@ function App() {
             <Route path="/cliente/*" element={<Navigate to="/cliente/home" replace />} />
 
             {/* --- RUTAS COACH --- */}
-            {/* Estas rutas coinciden exactamente con los links de tu Navbar */}
             <Route
               path="/coach/clientes"
               element={<ProtectedRoute element={Clientes} allowedRoles={["coach", "admin"]} />}
@@ -64,7 +71,7 @@ function App() {
               path="/coach/home"
               element={<ProtectedRoute element={CoachHome} allowedRoles={["coach", "admin"]} />}
             />
-            {/* Redirección por defecto para coach (Dashboard inicial) */}
+            {/* Redirección por defecto para coach */}
             <Route path="/coach/*" element={<Navigate to="/coach/clientes" replace />} />
 
             {/* --- RUTAS ADMIN --- */}
@@ -74,9 +81,10 @@ function App() {
             />
 
             {/* Error 404 */}
-            <Route path="*" element={<h2>404 - Página no encontrada</h2>} />
+            <Route path="*" element={<h2 style={{ textAlign: 'center', marginTop: '100px' }}>404 - Página no encontrada</h2>} />
           </Routes>
         </main>
+
         <Footer />
       </div>
     </BrowserRouter>

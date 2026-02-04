@@ -1,0 +1,213 @@
+/* ------------------------------------------------------
+   NAVBAR (Contenedor y Estilo Liquid Glass) 🧊
+------------------------------------------------------- */
+
+.navbar-container {
+  position: fixed;
+  top: 0; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 1100px;
+  z-index: 999;
+  transition: top 0.3s ease, transform 0.3s ease, width 0.3s ease;
+}
+
+.navbar {
+  margin-top: 20px; 
+  width: 100%;
+  padding: 14px 24px; 
+  border-radius: 50px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  color: #8FD9FB;
+  transition: var(--transition);
+  box-sizing: border-box; /* Asegura que el padding no desborde */
+}
+
+.navbar.scrolled {
+  margin-top: 10px;
+  color: #8FD9FB;
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+/* ------------------------------------------------------
+   SECCIONES
+------------------------------------------------------- */
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  flex-grow: 1;
+  justify-content: center;
+  gap: 20px;
+  /* Responsivo: Usamos margen automático en lugar de vh para no romper el centro */
+  margin: 0 auto; 
+}
+
+.nav-right {
+  gap: 12px;
+}
+
+.nav-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0; /* Evita que el logo se comprima */
+}
+
+/* ------------------------------------------------------
+   LINKS DE NAVEGACIÓN
+------------------------------------------------------- */
+.navbar a {
+  color: #8FD9FB;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.95rem; 
+  font-weight: 600;
+  transition: var(--transition);
+  position: relative;
+  padding: 5px 0;
+  white-space: nowrap;
+}
+
+.navbar a:hover {
+  opacity: 1; 
+  color: #89CFF0;
+  transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------
+   BOTONES (Perfil + Logout)
+------------------------------------------------------- */
+.nav-btn {
+  padding: 7px 14px;
+  border-radius: 50px;
+  font-weight: 500;
+  /* Ajustado: 0.5rem era demasiado pequeño para leer en móviles */
+  font-size: 0.75rem; 
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: var(--transition);
+  cursor: pointer;
+  color: #8FD9FB;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Perfil icono */
+.nav-btn-profile.icon-only {
+  padding: 8px 10px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn-profile.icon-only svg {
+  color: #8FD9FB;
+}
+
+/* ------------------------------------------------------
+   REDES SOCIALES (SOCIAL ICONS)
+------------------------------------------------------- */
+.social-icons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.social-icons a {
+  font-size: 1.3rem;
+  color: #89CFF0;
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE (Auditado para Mobile)
+------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .nav-center {
+    display: none; /* Se oculta para dar espacio a logo y acciones */
+  }
+
+  .nav-left {
+    flex-grow: 1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    top: 0;
+    width: 96%;
+  }
+
+  .navbar {
+    margin-top: 15px; /* Ajuste sutil de aire superior */
+    padding: 10px 15px;
+    border-radius: 30px;
+  }
+  
+  .navbar.scrolled {
+    margin-top: 10px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  .social-icons {
+    display: none; 
+  }
+
+  .nav-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem; /* Legible pero compacto */
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+  }
+}
+
+/* ------------------------------------------------------
+   BOTÓN DE CERRAR SESIÓN (Específico)
+------------------------------------------------------- */
+
+.logout-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  font-weight: 600;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #8FD9FB;
+  font-size: 0.85rem; /* Ajustado para consistencia móvil */
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background: rgba(233, 7, 7, 0.18);
+  border-color: rgba(255,255,255,0.32);
+  transform: translateY(-1px);
+}

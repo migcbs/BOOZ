@@ -1,0 +1,147 @@
+:root {
+    --ios-blue: #8FD9FB;
+    --ios-gold: #B49044;
+    --font-main: "Nunito", sans-serif;
+    --shadow-premium: 0 40px 80px rgba(0, 0, 0, 0.15);
+}
+
+/* Centrado absoluto de la sección */
+.ubicacion-section-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1200px; /* Un poco más amplio para balancear con el calendario */
+    margin: 0 auto;
+    padding: 60px 20px;
+    font-family: var(--font-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Alineación al centro de la pantalla */
+    box-sizing: border-box;
+}
+
+/* ----------------------------------- */
+/* CONTENEDOR DEL MAPA (Efecto Glass)  */
+/* ----------------------------------- */
+.map-container {
+    width: 100%;
+    max-width: 900px; /* Mantenemos el mapa en un tamaño elegante */
+    border-radius: 40px; /* Bordes más curvos estilo iOS 2026 */
+    overflow: hidden;
+    box-shadow: var(--shadow-premium);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: white;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+/* Efecto de brillo sobre el mapa al pasar el mouse */
+.map-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.2);
+    border-color: var(--ios-blue);
+}
+
+.map-iframe {
+    width: 100%;
+    height: 500px;
+    border: 0;
+    display: block;
+    
+    /* Personalización Visual del Mapa vía Filtros */
+    filter: grayscale(0.1) contrast(1.1) brightness(1.05) saturate(1.2);
+    transition: filter 0.4s ease;
+}
+
+.map-container:hover .map-iframe {
+    filter: grayscale(0) contrast(1.05) brightness(1);
+}
+
+/* ----------------------------------- */
+/* BOTÓN LIQUID GLASS REFINADO         */
+/* ----------------------------------- */
+.directions-btn-container {
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centrado perfecto del botón */
+}
+
+.btn-how-to-get {
+    display: inline-block;
+    padding: 20px 60px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--ios-blue);
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 100px; /* Botón tipo píldora */
+    letter-spacing: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    
+    /* Configuración Liquid Glass Premium */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    
+    /* Bordes HD */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-top: 2px solid rgba(255, 255, 255, 1);
+    
+    /* Sombra con matiz oro sutil */
+    box-shadow: 0 15px 35px rgba(180, 145, 68, 0.1);
+    
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-how-to-get:hover {
+    background: white;
+    color: #1d1d1f; /* Cambio a negro Apple para contraste */
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(143, 217, 251, 0.4);
+    letter-spacing: 6px;
+}
+
+.btn-how-to-get:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+/* ----------------------------------- */
+/* ANIMACIÓN DE ENTRADA                */
+/* ----------------------------------- */
+.animate-ios-entry {
+    animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ----------------------------------- */
+/* RESPONSIVE                          */
+/* ----------------------------------- */
+@media (max-width: 768px) {
+    .map-iframe {
+        height: 400px;
+    }
+    
+    .btn-how-to-get {
+        padding: 16px 40px;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        width: 80%; /* En móvil abarca casi todo el ancho */
+        text-align: center;
+    }
+    
+    .map-container {
+        border-radius: 30px;
+    }
+}

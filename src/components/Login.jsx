@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./Styles.css";
+import "./Login.css";
 // 🟢 IMPORTACIÓN CORREGIDA
 import API_BASE_URL from '../apiConfig'; 
 
