@@ -33,6 +33,7 @@
     position: relative;
     /* La animación de entrada que definimos en App.css */
     animation: ios-pop 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 25vh;
 }
 
 .auth-title {
