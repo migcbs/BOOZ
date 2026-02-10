@@ -122,6 +122,10 @@
 .auth-secondary-text { font-size: 0.9rem; color: #999; font-weight: 600; }
 .auth-link-highlight { color: var(--ios-blue); text-decoration: none; font-weight: 800; }
 
+
+.footer{
+    visibility: hidden;
+}
 /* ------------------------------------------------------
    RESPONSIVIDAD MÓVIL
 ------------------------------------------------------- */
@@ -130,5 +134,6 @@
         padding: 30px 20px;
         border-radius: 30px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Sombra más suave en móvil */
+        margin-top: 25vh;
     }
 }

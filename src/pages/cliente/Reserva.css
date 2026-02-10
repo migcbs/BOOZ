@@ -296,3 +296,33 @@
         padding: 0;
     }
 }
+
+.btn-primary-booz.waitlist-mode {
+    background: #FFB347; /* Un naranja suave estilo iOS para precaución/espera */
+    color: white;
+}
+
+.payment-options-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.pay-card {
+    background: #f5f5f7;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.pay-card.active {
+    border-color: #8FD9FB;
+    background: white;
+    box-shadow: 0 10px 20px rgba(143, 217, 251, 0.2);
+}

@@ -201,6 +201,10 @@
     transform: translateY(-1px) scale(0.98);
 }
 
+.footer{
+    visibility: hidden;
+}
+
 /* ------------------------------------------------------
    RESPONSIVIDAD MÓVIL
 ------------------------------------------------------- */
@@ -209,7 +213,7 @@
         width: 94%;
         padding: 30px 20px;
         border-radius: 30px;
-        margin-top: 20px;
+        margin-top: 25vh;
     }
 
     .auth-title {

@@ -1,213 +1,264 @@
-/* ------------------------------------------------------
-   NAVBAR (Contenedor y Estilo Liquid Glass) 🧊
-------------------------------------------------------- */
+/* ======================================================
+   CONFIGURACIÓN DE VARIABLES
+   ====================================================== */
+:root {
+  --booz-blue: #8FD9FB;
+  --booz-dark: #1d1d1f;
+  --booz-red: #ff4d4d; /* Rojo para el logout hover */
+  --glass-white: rgba(255, 255, 255, 0.95);
+  --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
+/* ------------------------------------------------------
+   CONTENEDOR PRINCIPAL
+------------------------------------------------------- */
 .navbar-container {
-  position: fixed;
+  position: fixed !important;
   top: 0; 
   left: 50%;
   transform: translateX(-50%);
-  width: 92%;
-  max-width: 1100px;
-  z-index: 999;
-  transition: top 0.3s ease, transform 0.3s ease, width 0.3s ease;
+  width: 100% !important;
+  max-width: 1400px;
+  z-index: 9999;
+  transition: var(--transition-smooth);
+  pointer-events: none; 
+  display: flex;
+  justify-content: center;
 }
 
+.navbar-container.scrolled-container {
+  top: 20px !important;
+  width: max-content !important; 
+  min-width: 520px; 
+  pointer-events: auto;
+  padding: 0 30px; 
+}
+
+/* ------------------------------------------------------
+   NAVBAR (La barra interna)
+------------------------------------------------------- */
 .navbar {
-  margin-top: 20px; 
-  width: 100%;
-  padding: 14px 24px; 
-  border-radius: 50px; 
-  display: flex;
+  margin: 20px auto; 
+  width: 97%;
+  padding: 15px 45px; 
+  border-radius: 100px; 
+  display: flex !important;
   justify-content: space-between;
   align-items: center;
   background: transparent;
-  color: #8FD9FB;
-  transition: var(--transition);
-  box-sizing: border-box; /* Asegura que el padding no desborde */
+  transition: var(--transition-smooth);
+  pointer-events: auto;
+  gap: 50px;
+  text-transform: uppercase;
 }
 
 .navbar.scrolled {
-  margin-top: 10px;
-  color: #8FD9FB;
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border); 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
+  margin: 0 !important;
+  background: var(--glass-white) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(143, 217, 251, 0.2) !important; /* Borde sutil azulado */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+  padding: 10px 45px !important;
 }
 
 /* ------------------------------------------------------
-   SECCIONES
+   ESTRUCTURA Y SEPARADORES
 ------------------------------------------------------- */
-.nav-left,
-.nav-center,
-.nav-right {
+.nav-left, .nav-right {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .nav-center {
-  flex-grow: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 20px;
-  /* Responsivo: Usamos margen automático en lugar de vh para no romper el centro */
-  margin: 0 auto; 
+  gap: 35px;
+  flex-grow: 1;
 }
 
-.nav-right {
-  gap: 12px;
+.nav-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.social-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: 20px;
+  padding-left: 25px;
+  padding-right: 5px;
+  border-left: 1.5px solid rgba(143, 217, 251, 0.4); 
+}
+
+/* ------------------------------------------------------
+   TIPOGRAFÍA Y COLORES (SIEMPRE AZUL)
+------------------------------------------------------- */
+/* Forzamos el azul en todos los estados */
+.nav-logo, 
+.nav-link, 
+.social-icons a, 
+.nav-btn-profile, 
+.nav-user-actions svg,
+.logout-btn {
+  color: var(--booz-blue) !important;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  text-transform: uppercase;
+}
+
+/* Efecto hover general para links */
+.nav-link:hover, .social-icons a:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
 }
 
 .nav-logo {
-  font-size: 1.2rem;
-  font-weight: 700;
-  flex-shrink: 0; /* Evita que el logo se comprima */
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+}
+
+.nav-link {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
 }
 
 /* ------------------------------------------------------
-   LINKS DE NAVEGACIÓN
+   BOTONES (Efecto Logout Rojo)
 ------------------------------------------------------- */
-.navbar a {
-  color: #8FD9FB;
-  text-decoration: none;
-  text-transform: uppercase;
-  font-size: 0.95rem; 
-  font-weight: 600;
-  transition: var(--transition);
-  position: relative;
-  padding: 5px 0;
+.logout-btn {
+  background: rgba(143, 217, 251, 0.1);
+  border: 1.5px solid rgba(143, 217, 251, 0.3);
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
-.navbar a:hover {
-  opacity: 1; 
-  color: #89CFF0;
-  transform: translateY(-1px);
+/* 🟢 EL CAMBIO: HOVER ROJO PARA CERRAR SESIÓN */
+.logout-btn:hover {
+  color: #fff !important;
+  background: var(--booz-red) !important;
+  border-color: var(--booz-red) !important;
+  box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
 }
 
 /* ------------------------------------------------------
-   BOTONES (Perfil + Logout)
+   RESPONSIVE
 ------------------------------------------------------- */
-.nav-btn {
-  padding: 7px 14px;
-  border-radius: 50px;
-  font-weight: 500;
-  /* Ajustado: 0.5rem era demasiado pequeño para leer en móviles */
-  font-size: 0.75rem; 
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  transition: var(--transition);
-  cursor: pointer;
-  color: #8FD9FB;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Perfil icono */
-.nav-btn-profile.icon-only {
-  padding: 8px 10px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-btn-profile.icon-only svg {
-  color: #8FD9FB;
-}
-
-/* ------------------------------------------------------
-   REDES SOCIALES (SOCIAL ICONS)
-------------------------------------------------------- */
-.social-icons {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.social-icons a {
-  font-size: 1.3rem;
-  color: #89CFF0;
-  opacity: 0.7;
-  transition: var(--transition);
-}
-
-/* ------------------------------------------------------
-   RESPONSIVE (Auditado para Mobile)
-------------------------------------------------------- */
-
-@media (max-width: 900px) {
-  .nav-center {
-    display: none; /* Se oculta para dar espacio a logo y acciones */
-  }
-
-  .nav-left {
-    flex-grow: 1;
-    justify-content: flex-start;
-  }
+@media (max-width: 1050px) {
+  .nav-center { display: none !important; }
+  .navbar-container.scrolled-container { min-width: 450px; }
 }
 
 @media (max-width: 600px) {
-  .navbar-container {
-    top: 0;
-    width: 96%;
+  .social-icons { display: none !important; }
+  .navbar-container.scrolled-container { 
+    min-width: unset;
+    width: 95% !important; 
+    padding: 0 10px;
   }
+  .navbar { padding: 10px 25px; }
+}
 
-  .navbar {
-    margin-top: 15px; /* Ajuste sutil de aire superior */
-    padding: 10px 15px;
-    border-radius: 30px;
-  }
-  
-  .navbar.scrolled {
-    margin-top: 10px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-  }
 
-  .social-icons {
-    display: none; 
-  }
 
-  .nav-btn {
-    padding: 6px 10px;
-    font-size: 0.7rem; /* Legible pero compacto */
-  }
 
-  .nav-logo {
-    font-size: 1rem;
-  }
+
+
+
+
+
+
+
+/* ------------------------------------------------------
+   CONTENEDOR DEL LOGO (FIX: Alineación a la izquierda)
+------------------------------------------------------- */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 🟢 FIX: Empuja el logo totalmente a la izquierda */
+  width: 140px; /* Espacio reservado */
+  height: 60px; 
+}
+
+.nav-isologo-img {
+  max-height: 50%; /* Un poco más grande para que luzca */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: var(--transition-smooth);
+}
+
+/* Cuando se hace scroll (Cápsula) */
+.navbar.scrolled .logo-wrapper {
+  width: 70px; /* Reducimos el espacio reservado */
+  height: 45px;
+}
+
+.navbar.scrolled .nav-isologo-img {
+  max-height: 70%; /* Que ocupe casi toda la cápsula */
 }
 
 /* ------------------------------------------------------
-   BOTÓN DE CERRAR SESIÓN (Específico)
+   BLOQUE RESPONSIVO REFORZADO
 ------------------------------------------------------- */
 
-.logout-btn {
-  padding: 8px 18px;
-  border-radius: 50px;
-  background: rgba(255,255,255,0.12);
-  text-transform: uppercase;
-  font-weight: 600;
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid rgba(255,255,255,0.22);
-  color: #8FD9FB;
-  font-size: 0.85rem; /* Ajustado para consistencia móvil */
-  cursor: pointer;
-  transition: var(--transition);
+/* Tablet / Laptops pequeñas */
+@media (max-width: 1050px) {
+  .nav-center { 
+    display: none !important; /* Ocultamos links para no amontonar */
+  }
+  
+  .navbar-container.scrolled-container { 
+    min-width: 450px; 
+  }
+  
+  .logo-wrapper {
+    width: 110px; /* Logo más discreto */
+  }
 }
 
-.logout-btn:hover {
-  background: rgba(233, 7, 7, 0.18);
-  border-color: rgba(255,255,255,0.32);
-  transform: translateY(-1px);
+/* Mobile (Teléfonos) */
+@media (max-width: 600px) {
+  .social-icons { 
+    display: none !important; /* Quitamos redes para que quepa Perfil y Salir */
+  }
+
+  .navbar-container.scrolled-container { 
+    min-width: unset;
+    width: 95% !important; 
+    padding: 0 10px;
+  }
+
+  .navbar { 
+    padding: 10px 20px; 
+    gap: 15px;
+  }
+
+  .logo-wrapper {
+    width: 90px; /* Logo más pequeño en móvil */
+    height: 40px;
+  }
+
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 0.65rem; /* Botón más compacto */
+  }
+}
+
+/* Pantallas súper pequeñas (iPhone SE, etc) */
+@media (max-width: 380px) {
+  .logout-btn {
+    display: none; /* Si es muy pequeño, solo dejamos el icono de perfil y el logo */
+  }
 }

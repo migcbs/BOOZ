@@ -1235,7 +1235,7 @@ button {
 /* RESPONSIVE: Ajuste del botón en móvil */
 @media (max-width: 600px) {
     .floating-whatsapp-btn {
-        bottom: 20px;
+        bottom: 10px;
         right: 20px;
         width: 50px; 
         height: 50px;
@@ -2187,7 +2187,7 @@ button {
 /* Ajuste para Mobile: lo subimos un poco para que no tape la Floating Island */
 @media (max-width: 768px) {
     .floating-whatsapp-btn {
-        bottom: 110px; /* Arriba del menú flotante */
+        bottom: 20px; /* Arriba del menú flotante */
         right: 20px;
         width: 55px;
         height: 55px;

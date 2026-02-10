@@ -14,76 +14,87 @@ enum Role {
 }
 
 enum TipoSuscripcion {
-  REGULAR    // Clientes de clases sueltas
-  SUSCRIPTO  // Clientes con Paquete 1 o 2 activo
+  REGULAR
+  SUSCRIPTO
 }
 
 enum TipoPaquete {
-  LMV        // Lunes, Miércoles, Viernes
-  MJ         // Martes y Jueves
-  SUELTA     // Fines de semana o clase única
+  LMV
+  MJ
+  SUELTA
 }
 
 model User {
-  id                 String          @id @default(uuid())
-  email              String          @unique
-  password           String?
-  role               String          @default("cliente")
+  id                  String          @id @default(uuid())
+  email               String          @unique
+  password            String?
+  role                String          @default("cliente")
 
   // --- Información Personal ---
-  nombre             String
-  apellido           String
-  telefono           String?
-  fechaNacimiento    DateTime?
-  contactoEmergencia String?
-  profileImageUrl    String?         @db.Text
-  instagram          String?         // Red social para expediente
+  nombre              String
+  apellido            String
+  telefono            String?
+  fechaNacimiento     DateTime?
+  contactoEmergencia  String?
+  profileImageUrl     String?         @db.Text
+  instagram           String?
 
   // --- Información Médica ---
-  tipoSangre         String?
-  alergias           String?
-  lesiones           String?         @db.Text
+  tipoSangre          String?
+  alergias            String?
+  lesiones            String?         @db.Text
 
   // --- Lógica de Negocio ---
-  tipoCliente        TipoSuscripcion @default(REGULAR)
+  tipoCliente         TipoSuscripcion @default(REGULAR)
   creditosDisponibles Int             @default(0)
-  suscripcionActiva  Boolean         @default(false)
-  planNombre         String?         // Ej: "Paquete 1 (6:00 AM)"
-  paqueteTipo        TipoPaquete?    // Para saber si es LMV o MJ
-  vencimientoPlan    DateTime?       // 30 días después de la compra
+  suscripcionActiva   Boolean         @default(false)
+  planNombre          String?
+  paqueteTipo         TipoPaquete?
+  vencimientoPlan     DateTime?
 
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
-  reservas           Class[]
+  // Relaciones
+  reservas            Class[]         @relation("UserReservas")
+  listaEspera         WaitingList[]
 }
 
 model Class {
   id            String      @id @default(uuid())
-  
-  // --- Identificación de Grupo ---
-  nombre        String      // Ej: "Grupo Alfa" o "Morning Flow"
-  tematica      String?     // Ej: "Resistencia" o "Flexibilidad"
+  nombre        String      
+  tematica      String?     
   descripcion   String?     @db.Text
-  paqueteRef    TipoPaquete @default(SUELTA) // Define si es del Paquete 1, 2 o Suelta
+  paqueteRef    TipoPaquete @default(SUELTA)
   
-  // --- Horario y Fecha ---
-  fecha         DateTime    // ISO Date que incluye hora exacta
-  
-  // --- Personalización Visual (Coach) ---
+  fecha         DateTime    
   color         String?     @default("#89CFF0")
-  imageUrl      String?     @db.Text // Póster de la clase
+  imageUrl      String?     @db.Text
   
-  // --- Lógica de Cupos y Camillas ---
-  numeroCamilla Int?        // Solo para Sábados/Domingos (1-8)
+  // Lógica de Capacidad
+  cupoMaximo    Int         @default(8)
+  inscritos     Int         @default(0)
+  numeroCamilla Int?        // Específico para reservas individuales
   
-  // --- Relación con Usuario ---
-  // Si userId está presente, la clase está "ocupada" por ese cliente.
-  // Las clases maestras (plantillas) tienen userId = null.
+  // Relación con el Cliente (Cuando la clase ya es una reserva individual)
   userId        String?
-  user          User?       @relation(fields: [userId], references: [id])
+  user          User?       @relation("UserReservas", fields: [userId], references: [id])
+
+  // Relación con Lista de Espera
+  espera        WaitingList[]
 
   createdAt     DateTime    @default(now())
+  @@index([fecha])
+}
 
-  @@index([fecha]) // Optimización para búsquedas en el calendario
+model WaitingList {
+  id        String   @id @default(uuid())
+  claseId   String
+  userId    String
+  clase     Class    @relation(fields: [claseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prioridad Int      @default(1) // Por si quieres manejar prioridades VIP
+  createdAt DateTime @default(now())
+
+  @@unique([claseId, userId]) // Evita que un usuario se anote dos veces a la misma lista
 }

@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from "react"; 
+import React, { useEffect, useState, useCallback } from "react"; 
 import { Link, useLocation, useNavigate } from "react-router-dom"; 
 import { FaFacebookF, FaInstagram, FaTiktok, FaUserCircle } from "react-icons/fa";
 import "./Navbar.css";
-// 🟢 FUNCIÓN CLAVE: Permite el scroll suave a las secciones del Single Page Design.
-const scrollToSection = (id) => {
-  const element = document.getElementById(id);
+import IsologoBooz from './assets/isologo.png';
 
+// 🟢 FUNCIÓN DE SCROLL ULTRA-REFORZADA
+const scrollToSection = (id) => {
   if (id === "inicio-section") {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  } else if (element) {
-    window.scrollTo({
-      top: element.offsetTop - 100,
-      behavior: 'smooth',
-    });
+    // 1. Intentamos con window
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 2. Fallback para cuando el scroll está en el elemento raíz (común en Chrome/Safari)
+    document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+    // 3. Fallback para el body
+    document.body.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    const element = document.getElementById(id);
+    if (element) {
+      // scrollIntoView suele ignorar las restricciones de los contenedores Flex
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
   }
 };
 
@@ -24,14 +30,12 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 🟢 ADECUACIÓN: Ocultar navbar en Auth y en rutas de Coach/Admin para limpiar el dashboard profesional
   const hideNavbar =
     location.pathname === "/login" || 
     location.pathname === "/register" ||
     location.pathname.startsWith("/coach") || 
     location.pathname.startsWith("/admin");
 
-  // Detectar rol según la ruta
   const getRoleFromPath = () => {
     if (location.pathname.startsWith("/cliente")) return "cliente";
     if (location.pathname.startsWith("/coach")) return "coach";
@@ -41,104 +45,97 @@ export default function Navbar() {
 
   const role = getRoleFromPath();
 
-  // LINKS POR ROL: Solo el cliente usará estos links en el Navbar ahora
-  const roleLinks = {
-    cliente: [
-      { id: "inicio-section", label: "Inicio" }, 
-      { id: "calendario-section", label: "Calendario" },
-      { id: "ubicacion-section", label: "Ubicación" }, 
-    ],
-    // Coach y Admin se dejan definidos por estructura, aunque no se renderizarán en el Navbar
-    coach: [
-      { to: "/coach/clientes", label: "Clientes" },
-      { to: "/coach/calendario", label: "Calendario" },
-      { to: "/coach/rutinas", label: "Rutinas" },
-    ],
-    admin: [
-      { to: "/admin/dashboard", label: "Dashboard" },
-      { to: "/admin/usuarios", label: "Usuarios" },
-    ],
-  };
+  const links = (role === 'cliente') ? [
+    { id: "inicio-section", label: "Inicio" }, 
+    { id: "calendario-section", label: "Calendario" },
+    { id: "ubicacion-section", label: "Ubicación" }, 
+  ] : []; // Simplificado para debugging
 
-  const links = roleLinks[role] || [];
+  const handleScroll = useCallback(() => {
+    // Detectamos scroll de donde sea que venga
+    const offset = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+    setScrolled(offset > 20);
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 15);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // También escuchamos el scroll en el body por si acaso
+    document.body.addEventListener("scroll", handleScroll, { passive: true });
+    
+    handleScroll();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  // 🟢 APLICACIÓN DE LA ADECUACIÓN
   if (hideNavbar) return null;
 
-  // Home dinámico
-  const homePath = "/cliente/home";
-
-  // Función de navegación para clientes
+  // 🟢 MANEJO DE NAVEGACIÓN Y REGRESO AL HOME
   const handleClientNavigation = (id, e) => {
+    if (e) e.preventDefault();
+    
+    // Si NO estamos en el Home, primero navegamos y luego scrolleamos
     if (location.pathname !== '/cliente/home' && location.pathname !== '/cliente') {
-        e.preventDefault();
         navigate('/cliente/home'); 
-        window.setTimeout(() => scrollToSection(id), 50); 
+        // Esperamos a que la ruta cambie y el DOM cargue
+        setTimeout(() => scrollToSection(id), 200); 
     } else {
-        e.preventDefault();
+        // Si ya estamos ahí, solo hacemos el scroll
         scrollToSection(id);
     }
   };
 
   return (
-    <div className="navbar-container">
-      <nav className={`navbar ${scrolled ? "scrolled" : ""} navbar-${role}`} role="navigation">
+    <div className={`navbar-container ${scrolled ? "scrolled-container" : ""}`}>
+      <nav className={`navbar ${scrolled ? "scrolled" : ""} navbar-${role}`}>
         
-        {/* IZQUIERDA: Logo */}
-        <div className="nav-left">
-          <Link to={homePath} 
-                className="nav-logo" 
-                onClick={(e) => handleClientNavigation("inicio-section", e)}
-          >
-            <strong>BOOZ</strong>
-          </Link>
-        </div>
+        {/* LOGO: Actúa como botón de "Inicio/Regreso" */}
+       {/* LOGO: Protegido en un contenedor para evitar desconfiguración */}
+      <div className="nav-left">
+        <Link 
+          to="/cliente/home" 
+          className="nav-logo" 
+          onClick={(e) => handleClientNavigation("inicio-section", e)}
+        >
+          <div className="logo-wrapper">
+              <img src={IsologoBooz} alt="BOOZ" className="nav-isologo-img" />
+          </div>
+        </Link>
+      </div>
 
-        {/* CENTRO: Solo para Cliente */}
-        <div className="nav-center" role="menubar">
+        {/* LINKS: Inicio, Calendario, etc. */}
+        <div className="nav-center">
           {links.map((link) => (
-            <a key={link.id} 
-               href={`#${link.id}`} 
-               className="nav-link" 
-               onClick={(e) => {
-                 if (link.id === 'inicio-section') {
-                    handleClientNavigation(link.id, e);
-                 } else {
-                    e.preventDefault(); 
-                    scrollToSection(link.id);
-                 }
-               }}
+            <a 
+              key={link.id} 
+              href={`#${link.id}`} 
+              className="nav-link" 
+              onClick={(e) => handleClientNavigation(link.id, e)}
             >
               {link.label}
             </a>
           ))}
         </div>
 
-        {/* DERECHA: Perfil, Logout y Redes */}
         <div className="nav-right">
-          <Link to={`/cliente/perfil`} className="nav-btn nav-btn-profile icon-only">
-            <FaUserCircle size={22} />
-          </Link>
-
-          <button className="nav-btn logout-btn" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-
+          <div className="nav-user-actions">
+            <Link to={`/cliente/perfil`} className="nav-btn-profile">
+              <FaUserCircle size={22} />
+            </Link>
+            <button className="nav-btn logout-btn" onClick={handleLogout}>
+              {scrolled ? "Cerrar sesión" : "Cerrar sesión"}
+            </button>
+          </div>
           <div className="social-icons">
-            <a href="https://www.facebook.com/profile.php?id=61584576365698" target="_blank" rel="noopener noreferrer"><FaFacebookF /></a>
-            <a href="https://www.instagram.com/booz.studio/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
-            <a href="https://www.tiktok.com/@booz.studio" target="_blank" rel="noopener noreferrer"><FaTiktok /></a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer"><FaFacebookF /></a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer"><FaInstagram /></a>
+            <a href="https://tiktok.com" target="_blank" rel="noreferrer"><FaTiktok /></a>
           </div>
         </div>
       </nav>

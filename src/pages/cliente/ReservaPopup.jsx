@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { format, getDay, isAfter, parseISO } from "date-fns";
+import { format, getDay, isAfter } from "date-fns";
 import { es } from 'date-fns/locale'; 
-import { FaWallet, FaTimes, FaUsers, FaBed, FaCheckCircle, FaClock } from 'react-icons/fa';
+import { FaWallet, FaTimes, FaBed, FaCheckCircle, FaClock, FaUserClock, FaMoneyBillWave } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import "./Reserva.css"; 
-// 🟢 IMPORTACIÓN DINÁMICA
 import API_BASE_URL from '../../apiConfig'; 
 
 export default function ReservaPopup({ dayData, close }) {
   const [clases, setClases] = useState([]);
   const [selectedClase, setSelectedClase] = useState(null);
-  const [selectedPaquete, setSelectedPaquete] = useState(null);
+  const [metodoPago, setMetodoPago] = useState(null); // 'CREDITOS' o 'EFECTIVO'
   const [camilla, setCamilla] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,87 +17,76 @@ export default function ReservaPopup({ dayData, close }) {
   const dayOfWeek = getDay(dayData.date); 
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-  // Verificar suscripción vigente
+  // 1. Verificar si tiene plan activo (L-V)
   const tienePlanActivo = user?.suscripcionActiva && 
                          user?.vencimientoPlan && 
                          isAfter(new Date(user.vencimientoPlan), new Date());
 
-  useEffect(() => {
-    // Si tiene plan activo y no es fin de semana, pre-seleccionamos su tipo de paquete
-    if (tienePlanActivo && !isWeekend && user.paqueteTipo) {
-        setSelectedPaquete({ id: user.paqueteTipo, costo: 0 });
-    }
+  // 2. Determinar si la clase seleccionada está llena
+  const estaLlena = selectedClase?.inscritos >= selectedClase?.cupoMaximo;
 
+  useEffect(() => {
     const fetchClases = async () => {
         try {
-            // 🟢 ACTUALIZACIÓN PARA VERCEL
             const res = await fetch(`${API_BASE_URL}/clases/disponibles`);
             const data = await res.json();
             const fechaTarget = format(dayData.date, 'yyyy-MM-dd');
             
-            // Filtro riguroso por fecha
-            const delDia = data.filter(c => {
-                const fechaClase = format(new Date(c.fecha), 'yyyy-MM-dd');
-                return fechaClase === fechaTarget;
-            });
-
+            const delDia = data.filter(c => format(new Date(c.fecha), 'yyyy-MM-dd') === fechaTarget);
             setClases(delDia);
             if (delDia.length === 1) setSelectedClase(delDia[0]);
         } catch (err) {
-            console.error("Error al cargar clases:", err);
-            Swal.fire("Error", "No se pudieron cargar las clases del día", "error");
+            Swal.fire("Error", "No se pudieron cargar las clases", "error");
         }
     };
-
     fetchClases();
-  }, [dayData.date, tienePlanActivo, isWeekend, user.paqueteTipo]);
+  }, [dayData.date]);
 
-  const confirmar = async () => {
-    if (!selectedClase) return Swal.fire("Aviso", "Selecciona un horario", "info");
-    if (!selectedPaquete) return Swal.fire("Aviso", "Selecciona un paquete o clase suelta", "info");
-    if (isWeekend && !camilla) return Swal.fire("Aviso", "Selecciona una camilla para fin de semana", "warning");
+const confirmar = async () => {
+  if (!selectedClase) return Swal.fire("Aviso", "Selecciona un horario", "info");
+  if (isWeekend && !camilla) return Swal.fire("Aviso", "Selecciona una camilla", "warning");
 
-    setLoading(true);
-    try {
-      // 🟢 ACTUALIZACIÓN PARA VERCEL
-      const res = await fetch(`${API_BASE_URL}/reservas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email || user.correo,
-          paqueteId: selectedPaquete.id.toUpperCase(), 
-          numeroCamilla: camilla,
-          selection: {
-            dateKey: format(new Date(selectedClase.fecha), 'yyyy-MM-dd'),
-            hour: format(new Date(selectedClase.fecha), 'HH:mm'),
-            nombreClase: selectedClase.nombre,
-            tematica: selectedClase.tematica
-          }
-        })
+  setLoading(true);
+  
+  // Definimos qué tipo de acceso estamos usando para que el backend sepa qué descontar
+  const tipoAcceso = isWeekend ? 'CREDITO' : (tienePlanActivo ? 'PLAN' : metodoPago);
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/reservas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: user.email || user.correo,
+        claseId: selectedClase.id || selectedClase._id, // Asegúrate de enviar el ID correcto
+        numeroCamilla: camilla,
+        metodoPago: tipoAcceso, // 'PLAN', 'CREDITOS' o 'EFECTIVO'
+        fechaClase: selectedClase.fecha // Enviamos la fecha para validaciones de cupo
+      })
+    });
+
+    const data = await res.json();
+    
+    if (res.ok && data.success) {
+      // Importante: El backend debe devolver el usuario actualizado
+      localStorage.setItem("user", JSON.stringify(data.userUpdated));
+      await Swal.fire({
+          icon: 'success',
+          title: '¡Reservado!',
+          text: 'Tu lugar ha sido asegurado.',
+          confirmButtonColor: '#8FD9FB'
       });
-
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
-        // Actualizamos el usuario localmente para reflejar el nuevo saldo/reserva
-        localStorage.setItem("user", JSON.stringify(data.userUpdated));
-        await Swal.fire({
-            icon: 'success',
-            title: '¡Reservado!',
-            text: 'Tu lugar ha sido asegurado correctamente en Booz Studio',
-            confirmButtonColor: '#8FD9FB'
-        });
-        close();
-        window.location.reload();
-      } else {
-        throw new Error(data.message || "Error desconocido");
-      }
-    } catch (e) {
-      Swal.fire("Error", e.message || "Error de conexión", "error");
-    } finally { 
-      setLoading(false); 
+      close();
+      window.location.reload();
+    } else {
+      // Esto captura el error 500 y te muestra el mensaje real del backend
+      throw new Error(data.message || "Error interno del servidor (500)");
     }
-  };
+  } catch (e) {
+    Swal.fire("Error", e.message, "error");
+  } finally { 
+    setLoading(false); 
+  }
+};
 
   return (
     <div className="popup-overlay">
@@ -106,27 +94,27 @@ export default function ReservaPopup({ dayData, close }) {
         <button className="close-x-btn" onClick={close}><FaTimes /></button>
         
         <div className="modal-header-solid">
-          <span className="date-badge-mini">{isWeekend ? "FIN DE SEMANA" : "CLASE SEMANAL"}</span>
+          <span className="date-badge-mini">{isWeekend ? "FIN DE SEMANA" : "SESIÓN SEMANAL"}</span>
           <h2>{format(dayData.date, "EEEE dd 'de' MMMM", { locale: es })}</h2>
         </div>
 
         <div className="modal-body-scroll">
           <h4 className="section-title"><FaClock /> 1. Horarios Disponibles</h4>
           <div className="clases-stack">
-            {clases.length > 0 ? clases.map(c => (
+            {clases.map(c => (
                 <div key={c.id} 
                      className={`clase-row ${selectedClase?.id === c.id ? 'selected' : ''}`}
                      onClick={() => setSelectedClase(c)}>
                   <div className="clase-info-main">
                     <strong>{c.nombre}</strong>
-                    <span className="tematica-txt">{c.tematica || 'Sesión General'}</span>
+                    <span className="tematica-txt">{c.cupoMaximo - c.inscritos} lugares disponibles</span>
                   </div>
                   <div className="clase-time">{format(new Date(c.fecha), 'HH:mm')}</div>
                 </div>
-            )) : <div className="no-clases-msg">No hay sesiones disponibles para esta fecha.</div>}
+            ))}
           </div>
 
-          {isWeekend && selectedClase && (
+          {isWeekend && (
             <div className="camilla-section animate-ios-entry">
               <h4 className="section-title"><FaBed /> 2. Camilla Asignada</h4>
               <div className="camilla-selector-grid">
@@ -139,12 +127,17 @@ export default function ReservaPopup({ dayData, close }) {
             </div>
           )}
 
-          <h4 className="section-title"><FaWallet /> {isWeekend ? '3.' : '2.'} Método de Acceso</h4>
+          <h4 className="section-title"><FaWallet /> {isWeekend ? '3.' : '2.'} Confirmación de Pago</h4>
           <div className="paquetes-stack">
             {isWeekend ? (
-              <div className={`paquete-row selected`} onClick={() => setSelectedPaquete({id: 'SUELTA', costo: 95})}>
-                <div className="pkg-text"><span>Pago por sesión individual</span></div>
-                <div className="pkg-price-tag">$95</div>
+              <div className="active-plan-status">
+                <div className="active-info">
+                  <FaCheckCircle color="#8FD9FB" size={20} />
+                  <div>
+                    <strong>Pago con Créditos</strong>
+                    <p>Tienes {user.creditos} créditos disponibles</p>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
@@ -153,29 +146,24 @@ export default function ReservaPopup({ dayData, close }) {
                     <div className="active-info">
                       <FaCheckCircle color="#8FD9FB" size={20} />
                       <div>
-                        <strong>Plan {user.planNombre || user.paqueteTipo} activo</strong>
-                        <p>Válido hasta: {format(new Date(user.vencimientoPlan), 'dd/MM/yyyy')}</p>
+                        <strong>Incluido en tu Plan {user.paqueteTipo}</strong>
+                        <p>Vence el: {format(new Date(user.vencimientoPlan), 'dd/MM/yyyy')}</p>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <div className={`paquete-row ${selectedPaquete?.id === 'LMV' ? 'selected' : ''}`}
-                         onClick={() => setSelectedPaquete({id: 'LMV', costo: 1099})}>
-                      <div className="pkg-text"><span>Lunes / Miércoles / Viernes</span></div>
-                      <div className="pkg-price-tag">$1099</div>
+                  <div className="payment-options-row">
+                    <div className={`pay-card ${metodoPago === 'CREDITOS' ? 'active' : ''}`}
+                         onClick={() => setMetodoPago('CREDITOS')}>
+                        <FaWallet />
+                        <span>Créditos ({user.creditos})</span>
                     </div>
-                    <div className={`paquete-row ${selectedPaquete?.id === 'MJ' ? 'selected' : ''}`}
-                         onClick={() => setSelectedPaquete({id: 'MJ', costo: 699})}>
-                      <div className="pkg-text"><span>Martes / Jueves</span></div>
-                      <div className="pkg-price-tag">$699</div>
+                    <div className={`pay-card ${metodoPago === 'EFECTIVO' ? 'active' : ''}`}
+                         onClick={() => setMetodoPago('EFECTIVO')}>
+                        <FaMoneyBillWave />
+                        <span>Efectivo</span>
                     </div>
-                    <div className={`paquete-row ${selectedPaquete?.id === 'SUELTA' ? 'selected' : ''}`}
-                         onClick={() => setSelectedPaquete({id: 'SUELTA', costo: 95})}>
-                      <div className="pkg-text"><span>Acceso individual</span></div>
-                      <div className="pkg-price-tag">$95</div>
-                    </div>
-                  </>
+                  </div>
                 )}
               </>
             )}
@@ -183,10 +171,10 @@ export default function ReservaPopup({ dayData, close }) {
         </div>
 
         <div className="modal-footer-solid">
-          <button className="btn-primary-booz" 
+          <button className={`btn-primary-booz ${estaLlena ? 'waitlist-mode' : ''}`}
                   onClick={confirmar} 
-                  disabled={loading || !selectedClase || !selectedPaquete}>
-            {loading ? "Sincronizando..." : "Confirmar Mi Lugar"}
+                  disabled={loading || !selectedClase}>
+            {loading ? "Procesando..." : (estaLlena ? "Unirse a Lista de Espera" : "Confirmar Mi Lugar")}
           </button>
         </div>
       </div>
