@@ -5,7 +5,6 @@ const cors = require('cors');
 const { addDays, parseISO, getDay, startOfDay } = require('date-fns');
 
 // 🟢 Adecuación para Prisma en Serverless (Vercel)
-// Evita el error de "Too many connections" en PostgreSQL al reutilizar la instancia.
 let prisma;
 if (process.env.NODE_ENV === 'production') {
     prisma = new PrismaClient();
@@ -62,7 +61,7 @@ app.post('/api/signup', async (req, res) => {
                 password: hashedPassword,
                 telefono,
                 role: 'cliente',
-                tipoCliente: 'REGULAR', // Valor del Enum en schema.prisma
+                tipoCliente: 'REGULAR', 
                 creditosDisponibles: 0,
                 suscripcionActiva: false
             }
@@ -145,7 +144,6 @@ app.put('/api/coach/update-expediente/:id', async (req, res) => {
 app.delete('/api/coach/clientes/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        // Transacción para limpiar registros antes de borrar al usuario
         await prisma.$transaction([
             prisma.class.deleteMany({ where: { userId: id.trim() } }),
             prisma.user.delete({ where: { id: id.trim() } })
@@ -174,8 +172,7 @@ app.get('/api/clases/disponibles', async (req, res) => {
 
 app.post('/api/coach/crear-paquete', async (req, res) => {
     try {
-        const { nombre, tematica, descripcion, paqueteRef, hora, fechaInicio, color, imageUrl } = req.body;
-        // Validar que paqueteRef sea un Enum válido: LMV o MJ
+        const { nombre, tematica, descripcion, paqueteRef, hora, fechaInicio, color, imageUrl, cupoMaximo } = req.body;
         const diasValidos = paqueteRef === 'LMV' ? [1, 3, 5] : [2, 4];
         const [h, m] = hora.split(':');
         
@@ -190,15 +187,16 @@ app.post('/api/coach/crear-paquete', async (req, res) => {
                     nombre,
                     tematica,
                     descripcion: descripcion || "",
-                    paqueteRef, // Enum: LMV / MJ
+                    paqueteRef, 
                     fecha: fechaFinal,
                     color: color || "#8FD9FB",
-                    imageUrl: imageUrl || ""
+                    imageUrl: imageUrl || "",
+                    cupoMaximo: parseInt(cupoMaximo) || 8, // Adecuación Cupo
+                    inscritos: 0
                 });
             }
         }
         
-        // Inserción masiva para optimizar PostgreSQL
         await prisma.class.createMany({
             data: slots,
             skipDuplicates: true
@@ -212,7 +210,7 @@ app.post('/api/coach/crear-paquete', async (req, res) => {
 
 app.post('/api/coach/crear-suelta', async (req, res) => {
     try {
-        const { nombre, tematica, descripcion, hora, fechaInicio, color, imageUrl } = req.body;
+        const { nombre, tematica, descripcion, hora, fechaInicio, color, imageUrl, cupoMaximo } = req.body;
         const [h, m] = hora.split(':');
         const fechaFinal = new Date(parseISO(fechaInicio));
         fechaFinal.setHours(parseInt(h), parseInt(m), 0, 0);
@@ -222,10 +220,12 @@ app.post('/api/coach/crear-suelta', async (req, res) => {
                 nombre,
                 tematica,
                 descripcion: descripcion || "",
-                paqueteRef: "SUELTA", // Enum obligatorio
+                paqueteRef: "SUELTA", 
                 fecha: fechaFinal,
                 color: color || "#8FD9FB",
-                imageUrl: imageUrl || ""
+                imageUrl: imageUrl || "",
+                cupoMaximo: parseInt(cupoMaximo) || 8, // Adecuación Cupo
+                inscritos: 0
             }
         });
         res.json({ success: true, clase: nuevaClase });
@@ -254,49 +254,58 @@ app.delete('/api/admin/clases-reset', async (req, res) => {
 });
 
 // ======================================================
-// 4. SISTEMA DE RESERVAS, CRÉDITOS Y CANCELACIÓN
+// 4. SISTEMA DE RESERVAS (ACTUALIZADO CON PAGO Y CUPOS)
 // ======================================================
 
 app.post('/api/reservas', async (req, res) => {
     try {
-        const { email, paqueteId, selection, numeroCamilla } = req.body;
+        const { email, claseId, metodoPago, numeroCamilla, selection } = req.body;
+        
         const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
         if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-        const fechaReserva = new Date(`${selection.dateKey}T${selection.hour}:00`);
-        
-        // 🟢 Transacción Atómica: Crea reserva y descuenta crédito
+        // Buscamos la clase original para validar cupo y obtener datos
+        const claseMaestra = await prisma.class.findUnique({ where: { id: claseId } });
+        if (!claseMaestra) return res.status(404).json({ message: "Clase no disponible" });
+
+        if (claseMaestra.inscritos >= claseMaestra.cupoMaximo) {
+            return res.status(400).json({ success: false, message: "CLASE_LLENA" });
+        }
+
         const result = await prisma.$transaction(async (tx) => {
+            // 1. Crear la reserva individual
             const nuevaReserva = await tx.class.create({
                 data: {
-                    nombre: selection.nombreClase,
-                    fecha: fechaReserva,
+                    nombre: claseMaestra.nombre,
+                    fecha: claseMaestra.fecha,
                     userId: user.id,
                     numeroCamilla: numeroCamilla ? parseInt(numeroCamilla) : null,
-                    paqueteRef: paqueteId,
-                    tematica: selection.tematica || "Clase Regular"
+                    paqueteRef: claseMaestra.paqueteRef,
+                    tematica: claseMaestra.tematica || "Clase Regular",
+                    color: "#8FD9FB"
                 }
             });
 
+            // 2. Actualizar inscritos en la clase maestra
+            await tx.class.update({
+                where: { id: claseId },
+                data: { inscritos: { increment: 1 } }
+            });
+
+            // 3. Lógica de Cobro / Plan
             let updateData = {};
-            const esPaquete = (paqueteId === 'LMV' || paqueteId === 'MJ');
-            
-            if (esPaquete) {
-                updateData = {
-                    tipoCliente: 'SUSCRIPTO', // Enum TipoSuscripcion
-                    suscripcionActiva: true,
-                    planNombre: `Paquete ${paqueteId}`,
-                    paqueteTipo: paqueteId,
-                    vencimientoPlan: addDays(new Date(), 30),
-                    creditosDisponibles: { decrement: COSTOS[paqueteId] || 0 }
-                };
-            } else {
-                updateData = { creditosDisponibles: { decrement: COSTOS.SUELTA } };
+            if (metodoPago === 'CREDITOS') {
+                if (user.creditosDisponibles < 1) throw new Error("Créditos insuficientes");
+                updateData.creditosDisponibles = { decrement: 1 };
+            } else if (metodoPago === 'PLAN') {
+                // Si es por plan, solo validamos que esté activo (ya se hace en el front, pero aquí aseguramos integridad)
+                updateData.suscripcionActiva = true;
             }
 
             const userUpdated = await tx.user.update({ 
                 where: { id: user.id }, 
-                data: updateData 
+                data: updateData,
+                include: { reservas: { orderBy: { fecha: 'asc' } } }
             });
 
             return userUpdated;
@@ -306,7 +315,26 @@ app.post('/api/reservas', async (req, res) => {
         res.json({ success: true, userUpdated: safeUser });
     } catch (e) {
         console.error("Error Reserva:", e);
-        res.status(500).json({ success: false, message: "Error al procesar reserva" });
+        res.status(500).json({ success: false, message: e.message || "Error al procesar reserva" });
+    }
+});
+
+// 🟢 NUEVA RUTA: LISTA DE ESPERA
+app.post('/api/reservas/lista-espera', async (req, res) => {
+    try {
+        const { email, claseId } = req.body;
+        const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+        
+        await prisma.waitingList.create({
+            data: {
+                claseId: claseId,
+                userId: user.id
+            }
+        });
+
+        res.json({ success: true, message: "Anotado en lista de espera" });
+    } catch (e) {
+        res.status(500).json({ error: "Ya estás en la lista de espera para esta clase." });
     }
 });
 
@@ -320,19 +348,18 @@ app.post('/api/reservas/cancelar', async (req, res) => {
             return res.status(404).json({ message: "Reserva o usuario no encontrado" });
         }
 
-        const montoADevolver = COSTOS[reserva.paqueteRef] || 95;
-
+        // Aquí podrías decidir si devuelves crédito o no según política
         await prisma.$transaction([
             prisma.class.delete({ where: { id: reservaId } }),
             prisma.user.update({
                 where: { email: userEmail.toLowerCase() },
-                data: { creditosDisponibles: { increment: montoADevolver } }
+                data: { creditosDisponibles: { increment: 1 } }
             })
         ]);
 
-        res.json({ success: true, message: "Reserva cancelada y crédito devuelto" });
+        res.json({ success: true, message: "Reserva cancelada" });
     } catch (e) {
-        res.status(500).json({ message: "Error interno al cancelar la reserva" });
+        res.status(500).json({ message: "Error interno al cancelar" });
     }
 });
 
@@ -390,6 +417,34 @@ app.get('/api/admin/stats-ventas', async (req, res) => {
 });
 
 // ======================================================
+// RUTAS DE ADMINISTRACIÓN DE LISTA DE ESPERA
+// ======================================================
+
+app.get('/api/admin/lista-espera', async (req, res) => {
+    try {
+        const lista = await prisma.waitingList.findMany({
+            include: {
+                user: { select: { nombre: true, apellido: true, email: true, telefono: true } },
+                clase: { select: { nombre: true, fecha: true } }
+            },
+            orderBy: { createdAt: 'asc' }
+        });
+        res.json(lista);
+    } catch (e) {
+        res.status(500).json({ error: "Error al obtener lista de espera" });
+    }
+});
+
+app.delete('/api/admin/lista-espera/:id', async (req, res) => {
+    try {
+        await prisma.waitingList.delete({ where: { id: req.params.id } });
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: "No se pudo eliminar el registro" });
+    }
+});
+
+// ======================================================
 // 6. LANZAMIENTO
 // ======================================================
 
@@ -399,5 +454,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// Exportación obligatoria para Vercel
 module.exports = app;

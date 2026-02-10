@@ -3,14 +3,14 @@ import {
     FaUsers, FaChartLine, FaUserPlus, FaUserShield, 
     FaTrashAlt, FaSearch, FaCreditCard, FaChalkboardTeacher,
     FaWallet, FaCheckCircle, FaFileMedical, FaHistory,
-    FaEnvelope, FaExclamationTriangle, FaSignOutAlt, FaPlusCircle 
+    FaEnvelope, FaExclamationTriangle, FaSignOutAlt, FaPlusCircle,
+    FaClock, FaWhatsapp, FaUserClock, FaFilter
 } from 'react-icons/fa';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import './Styles.css';
-// 🟢 IMPORTACIÓN DEL CONFIG
 import API_BASE_URL from '../../apiConfig';
 
 export default function AdminHome() {
@@ -18,17 +18,16 @@ export default function AdminHome() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [allUsers, setAllUsers] = useState([]);
     const [allClases, setAllClases] = useState([]);
+    const [espera, setEspera] = useState([]); // 🟢 ESTADO PARA LISTA DE ESPERA
     const [salesStats, setSalesStats] = useState({ LMV: 0, MJ: 0, SUELTA: 0, totalIngresos: 0 });
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     
     const [tipoClaseNueva, setTipoClaseNueva] = useState('SUELTA');
-
     const [newStaff, setNewStaff] = useState({
         nombre: '', apellido: '', email: '', password: '', role: 'coach'
     });
 
-    // 🟢 ACTUALIZACIÓN DINÁMICA DEL TÍTULO (Basado en lo que pediste antes)
     useEffect(() => {
         const tabTitles = {
             dashboard: 'Dashboard',
@@ -44,22 +43,26 @@ export default function AdminHome() {
     const loadAdminData = async () => {
         setLoading(true);
         try {
-            // 🟢 TODAS LAS URLS ACTUALIZADAS A API_BASE_URL
-            const resUsers = await fetch(`${API_BASE_URL}/admin/usuarios-sistema`);
-            const usersData = await resUsers.json();
-            
-            const resSales = await fetch(`${API_BASE_URL}/admin/stats-ventas`);
-            const salesData = await resSales.json();
+            // Ejecutamos todas las peticiones en paralelo para máxima velocidad
+            const [resUsers, resSales, resClases, resEspera] = await Promise.all([
+                fetch(`${API_BASE_URL}/admin/usuarios-sistema`),
+                fetch(`${API_BASE_URL}/admin/stats-ventas`),
+                fetch(`${API_BASE_URL}/clases/disponibles`),
+                fetch(`${API_BASE_URL}/admin/lista-espera`) // 🟢 NUEVA RUTA
+            ]);
 
-            const resClases = await fetch(`${API_BASE_URL}/clases/disponibles`);
+            const usersData = await resUsers.json();
+            const salesData = await resSales.json();
             const clasesData = await resClases.json();
+            const esperaData = await resEspera.json();
 
             setAllUsers(usersData);
             setSalesStats(salesData);
             setAllClases(clasesData);
+            setEspera(esperaData);
         } catch (error) {
             console.error("Error cargando datos:", error);
-            Swal.fire('Error', 'No se pudo conectar con el servidor de Booz', 'error');
+            Swal.fire('Error', 'Sincronización fallida con Booz HQ', 'error');
         } finally {
             setLoading(false);
         }
@@ -72,24 +75,54 @@ export default function AdminHome() {
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#007AFF',
-            cancelButtonColor: '#8e8e93',
-            confirmButtonText: 'Cerrar Sesión',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Cerrar Sesión'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem('user'); // Corregido de userEmail a user para limpiar sesión completa
+                localStorage.removeItem('user');
                 navigate('/login'); 
             }
         });
     };
 
+    // 🟢 GESTIÓN DE LISTA DE ESPERA (RESOLVER)
+    const handleResolverEspera = async (id, nombreCliente) => {
+        const { isConfirmed } = await Swal.fire({
+            title: `¿Confirmar cupo para ${nombreCliente}?`,
+            text: "Se eliminará de la lista de espera una vez que le asignes su lugar manualmente.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#8FD9FB',
+            confirmButtonText: 'Listo, asignado'
+        });
+
+        if (isConfirmed) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/lista-espera/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    Swal.fire('Actualizado', 'Lista de espera depurada.', 'success');
+                    loadAdminData();
+                }
+            } catch (e) {
+                Swal.fire('Error', 'No se pudo actualizar.', 'error');
+            }
+        }
+    };
+
     const handleViewExpediente = (user) => {
+        const estaEnEspera = espera.find(e => e.userId === user.id);
+        
         Swal.fire({
             title: `<div style="display:flex; align-items:center; gap:10px; font-family:var(--font-main)">
-                        <span>Ficha Médica: ${user.nombre}</span>
+                        <span>Ficha: ${user.nombre}</span>
                     </div>`,
             html: `
                 <div class="expediente-swal">
+                    ${estaEnEspera ? `
+                        <div style="background: #FFF9E6; border: 1px solid #FFCC00; padding: 10px; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <FaClock style="color: #FF9500" />
+                            <span style="color: #856404; font-size: 12px;"><strong>USUARIO EN LISTA DE ESPERA:</strong> ${estaEnEspera.clase.nombre}</span>
+                        </div>
+                    ` : ''}
                     <div class="swal-section">
                         <h4><FaUsers/> Perfil</h4>
                         <p><strong>Email:</strong> ${user.email}</p>
@@ -97,21 +130,15 @@ export default function AdminHome() {
                         <p><strong>Créditos:</strong> $${user.creditosDisponibles}</p>
                     </div>
                     <div class="swal-section warning">
-                        <h4><FaFileMedical/> Salud y Seguridad</h4>
+                        <h4><FaFileMedical/> Salud</h4>
                         <p><strong>Lesiones:</strong> ${user.lesiones || 'Ninguna'}</p>
                         <p><strong>Alergias:</strong> ${user.alergias || 'Ninguna'}</p>
-                        <p><strong>Tipo Sangre:</strong> ${user.tipoSangre || 'N/D'}</p>
-                    </div>
-                    <div class="swal-section">
-                        <h4><FaExclamationTriangle/> Emergencia</h4>
-                        <p><strong>Contacto:</strong> ${user.contactoEmergencia || 'No registrado'}</p>
                     </div>
                 </div>
             `,
             confirmButtonText: 'Cerrar',
             confirmButtonColor: '#007AFF',
-            width: '550px',
-            customClass: { popup: 'glass-card-swal' }
+            width: '550px'
         });
     };
 
@@ -122,8 +149,7 @@ export default function AdminHome() {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#FF3B30',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Sí, eliminar'
         });
 
         if (confirm.isConfirmed) {
@@ -140,66 +166,12 @@ export default function AdminHome() {
     };
 
     const handleDeleteClase = async (id) => {
-        const confirm = await Swal.fire({
-            title: '¿Eliminar clase?',
-            text: "Esta sesión se quitará del calendario.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#FF3B30',
-            confirmButtonText: 'Borrar Clase'
-        });
-
+        const confirm = await Swal.fire({ title: '¿Eliminar clase?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#FF3B30' });
         if (confirm.isConfirmed) {
             try {
                 const res = await fetch(`${API_BASE_URL}/admin/clases/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    Swal.fire('Eliminada', 'Calendario actualizado.', 'success');
-                    loadAdminData();
-                }
-            } catch (e) {
-                Swal.fire('Error', 'No se pudo eliminar.', 'error');
-            }
-        }
-    };
-
-    const handleDeleteAllClases = async () => {
-        const confirm = await Swal.fire({
-            title: '¿BORRAR TODO EL CALENDARIO?',
-            text: "Se eliminarán TODAS las sesiones programadas. Esta acción es irreversible.",
-            icon: 'error',
-            showCancelButton: true,
-            confirmButtonColor: '#FF3B30',
-            confirmButtonText: 'Sí, borrar todo',
-            cancelButtonText: 'Cancelar'
-        });
-
-        if (confirm.isConfirmed) {
-            const { value: confirmText } = await Swal.fire({
-                title: 'Confirmación de seguridad',
-                text: 'Escribe "BORRAR TODO" para confirmar la limpieza total:',
-                input: 'text',
-                inputPlaceholder: 'BORRAR TODO',
-                showCancelButton: true,
-                confirmButtonColor: '#FF3B30',
-                confirmButtonText: 'Confirmar eliminación masiva',
-                inputValidator: (value) => {
-                    if (value !== 'BORRAR TODO') {
-                        return 'Debes escribir la frase exacta para proceder';
-                    }
-                }
-            });
-
-            if (confirmText === 'BORRAR TODO') {
-                try {
-                    const res = await fetch(`${API_BASE_URL}/admin/clases-reset`, { method: 'DELETE' });
-                    if (res.ok) {
-                        Swal.fire('Calendario Limpio', 'Se han eliminado todas las clases.', 'success');
-                        loadAdminData();
-                    }
-                } catch (e) {
-                    Swal.fire('Error', 'Hubo un fallo al intentar resetear el sistema.', 'error');
-                }
-            }
+                if (res.ok) { loadAdminData(); Swal.fire('Eliminada', '', 'success'); }
+            } catch (e) { Swal.fire('Error', '', 'error'); }
         }
     };
 
@@ -212,24 +184,18 @@ export default function AdminHome() {
                 body: JSON.stringify(newStaff)
             });
             if (response.ok) {
-                Swal.fire('Éxito', `${newStaff.role.toUpperCase()} registrado correctamente.`, 'success');
+                Swal.fire('Éxito', `${newStaff.role.toUpperCase()} registrado.`, 'success');
                 setNewStaff({ nombre: '', apellido: '', email: '', password: '', role: 'coach' });
                 loadAdminData();
             }
-        } catch (e) {
-            Swal.fire('Error de conexión.', '', 'error');
-        }
+        } catch (e) { Swal.fire('Error.', '', 'error'); }
     };
 
     const handleCreateClassAdmin = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
-        
-        const endpoint = tipoClaseNueva === 'SUELTA' 
-            ? `${API_BASE_URL}/coach/crear-suelta`
-            : `${API_BASE_URL}/coach/crear-paquete`;
-
+        const endpoint = tipoClaseNueva === 'SUELTA' ? `${API_BASE_URL}/coach/crear-suelta` : `${API_BASE_URL}/coach/crear-paquete`;
         try {
             const res = await fetch(endpoint, {
                 method: 'POST',
@@ -237,7 +203,8 @@ export default function AdminHome() {
                 body: JSON.stringify({
                     ...data,
                     color: tipoClaseNueva === 'SUELTA' ? "#B49044" : "#A9B090",
-                    paqueteRef: tipoClaseNueva === 'SUELTA' ? 'SUELTA' : data.paqueteRef
+                    paqueteRef: tipoClaseNueva === 'SUELTA' ? 'SUELTA' : data.paqueteRef,
+                    cupoMaximo: parseInt(data.cupoMaximo) || 8
                 })
             });
             if (res.ok) {
@@ -245,26 +212,17 @@ export default function AdminHome() {
                 e.target.reset();
                 loadAdminData();
             }
-        } catch (err) {
-            Swal.fire('Error', 'No se pudo procesar la solicitud.', 'error');
-        }
+        } catch (err) { Swal.fire('Error', '', 'error'); }
     };
 
     const clientes = allUsers.filter(u => u.role === 'cliente');
     const staff = allUsers.filter(u => u.role === 'coach' || u.role === 'admin');
     const activeMembers = clientes.filter(u => u.suscripcionActiva).length;
 
-    const getBarHeight = (value) => {
-        const maxValue = Math.max(salesStats.LMV, salesStats.MJ, salesStats.SUELTA, 1);
-        return `${Math.max((value / maxValue) * 100, 5)}%`;
-    };
-
-    // 🟢 INTEGRACIÓN DEL LOADER CENTRADO QUE DISEÑAMOS
     if (loading) return (
         <div className="loader-container-full">
             <div className="loader-content">
                 <img src="/isologo.png" alt="Booz Logo" className="loader-logo-spin" />
-                <div className="loader-booz">Sincronizando Sistema Booz...</div>
             </div>
         </div>
     );
@@ -273,31 +231,17 @@ export default function AdminHome() {
         <div className="admin-container animate-ios-entry">
             <aside className="admin-sidebar">
                 <div className="sidebar-top">
-                    <div className="admin-logo">
-                        <h2>BOOZ <span>ADMIN</span></h2>
-                    </div>
+                    <div className="admin-logo"><h2>BOOZ <span>ADMIN</span></h2></div>
                     <nav className="admin-nav">
-                        <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>
-                            <FaChartLine /> <span>Dashboard</span>
-                        </button>
-                        <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
-                            <FaUsers /> <span>Directorio</span>
-                        </button>
-                        <button className={activeTab === 'clases' ? 'active' : ''} onClick={() => setActiveTab('clases')}>
-                            <FaChalkboardTeacher /> <span>Clases</span>
-                        </button>
-                        <button className={activeTab === 'sales' ? 'active' : ''} onClick={() => setActiveTab('sales')}>
-                            <FaWallet /> <span>Finanzas</span>
-                        </button>
-                        <button className={activeTab === 'staff' ? 'active' : ''} onClick={() => setActiveTab('staff')}>
-                            <FaUserShield /> <span>Staff</span>
-                        </button>
+                        <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}><FaChartLine /> <span>Dashboard</span></button>
+                        <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}><FaUsers /> <span>Directorio</span></button>
+                        <button className={activeTab === 'clases' ? 'active' : ''} onClick={() => setActiveTab('clases')}><FaChalkboardTeacher /> <span>Calendario</span></button>
+                        <button className={activeTab === 'sales' ? 'active' : ''} onClick={() => setActiveTab('sales')}><FaWallet /> <span>Finanzas</span></button>
+                        <button className={activeTab === 'staff' ? 'active' : ''} onClick={() => setActiveTab('staff')}><FaUserShield /> <span>Equipo Staff</span></button>
                     </nav>
                 </div>
                 <div className="sidebar-bottom">
-                    <button className="btn-logout" onClick={handleLogout}>
-                        <FaSignOutAlt /> <span>Cerrar Sesión</span>
-                    </button>
+                    <button className="btn-logout" onClick={handleLogout}><FaSignOutAlt /> <span>Salir</span></button>
                 </div>
             </aside>
 
@@ -305,39 +249,50 @@ export default function AdminHome() {
                 {activeTab === 'dashboard' && (
                     <div className="admin-tab-content">
                         <header className="content-header">
-                            <h1>Panel de Control</h1>
+                            <h1>Resumen Ejecutivo</h1>
                             <p>{format(new Date(), "EEEE d 'de' MMMM", { locale: es })}</p>
                         </header>
                         <div className="metrics-grid">
                             <div className="metric-card glass-card">
                                 <div className="metric-icon blue"><FaUsers /></div>
-                                <div className="metric-info"><h3>Total Clientes</h3><p className="number">{clientes.length}</p></div>
+                                <div className="metric-info"><h3>Base Clientes</h3><p className="number">{clientes.length}</p></div>
                             </div>
                             <div className="metric-card glass-card">
-                                <div className="metric-icon green"><FaCheckCircle /></div>
-                                <div className="metric-info"><h3>Suscripciones OK</h3><p className="number">{activeMembers}</p></div>
+                                <div className="metric-icon orange"><FaUserClock /></div>
+                                <div className="metric-info"><h3>En Espera</h3><p className="number" style={{color: '#FF9500'}}>{espera.length}</p></div>
                             </div>
                             <div className="metric-card glass-card">
                                 <div className="metric-icon gold"><FaCreditCard /></div>
-                                <div className="metric-info"><h3>Caja Estimada</h3><p className="number">${salesStats.totalIngresos.toLocaleString()}</p></div>
+                                <div className="metric-info"><h3>Ingresos Totales</h3><p className="number">${salesStats.totalIngresos.toLocaleString()}</p></div>
                             </div>
                         </div>
+
+                        {/* 🟢 SECCIÓN DASHBOARD: ALERTAS DE LISTA DE ESPERA */}
                         <div className="dashboard-grid-dual">
-                            <div className="chart-container-pro glass-card">
-                                <h3>Proporción de Ventas</h3>
-                                <div className="fake-chart">
-                                    <div className="bar-group"><div className="bar" style={{ height: getBarHeight(salesStats.LMV) }}></div><span>LMV</span></div>
-                                    <div className="bar-group"><div className="bar" style={{ height: getBarHeight(salesStats.MJ), background: '#A9B090' }}></div><span>MJ</span></div>
-                                    <div className="bar-group"><div className="bar" style={{ height: getBarHeight(salesStats.SUELTA), background: '#B49044' }}></div><span>Suelta</span></div>
+                            <div className="activity-card glass-card">
+                                <h3 style={{display: 'flex', alignItems: 'center', gap: '10px'}}><FaClock color="#FF9500"/> Solicitudes en Espera</h3>
+                                <div className="waiting-list-dashboard">
+                                    {espera.length > 0 ? espera.slice(0, 4).map((e, i) => (
+                                        <div className="waiting-item-mini" key={i}>
+                                            <div className="w-info">
+                                                <strong>{e.user.nombre}</strong>
+                                                <span>{e.clase.nombre}</span>
+                                            </div>
+                                            <div className="w-actions">
+                                                <a href={`https://wa.me/${e.user.telefono}`} target="_blank" rel="noreferrer"><FaWhatsapp color="#25D366"/></a>
+                                                <button onClick={() => handleResolverEspera(e.id, e.user.nombre)}><FaCheckCircle color="#8FD9FB"/></button>
+                                            </div>
+                                        </div>
+                                    )) : <p className="empty-state">No hay gente en espera. ¡Todo fluye!</p>}
                                 </div>
                             </div>
                             <div className="activity-card glass-card">
-                                <h3><FaHistory/> Actividad en Sistema</h3>
+                                <h3><FaHistory/> Últimos Registros</h3>
                                 <div className="activity-list">
-                                    {allUsers.slice(-5).reverse().map((u, i) => (
+                                    {allUsers.slice(-4).reverse().map((u, i) => (
                                         <div className="tx-item" key={i}>
-                                            <div className="tx-icon"><FaUserPlus/></div>
-                                            <div className="tx-info"><strong>{u.nombre} {u.apellido}</strong><span>{u.role.toUpperCase()} • {u.email}</span></div>
+                                            <div className="avatar-mini">{u.nombre[0]}</div>
+                                            <div className="tx-info"><strong>{u.nombre}</strong><span>{u.email}</span></div>
                                         </div>
                                     ))}
                                 </div>
@@ -349,27 +304,35 @@ export default function AdminHome() {
                 {activeTab === 'users' && (
                     <div className="admin-tab-content">
                         <header className="content-header search-header">
-                            <h1>Directorio de Clientes</h1>
-                            <div className="search-box-pro">
-                                <FaSearch />
-                                <input type="text" placeholder="Nombre, email o lesiones..." onChange={(e) => setSearchTerm(e.target.value)} />
-                            </div>
+                            <h1>Directorio Booz</h1>
+                            <div className="search-box-pro"><FaSearch /><input type="text" placeholder="Buscar por nombre, email o lesión..." onChange={(e) => setSearchTerm(e.target.value)} /></div>
                         </header>
                         <div className="admin-table-container glass-card">
                             <table className="admin-table">
                                <thead>
-                                   <tr><th>Usuario</th><th>Estatus</th><th>Historial Médico</th><th>Saldo</th><th>Acciones</th></tr>
+                                   <tr><th>Cliente</th><th>Estatus / Plan</th><th>Lista Espera</th><th>Acciones</th></tr>
                                </thead>
                                <tbody>
-                                   {clientes.filter(u => (u.nombre + u.apellido + u.email).toLowerCase().includes(searchTerm.toLowerCase())).map(user => (
+                                   {clientes.filter(u => (u.nombre + u.apellido + u.email).toLowerCase().includes(searchTerm.toLowerCase())).map(user => {
+                                       const waiting = espera.find(e => e.userId === user.id);
+                                       return (
                                        <tr key={user.id}>
-                                           <td><div className="user-profile-cell"><div className="avatar-mini">{user.nombre[0]}</div><div className="info"><strong>{user.nombre} {user.apellido}</strong><span>{user.email}</span></div></div></td>
-                                           <td><span className={`status-badge ${user.suscripcionActiva ? 'active' : 'inactive'}`}>{user.planNombre || 'Sin Plan'}</span></td>
-                                           <td><button className="btn-medical" onClick={() => handleViewExpediente(user)}><FaFileMedical /> Abrir Ficha</button></td>
-                                           <td><strong className="price-tag">${user.creditosDisponibles}</strong></td>
-                                           <td><button className="btn-icon delete" onClick={() => handleDeleteUser(user.id, user.nombre)}><FaTrashAlt /></button></td>
+                                           <td><div className="user-profile-cell"><div className="avatar-mini" style={{background: user.suscripcionActiva ? '#8FD9FB' : '#eee'}}>{user.nombre[0]}</div><div className="info"><strong>{user.nombre} {user.apellido}</strong><span>{user.email}</span></div></div></td>
+                                           <td><span className={`status-badge ${user.suscripcionActiva ? 'active' : 'inactive'}`}>{user.planNombre || 'Regular'}</span></td>
+                                           <td>
+                                               {waiting ? 
+                                                    <span className="waiting-tag"><FaClock /> {waiting.clase.nombre}</span> : 
+                                                    <span style={{opacity: 0.3}}>—</span>
+                                               }
+                                           </td>
+                                           <td>
+                                               <div className="table-actions">
+                                                    <button className="btn-table-action" onClick={() => handleViewExpediente(user)}><FaFileMedical /></button>
+                                                    <button className="btn-table-action del" onClick={() => handleDeleteUser(user.id, user.nombre)}><FaTrashAlt /></button>
+                                               </div>
+                                           </td>
                                        </tr>
-                                   ))}
+                                   )})}
                                </tbody>
                             </table>
                         </div>
@@ -378,50 +341,54 @@ export default function AdminHome() {
 
                 {activeTab === 'clases' && (
                     <div className="admin-tab-content">
-                        <header className="content-header">
-                            <h1>Gestión de Clases</h1>
-                            <p>Administra las sesiones individuales y los paquetes mensuales</p>
-                        </header>
-
+                        <header className="content-header"><h1>Calendario Maestros</h1></header>
                         <div className="dashboard-grid-dual">
-                            <div className="form-container glass-card" style={{height: 'fit-content'}}>
+                            <div className="form-container glass-card">
                                 <div className="form-type-selector">
-                                    <button className={tipoClaseNueva === 'SUELTA' ? 'active' : ''} onClick={() => setTipoClaseNueva('SUELTA')}>Suelta</button>
-                                    <button className={tipoClaseNueva !== 'SUELTA' ? 'active' : ''} onClick={() => setTipoClaseNueva('LMV')}>Mensual</button>
+                                    <button className={tipoClaseNueva === 'SUELTA' ? 'active' : ''} onClick={() => setTipoClaseNueva('SUELTA')}>Clase Única</button>
+                                    <button className={tipoClaseNueva !== 'SUELTA' ? 'active' : ''} onClick={() => setTipoClaseNueva('LMV')}>Programar Mes</button>
                                 </div>
                                 <form className="admin-form" onSubmit={handleCreateClassAdmin}>
-                                    <div className="input-group"><label>Nombre de la Clase</label><input name="nombre" placeholder="Ej: Pilates" required /></div>
-                                    {tipoClaseNueva !== 'SUELTA' && (
-                                        <div className="input-group"><label>Tipo de Paquete</label><select name="paqueteRef"><option value="LMV">LMV (L-M-V)</option><option value="MJ">MJ (M-J)</option></select></div>
-                                    )}
-                                    <div className="input-group"><label>Temática</label><input name="tematica" placeholder="Ej: Flexibilidad" /></div>
+                                    <div className="input-group"><label>Nombre</label><input name="nombre" placeholder="Ej: Power Yoga" required /></div>
                                     <div className="form-grid">
-                                        <div className="input-group"><label>Fecha</label><input type="date" name="fechaInicio" required /></div>
                                         <div className="input-group"><label>Hora</label><input type="time" name="hora" required /></div>
+                                        <div className="input-group"><label>Cupo</label><input type="number" name="cupoMaximo" defaultValue="8" required /></div>
                                     </div>
-                                    <button type="submit" className="btn-admin-submit"><FaPlusCircle /> Publicar Clase</button>
+                                    <div className="input-group"><label>Inicio</label><input type="date" name="fechaInicio" required /></div>
+                                    {tipoClaseNueva !== 'SUELTA' && (
+                                        <div className="input-group"><label>Paquete</label><select name="paqueteRef"><option value="LMV">L-M-V</option><option value="MJ">M-J</option></select></div>
+                                    )}
+                                    <button type="submit" className="btn-admin-submit"><FaPlusCircle /> Publicar en App</button>
                                 </form>
                             </div>
 
-                            <div className="admin-table-container glass-card" style={{ margin: 0 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', alignItems: 'center' }}>
-                                    <h3>Calendario Activo</h3>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                        <button className="btn-danger-outline" onClick={handleDeleteAllClases} style={{ fontSize: '0.7rem', padding: '5px 10px' }}><FaTrashAlt /> Borrar Todo</button>
-                                        <span className="badge-count">{allClases.length} sesiones</span>
-                                    </div>
-                                </div>
-                                <div className="scrollable-table" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                            {/* 🟢 TABLA DE CLASES CON DETALLE DE ESPERA */}
+                            <div className="admin-table-container glass-card">
+                                <h3>Sesiones Programadas</h3>
+                                <div className="scrollable-table" style={{ maxHeight: '500px' }}>
                                     <table className="admin-table">
-                                        <thead><tr><th>Clase</th><th>Info</th><th>Acción</th></tr></thead>
+                                        <thead><tr><th>Clase</th><th>Cupo</th><th>En Espera</th><th>Acción</th></tr></thead>
                                         <tbody>
-                                            {allClases.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map(clase => (
+                                            {allClases.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map(clase => {
+                                                const enEspera = espera.filter(e => e.claseId === clase.id).length;
+                                                return (
                                                 <tr key={clase.id}>
-                                                    <td><div className="clase-info-cell"><div className="color-indicator" style={{ background: clase.color }}></div><div><strong>{clase.nombre}</strong><span className={`mini-badge ${clase.paqueteRef}`}>{clase.paqueteRef}</span></div></div></td>
-                                                    <td><div style={{ fontSize: '0.8rem' }}>{format(new Date(clase.fecha), 'dd MMM', { locale: es })}<br />{format(new Date(clase.fecha), 'HH:mm')} hrs</div></td>
+                                                    <td>
+                                                        <div className="clase-info-cell">
+                                                            <div className="color-indicator" style={{ background: clase.color }}></div>
+                                                            <div><strong>{clase.nombre}</strong><span>{format(new Date(clase.fecha), 'dd/MM HH:mm')}</span></div>
+                                                        </div>
+                                                    </td>
+                                                    <td><span className="cupo-indicator">{clase.inscritos || 0}/{clase.cupoMaximo || 8}</span></td>
+                                                    <td>
+                                                        {enEspera > 0 ? 
+                                                            <b style={{color: '#FF9500', display: 'flex', alignItems: 'center', gap: '5px'}}><FaUsers/> {enEspera}</b> : 
+                                                            <span style={{opacity: 0.2}}>0</span>
+                                                        }
+                                                    </td>
                                                     <td><button className="btn-icon delete" onClick={() => handleDeleteClase(clase.id)}><FaTrashAlt /></button></td>
                                                 </tr>
-                                            ))}
+                                            )})}
                                         </tbody>
                                     </table>
                                 </div>
@@ -432,25 +399,29 @@ export default function AdminHome() {
 
                 {activeTab === 'staff' && (
                     <div className="admin-tab-content">
-                        <header className="content-header"><h1>Administración de Staff</h1></header>
+                        <header className="content-header"><h1>Gestión de Staff</h1></header>
                         <div className="split-view">
                             <div className="form-container glass-card">
-                                <h2><FaUserPlus /> Alta de Colaborador</h2>
+                                <h2><FaUserPlus /> Nuevo Colaborador</h2>
                                 <form onSubmit={handleCreateStaff} className="admin-form">
-                                    <div className="form-grid">
-                                        <div className="input-group"><label>Nombre</label><input type="text" required value={newStaff.nombre} onChange={e => setNewStaff({...newStaff, nombre: e.target.value})} /></div>
-                                        <div className="input-group"><label>Email</label><input type="email" required value={newStaff.email} onChange={e => setNewStaff({...newStaff, email: e.target.value})} /></div>
-                                    </div>
-                                    <div className="input-group"><label>Contraseña</label><input type="password" required value={newStaff.password} onChange={e => setNewStaff({...newStaff, password: e.target.value})} /></div>
-                                    <div className="input-group"><label>Rol</label><select value={newStaff.role} onChange={e => setNewStaff({...newStaff, role: e.target.value})}><option value="coach">Coach</option><option value="admin">Administrador</option></select></div>
-                                    <button type="submit" className="btn-admin-submit">Guardar Cambios</button>
+                                    <div className="input-group"><label>Nombre Completo</label><input type="text" required onChange={e => setNewStaff({...newStaff, nombre: e.target.value})} /></div>
+                                    <div className="input-group"><label>Email Corporativo</label><input type="email" required onChange={e => setNewStaff({...newStaff, email: e.target.value})} /></div>
+                                    <div className="input-group"><label>Contraseña</label><input type="password" required onChange={e => setNewStaff({...newStaff, password: e.target.value})} /></div>
+                                    <div className="input-group"><label>Rol</label><select onChange={e => setNewStaff({...newStaff, role: e.target.value})}><option value="coach">Coach</option><option value="admin">Administrador</option></select></div>
+                                    <button type="submit" className="btn-admin-submit">Dar de Alta</button>
                                 </form>
                             </div>
                             <div className="info-box glass-card">
-                                <h3>Equipo Activo</h3>
+                                <h3>Equipo Booz</h3>
                                 <div className="staff-list-detailed">
                                     {staff.map(s => (
-                                        <div key={s.id} className="staff-row"><div className="staff-info"><div className={`role-dot ${s.role}`}></div><div><strong>{s.nombre}</strong><span>{s.role}</span></div></div><FaEnvelope style={{ color: '#86868b' }} /></div>
+                                        <div key={s.id} className="staff-row">
+                                            <div className="staff-info">
+                                                <div className={`role-dot ${s.role}`}></div>
+                                                <div><strong>{s.nombre}</strong><span>{s.role.toUpperCase()}</span></div>
+                                            </div>
+                                            <FaEnvelope style={{ color: '#86868b', cursor: 'pointer' }} onClick={() => window.location.href=`mailto:${s.email}`} />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -460,11 +431,15 @@ export default function AdminHome() {
 
                 {activeTab === 'sales' && (
                     <div className="admin-tab-content">
-                         <header className="content-header"><h1>Finanzas Totales</h1></header>
+                         <header className="content-header"><h1>Inteligencia Financiera</h1></header>
                         <div className="metrics-grid">
-                            <div className="sales-card glass-card"><h4>Ventas LMV</h4><p className="sale-qty">{salesStats.LMV} paquetes</p><p className="sale-total">${(salesStats.LMV * 1099).toLocaleString()}</p></div>
-                            <div className="sales-card glass-card"><h4>Ventas MJ</h4><p className="sale-qty">{salesStats.MJ} paquetes</p><p className="sale-total">${(salesStats.MJ * 699).toLocaleString()}</p></div>
-                            <div className="sales-card glass-card"><h4>Ventas Sueltas</h4><p className="sale-qty">{salesStats.SUELTA} unidades</p><p className="sale-total">${(salesStats.SUELTA * 95).toLocaleString()}</p></div>
+                            <div className="sales-card glass-card"><h4>Paquetes LMV</h4><p className="sale-qty">{salesStats.LMV} u.</p><p className="sale-total">${(salesStats.LMV * 1099).toLocaleString()}</p></div>
+                            <div className="sales-card glass-card"><h4>Paquetes MJ</h4><p className="sale-qty">{salesStats.MJ} u.</p><p className="sale-total">${(salesStats.MJ * 699).toLocaleString()}</p></div>
+                            <div className="sales-card glass-card"><h4>Clases Sueltas</h4><p className="sale-qty">{salesStats.SUELTA} u.</p><p className="sale-total">${(salesStats.SUELTA * 95).toLocaleString()}</p></div>
+                        </div>
+                        <div className="glass-card" style={{marginTop: '20px', padding: '30px', textAlign: 'center'}}>
+                            <h2 style={{fontSize: '3rem', fontWeight: '800'}}>${salesStats.totalIngresos.toLocaleString()}</h2>
+                            <p style={{opacity: 0.6, letterSpacing: '2px'}}>TOTAL INGRESOS BRUTOS ESTIMADOS</p>
                         </div>
                     </div>
                 )}

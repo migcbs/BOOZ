@@ -1,75 +1,149 @@
 /* ============================================================
-   BOOZ ADMIN - ULTIMATE FULL VERSION (2026)
-   ESTABILIDAD, HONESTIDAD Y DISEÑO PREMIUM
+   BOOZ ADMIN - EXTREME FULL DETAIL VERSION (2026)
+   MAXIMA ESPECIFICIDAD, CONTROL DE COMPONENTES Y RESPONSIVE PRO
    ============================================================ */
 
 :root {
+    /* Paleta Premium Booz */
     --ios-blue: #8FD9FB;
     --ios-sage: #A9B090;
     --ios-gold: #B49044;
     --ios-green: #34C759;
     --ios-red: #FF3B30;
+    --ios-orange: #FF9500;
     --ios-pink: #E1306C;
+    --ios-dark: #1d1d1f;
+    
+    /* Superficies y Bordes */
     --bg-main: #f5f5f7;
     --sidebar-bg: #1d1d1f;
-    --glass-bg: rgba(255, 255, 255, 1);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --border-light: rgba(0, 0, 0, 0.05);
+    --glass-bg: #ffffff;
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --border-light: #e5e5e7;
+    
+    /* Sombras y Elevaciones */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.06);
+    
+    /* Tipografía y Curvas */
     --font-main: "Nunito", sans-serif;
-    --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    --shadow-premium: 0 10px 40px rgba(0, 0, 0, 0.06);
+    --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     --radius-lg: 32px;
     --radius-md: 18px;
     --radius-sm: 12px;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* --- RESET & BASE --- */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    -webkit-tap-highlight-color: transparent; 
 }
 
 body {
     background-color: var(--bg-main);
     font-family: var(--font-main);
-    color: #1d1d1f;
-    overflow-x: hidden;
+    color: var(--ios-dark);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-/* --- HOMOLOGACIÓN UPPERCASE GLOBAL --- */
+/* --- SISTEMA DE TIPOGRAFÍA (MÁXIMA FUERZA) --- */
 h1, h2, h3, h4, 
-button, 
-label, 
 th, 
 .status-badge, 
-.status-pill,
+.status-pill, 
 .mini-badge, 
-.badge-tipo,
-.badge-count,
-.number,
-.loader-text,
-.act-desc span,
-.tx-info strong,
-.btn-logout {
+.badge-tipo, 
+.badge-count, 
+.number, 
+.btn-logout, 
+.waiting-tag, 
+.btn-admin-submit, 
+.btn-medical, 
+.btn-table-action, 
+.btn-table-action-del,
+.form-type-selector button {
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     font-weight: 800;
+    margin-top: 20px;
 }
 
-/* --- LAYOUT PRINCIPAL (DESKTOP) --- */
-.admin-container {
+/* ============================================================
+   CONTENT HEADER - PREMIUM TYPOGRAPHY
+   ============================================================ */
+
+.content-header {
+    margin-bottom: 35px;
     display: flex;
-    min-height: 100vh;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* El título principal: Fuerte y con espaciado minimalista */
+.content-header h1 {
+    font-size: 32px;
+    font-weight: 850; /* Extra bold para look iOS */
+    color: var(--ios-dark);
+    letter-spacing: -1px; /* Tracking cerrado para elegancia */
+    text-transform: none; /* Mantener naturalidad, o UPPERCASE si prefieres */
+}
+
+/* El subtítulo / Fecha: Sutil pero legible */
+.content-header p {
+    font-size: 15px;
+    color: #8e8e93; /* Gris clásico de Apple */
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+/* Variante para headers con búsqueda (Search Header) */
+.content-header.search-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end; /* Alinea el título con la caja de búsqueda */
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* --- OPTIMIZACIÓN MOBILE --- */
+@media (max-width: 768px) {
+    .content-header {
+        margin-bottom: 25px;
+        padding: 0 5px;
+    }
+
+    .content-header h1 {
+        font-size: 26px; /* Reducción para pantallas pequeñas */
+        letter-spacing: -0.5px;
+    }
+
+    .content-header p {
+        font-size: 13px;
+    }
+
+    .content-header.search-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+
+/* --- LAYOUT PRINCIPAL (CONTROL HORIZONTAL) --- */
+.admin-container { 
+    display: flex; 
+    min-height: 100vh; 
 }
 
 .admin-sidebar {
-    width: 280px;
+    width: 260px;
     background-color: var(--sidebar-bg);
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 40px 20px;
     position: fixed;
     height: calc(100vh - 40px);
@@ -81,218 +155,956 @@ th,
 
 .admin-main {
     flex: 1;
-    margin-left: 320px;
-    padding: 60px 50px;
-    width: calc(100% - 320px);
+    margin-left: 300px;
+    padding: 40px 50px;
+    width: calc(100% - 300px);
+    max-width: 1800px; /* Evita que en pantallas ultra-wide se pierda la proporción */
+}
+
+
+
+/* --- COMPONENTES SIDEBAR --- */
+.admin-logo { margin-bottom: 40px; padding: 0 10px; }
+.admin-logo h2 { font-size: 22px; }
+.admin-logo span { color: var(--ios-blue); font-weight: 300; opacity: 0.8; }
+
+.admin-nav { display: flex; flex-direction: column; gap: 8px; }
+.admin-nav button {
+    background: transparent; 
+    border: none; 
+    color: #86868b;
+    padding: 14px 18px; 
+    text-align: left; 
+    font-size: 13px;
+    border-radius: var(--radius-md); 
+    cursor: pointer;
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
     transition: var(--transition);
 }
 
-/* --- SIDEBAR COMPONENTS --- */
-.sidebar-top { flex: 1; }
-.admin-logo { padding: 0 20px 50px; }
-.admin-logo h2 { font-size: 24px; }
-.admin-logo span { color: var(--ios-blue); font-weight: 300; opacity: 0.8; }
+.admin-nav button svg { font-size: 20px; }
 
-.admin-nav { display: flex; flex-direction: column; gap: 10px; }
-.admin-nav button {
-    background: none; border: none; color: #86868b;
-    padding: 15px 20px; text-align: left; font-size: 13px;
-    border-radius: var(--radius-md); cursor: pointer;
-    display: flex; align-items: center; gap: 14px; transition: var(--transition);
-}
-.admin-nav button:hover { background: rgba(255, 255, 255, 0.08); color: white; }
-.admin-nav button.active {
-    background: var(--ios-blue); color: #1d1d1f;
-    box-shadow: 0 8px 25px rgba(143, 217, 251, 0.3);
+.admin-nav button.active { 
+    background: var(--ios-blue); 
+    color: var(--ios-dark); 
+    box-shadow: 0 8px 20px rgba(143, 217, 251, 0.3); 
 }
 
-.sidebar-bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 25px; }
-.btn-logout {
-    width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px;
-    background: rgba(255, 59, 48, 0.1); color: var(--ios-red); border: none;
-    border-radius: var(--radius-md); cursor: pointer; transition: var(--transition);
+.admin-nav button:hover:not(.active) { 
+    background: rgba(255, 255, 255, 0.05); 
+    color: white; 
+    transform: translateX(5px);
 }
-.btn-logout:hover { background: var(--ios-red); color: white; transform: translateX(5px); }
 
-/* --- GLASS CARDS (LIQUID EFFECT) --- */
-.glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
-    padding: 35px; box-shadow: var(--shadow-premium); transition: var(--transition);
+/* --- BOTONES DE ACCIÓN (TABLAS Y FORMULARIOS) --- */
+.action-group, .table-actions { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
 }
-.glass-card:hover { transform: translateY(-3px); box-shadow: 0 15px 45px rgba(0,0,0,0.05); }
 
-/* --- DASHBOARD ELEMENTS --- */
-.metrics-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px; margin-bottom: 40px;
+.btn-table-action {
+    background: rgba(143, 217, 251, 0.12);
+    color: #4da3c9;
+    border: 1px solid rgba(143, 217, 251, 0.3);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
 }
-.metric-card { display: flex; align-items: center; gap: 20px; }
-.metric-icon { 
-    width: 65px; height: 65px; border-radius: 20px; 
-    display: flex; align-items: center; justify-content: center; font-size: 26px; 
+
+.btn-table-action:hover { 
+    background: var(--ios-blue); 
+    color: var(--ios-dark); 
+    transform: translateY(-2px); 
+    box-shadow: var(--shadow-sm);
 }
-.metric-icon.blue { background: #e8f7fe; color: var(--ios-blue); }
-.metric-icon.green { background: #eafaf0; color: var(--ios-green); }
-.metric-icon.gold { background: #f7f1e6; color: var(--ios-gold); }
-.metric-info h3 { font-size: 13px; color: #86868b; margin-bottom: 5px; }
-.metric-info .number { font-size: 30px; letter-spacing: -1px; }
 
-.dashboard-grid-dual { display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; margin-top: 30px; }
-
-/* --- GRÁFICO MEJORADO --- */
-.chart-placeholder { height: 400px; display: flex; flex-direction: column; }
-.fake-chart {
-    flex: 1; display: flex; align-items: flex-end; justify-content: space-around;
-    padding: 30px 40px; background: rgba(0, 0, 0, 0.02); border-radius: var(--radius-lg);
-    margin-top: 20px; gap: 20px; min-height: 250px;
+.btn-table-action-del {
+    background: rgba(255, 59, 48, 0.08);
+    color: var(--ios-red);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
 }
-.bar-group { display: flex; flex-direction: column; align-items: center; gap: 12px; height: 100%; justify-content: flex-end; }
-.bar { 
-    width: 60px; background: var(--ios-blue); border-radius: 14px 14px 6px 6px; 
-    position: relative; transition: height 1s var(--transition); 
-    box-shadow: 0 4px 15px rgba(143, 217, 251, 0.2);
+
+.btn-table-action-del:hover { 
+    background: var(--ios-red); 
+    color: white; 
+    transform: translateY(-2px); 
+    box-shadow: var(--shadow-sm);
 }
-.bar span { font-size: 12px; color: #424245; white-space: nowrap; }
-
-/* --- TABLAS PROFESIONALES --- */
-.admin-table-container { width: 100%; overflow-x: auto; }
-.admin-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
-.admin-table th { padding: 10px 25px; color: #86868b; font-size: 12px; text-align: left; }
-.admin-table td { padding: 22px 25px; background: white; transition: var(--transition); }
-.admin-table tr:hover td { background: #fbfbfd; }
-.admin-table tr td:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
-.admin-table tr td:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
-
-/* --- BÚSQUEDA PRO --- */
-.search-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.search-box-pro {
-    position: relative; display: flex; align-items: center;
-    background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
-    border: 1px solid var(--border-light); padding: 14px 20px; border-radius: var(--radius-md);
-    width: 380px; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-.search-box-pro:focus-within { background: white; width: 450px; border-color: var(--ios-blue); box-shadow: 0 8px 25px rgba(143, 217, 251, 0.15); }
-.search-box-pro svg { color: #86868b; margin-right: 15px; font-size: 18px; }
-.search-box-pro input { background: none; border: none; outline: none; width: 100%; font-family: var(--font-main); font-weight: 700; font-size: 15px; }
-
-/* --- BOTONES DE ACCIÓN (INCLUIDO MÉDICO) --- */
-.action-group { display: flex; gap: 10px; align-items: center; }
-.btn-icon { width: 38px; height: 38px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); background: #f5f5f7; }
-.btn-icon.view { color: var(--ios-blue); background: rgba(143, 217, 251, 0.15); }
-.btn-icon.delete { color: var(--ios-red); background: rgba(255, 59, 48, 0.1); }
-.btn-icon:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-.btn-icon.delete:hover { background: var(--ios-red); color: white; }
 
 .btn-medical {
-    background: rgba(143, 217, 251, 0.12); color: #5bb0d6;
-    border: 2px solid var(--ios-blue); padding: 10px 18px; border-radius: var(--radius-sm);
-    font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition);
+    background: transparent; 
+    color: #5bb0d6; 
+    border: 2px solid var(--ios-blue);
+    padding: 8px 15px; 
+    border-radius: 10px; 
+    font-size: 10px; 
+    cursor: pointer;
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    transition: var(--transition);
 }
-.btn-medical:hover { background: var(--ios-blue); color: #1d1d1f; transform: scale(1.05); }
 
-.btn-danger-outline {
-    background: transparent; color: var(--ios-red); border: 2px solid var(--ios-red);
-    padding: 10px 20px; border-radius: var(--radius-sm); cursor: pointer;
-    display: flex; align-items: center; gap: 8px; transition: var(--transition);
+.btn-logout {
+    margin-top: auto; 
+    width: 100%; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    padding: 16px;
+    background: rgba(255, 59, 48, 0.1); 
+    color: var(--ios-red); 
+    border: none;
+    border-radius: var(--radius-md); 
+    cursor: pointer; 
+    transition: var(--transition);
 }
-.btn-danger-outline:hover { background: var(--ios-red); color: white; }
 
-/* --- FORMULARIOS --- */
-.form-type-selector { display: flex; background: rgba(0, 0, 0, 0.05); padding: 5px; border-radius: 16px; margin-bottom: 25px; gap: 5px; }
+/* --- BLOQUES DEL DASHBOARD (CONTENEDORES) --- */
+.glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    background: white; 
+    padding: 20px; 
+    border-radius: 22px;
+    border: 1px solid var(--glass-border);
+}
+
+.metric-icon { 
+    width: 55px; 
+    height: 55px; 
+    border-radius: 16px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 22px;
+}
+
+.metric-icon.blue { background: #e8f7fe; color: var(--ios-blue); }
+.metric-icon.green { background: #eafaf0; color: var(--ios-green); }
+.metric-icon.gold { background: #fdf6e7; color: var(--ios-gold); }
+.metric-icon.orange { background: #fff4e5; color: var(--ios-orange); }
+
+.metric-info h3 { font-size: 11px; color: #86868b; margin-bottom: 4px; }
+.metric-info .number { font-size: 26px; letter-spacing: -1px; }
+
+/* Ajuste Horizontal Grid Dual */
+.dashboard-grid-dual {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+/* ============================================================
+   RESPONSIVE TABLE TRANSFORMATION & ADMIN FORM
+   ============================================================ */
+
+/* ============================================================
+   BOOZ ADMIN - RESPONSIVE CARDS & FULL UI SYSTEM (2026)
+   ============================================================ */
+
+/* --- 1. ESTRUCTURA DE TABLA (MODO DESKTOP) --- */
+.admin-table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; /* Espacio entre tarjetas */
+}
+
+.admin-table th {
+    padding: 10px 20px;
+    font-size: 11px;
+    color: #8e8e93;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.admin-table td {
+    padding: 16px 20px;
+    background: #ffffff;
+    vertical-align: middle;
+    transition: var(--transition);
+}
+
+/* Efecto de fila unificada */
+.admin-table tr td:first-child { 
+    border-radius: 18px 0 0 18px; 
+    border-left: 1px solid var(--glass-border); 
+}
+.admin-table tr td:last-child { 
+    border-radius: 0 18px 18px 0; 
+    border-right: 1px solid var(--glass-border); 
+}
+.admin-table tr td { 
+    border-top: 1px solid var(--glass-border); 
+    border-bottom: 1px solid var(--glass-border); 
+}
+
+.admin-table tr:hover td {
+    background: #fbfbfd;
+    transform: scale(1.002);
+}
+
+/* --- 2. METAMORFOSIS A TARJETAS (MODO MOBILE < 768px) --- */
+@media (max-width: 768px) {
+    .admin-table thead {
+        display: none; /* Ocultamos cabeceras */
+    }
+
+    .admin-table, 
+    .admin-table tbody, 
+    .admin-table tr, 
+    .admin-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-table tr {
+        margin-bottom: 20px;
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        animation: slideUp 0.4s ease-out;
+    }
+
+    .admin-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border: none !important;
+        border-bottom: 1px solid #f2f2f7 !important;
+        text-align: right;
+    }
+
+    /* Penúltimo hijo para que no se vea doble borde */
+    .admin-table td:last-child {
+        border-bottom: none !important;
+        background: #fbfbfd;
+        padding: 18px 20px;
+    }
+
+    /* Inserción de etiquetas mediante data-label */
+    .admin-table td::before {
+        content: attr(data-label);
+        font-weight: 800;
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #aeaeb2;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+
+    /* Ajuste de Celda de Perfil en Tarjeta */
+    .user-profile-cell {
+        flex-direction: row; /* Mantenemos orden para legibilidad */
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .user-profile-cell .info {
+        text-align: right;
+    }
+
+    /* Acciones en Mobile: Botones grandes para pulgares */
+    .table-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-table-action, 
+    .btn-table-action-del {
+        justify-content: center;
+        padding: 12px;
+        font-size: 12px;
+    }
+}
+
+/* --- 3. ADMIN FORM & UI ELEMENTS (FALTANTES) --- */
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.input-group label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #8e8e93;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input-group input, 
+.input-group select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #d2d2d7;
+    background: #fbfbfd;
+    font-family: var(--font-main);
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.input-group input:focus {
+    border-color: var(--ios-blue);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Selector de tipo (Suelta / Mensual) */
+.form-type-selector {
+    display: flex;
+    background: #f2f2f7;
+    padding: 4px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+}
+
 .form-type-selector button {
-    flex: 1; padding: 14px; border: none; border-radius: 12px;
-    background: transparent; color: #86868b; font-weight: 800; cursor: pointer; transition: var(--transition);
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    background: transparent;
+    color: #8e8e93;
+    transition: 0.2s;
 }
-.form-type-selector button.active { background: white; color: var(--ios-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
-.input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.input-group label { font-size: 12px; color: #86868b; margin-left: 5px; }
-.input-group input, .input-group select {
-    background: white; border: 1px solid #e5e5e7;
-    padding: 16px; border-radius: var(--radius-md); font-family: var(--font-main);
-    font-weight: 700; transition: var(--transition);
+.form-type-selector button.active {
+    background: #fff;
+    color: var(--ios-dark);
+    box-shadow: var(--shadow-sm);
 }
-.input-group input:focus { border-color: var(--ios-blue); box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.15); outline: none; }
+
+/* --- 4. EXPEDIENTE SWAL (PARA EL POPUP) --- */
+.expediente-swal {
+    text-align: left;
+    padding: 10px;
+}
+
+.swal-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f5f5f7;
+    border-radius: 14px;
+}
+
+.swal-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--ios-blue);
+}
+
+.swal-section.warning h4 { color: var(--ios-red); }
+
+/* --- 5. SIDEBAR BOTTOM FIX --- */
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--ios-red);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* --- COMPONENTES DE CONTROL PREMIUM --- */
+
+.search-box-pro {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    padding: 14px 25px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    max-width: 500px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 25px;
+}
+
+.search-box-pro:focus-within {
+    max-width: 550px;
+    border-color: var(--ios-blue);
+    box-shadow: 0 10px 30px rgba(143, 217, 251, 0.15);
+}
+
+.search-box-pro input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 15px;
+    background: transparent;
+}
+
+.form-type-selector {
+    display: flex;
+    background: #f2f2f7;
+    padding: 5px;
+    border-radius: 18px;
+    margin-bottom: 30px;
+    gap: 5px;
+}
+
+.form-type-selector button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #86868b;
+    background: transparent;
+    font-size: 11px;
+}
+
+.form-type-selector button.active {
+    background: #fff;
+    color: var(--ios-blue);
+    box-shadow: var(--shadow-sm);
+}
 
 .btn-admin-submit {
-    background: var(--sidebar-bg); color: white; border: none;
-    padding: 18px; border-radius: var(--radius-md); font-weight: 800; width: 100%;
-    cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%;
+    background: var(--sidebar-bg);
+    color: white;
+    border: none;
+    padding: 22px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: var(--transition);
 }
-.btn-admin-submit:hover { transform: scale(1.02); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
 
-/* --- CLASES & BADGES --- */
-.clase-info-cell { display: flex; align-items: center; gap: 15px; }
-.color-indicator { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+.btn-admin-submit:hover {
+    background: #000;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
 
-.badge-tipo { padding: 6px 12px; border-radius: 10px; font-size: 11px; }
-.badge-tipo.LMV { background: rgba(0, 122, 255, 0.1); color: #007AFF; }
-.badge-tipo.MJ { background: rgba(169, 176, 144, 0.2); color: var(--ios-sage); }
-.badge-tipo.SUELTA { background: rgba(255, 159, 10, 0.1); color: #FF9F0A; }
+/* ============================================================
+   MOBILE OPTIMIZATION (THE RECONSTRUCTION)
+   ============================================================ */
 
-.mini-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 10px; margin-top: 5px; }
-.mini-badge.LMV { background: rgba(169, 176, 144, 0.2); color: var(--ios-sage); }
-.mini-badge.MJ { background: rgba(143, 217, 251, 0.2); color: #2d89b3; }
-.mini-badge.SUELTA { background: rgba(180, 144, 68, 0.15); color: var(--ios-gold); }
+@media (max-width: 1024px) {
+    .admin-sidebar { width: 80px; padding: 30px 10px; }
+    .admin-main { margin-left: 100px; padding: 25px; width: calc(100% - 100px); }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .admin-logo h2, .admin-nav button span { display: none; }
+}
 
-.status-badge, .status-pill { padding: 6px 16px; border-radius: 50px; font-size: 11px; }
-.status-badge.active { background: #EAF9EE; color: var(--ios-green); }
-.status-badge.inactive { background: #F2F2F7; color: #8e8e93; }
+@media (max-width: 768px) {
+    /* Dock de Navegación Estilo iOS */
+    .admin-sidebar {
+        width: 90%; 
+        height: 75px; 
+        bottom: 25px; 
+        left: 5%; 
+        margin: 0; 
+        border-radius: 24px;
+        flex-direction: row; 
+        top: auto; 
+        padding: 0 15px; 
+        justify-content: space-around;
+        align-items: center;
+        background: rgba(29, 29, 31, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
 
-/* --- STAFF & ACTIVIDAD --- */
-.staff-list-mini { max-height: 500px; overflow-y: auto; padding-right: 10px; }
-.staff-row, .staff-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-light); transition: var(--transition); }
-.staff-item:hover { background: rgba(255,255,255,0.4); border-radius: 14px; padding: 18px 10px; }
-.role-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
-.role-dot.admin { background: var(--ios-gold); }
-.role-dot.coach { background: var(--ios-blue); }
+    .admin-nav { 
+        flex-direction: row; 
+        width: 100%; 
+        justify-content: space-around; 
+        gap: 0; 
+    }
 
-.tx-item { display: flex; align-items: center; gap: 15px; padding: 16px; background: rgba(255,255,255,0.5); border-radius: 20px; margin-bottom: 12px; }
-.tx-icon { width: 45px; height: 45px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--ios-blue); }
-.tx-amount { font-weight: 800; color: var(--ios-green); }
+    .admin-nav button {
+        padding: 15px;
+        color: #fff;
+        opacity: 0.5;
+    }
 
-/* --- LOADER BOOZ --- */
-.loader-container { height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 25px; }
-.loader-booz { width: 80px; height: 80px; background: var(--ios-blue); border-radius: 50%; animation: liquid-pulse 2s infinite ease-in-out; box-shadow: 0 0 30px rgba(143, 217, 251, 0.4); position: relative; }
-.loader-booz::after { content: ""; width: 100%; height: 100%; border-radius: 50%; border: 3px solid transparent; border-top-color: rgba(255, 255, 255, 0.8); position: absolute; animation: spin 1s linear infinite; }
+    .admin-nav button.active {
+        opacity: 1;
+        background: transparent;
+        color: var(--ios-blue);
+        box-shadow: none;
+    }
 
-/* --- UX MOBILE: FLOATING ISLAND MENU --- */
+    .admin-main { 
+        margin-left: 0; 
+        width: 100%; 
+        padding: 20px 20px 120px; 
+    }
+
+    .metrics-grid { 
+        grid-template-columns: 1fr; 
+        gap: 15px; 
+    }
+
+    .dashboard-grid-dual { 
+        grid-template-columns: 1fr; 
+    }
+
+    .form-grid { 
+        grid-template-columns: 1fr; 
+    }
+
+    .btn-table-action span, 
+    .btn-table-action-del span { 
+        display: none; 
+    }
+
+    /* Mejora de Cards en Mobile */
+    .metric-card {
+        padding: 15px;
+    }
+}
+
+/* --- CLASES DE UTILIDAD / ESTADOS --- */
+.text-center { text-align: center; }
+.mt-20 { margin-top: 20px; }
+.mb-20 { margin-bottom: 20px; }
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 10px;
+}
+
+.status-badge.active { background: rgba(52, 199, 89, 0.1); color: var(--ios-green); }
+.status-badge.pending { background: rgba(255, 149, 0, 0.1); color: var(--ios-orange); }
+
+/* Animación de carga para el botón submit */
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* ============================================================
+   BOOZ ADMIN - CSS COMPLETO BASADO EN JSX (VERSION 2026)
+   ============================================================ */
+
+/* --- ESTRUCTURA SIDEBAR CORREGIDA --- */
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Clave para separar top de bottom */
+    padding: 40px 20px;
+    position: fixed;
+    height: calc(100vh - 40px);
+    margin: 20px;
+    border-radius: var(--radius-lg);
+    z-index: 1000;
+}
+
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* --- CLASES DE COMPONENTES DEL DASHBOARD (FALTANTES) --- */
+
+/* Contenedores de Actividad */
+.activity-card {
+    min-height: 300px;
+}
+
+.waiting-list-dashboard {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.waiting-item-mini {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--ios-orange);
+}
+
+.w-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.w-info strong { font-size: 14px; color: var(--ios-dark); }
+.w-info span { font-size: 11px; color: #8e8e93; text-transform: uppercase; }
+
+.w-actions {
+    display: flex;
+    gap: 15px;
+    font-size: 18px;
+}
+
+.w-actions button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.w-actions button:hover { transform: scale(1.2); }
+
+/* --- DIRECTORIO Y TABLAS --- */
+.user-profile-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-mini {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--ios-dark);
+}
+
+.waiting-tag {
+    background: rgba(255, 149, 0, 0.1);
+    color: var(--ios-orange);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* --- CALENDARIO Y CLASES --- */
+.clase-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-indicator {
+    width: 8px;
+    height: 35px;
+    border-radius: 4px;
+}
+
+.cupo-indicator {
+    font-family: var(--font-main);
+    font-weight: 800;
+    color: var(--ios-blue);
+    background: rgba(143, 217, 251, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.scrollable-table {
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+/* --- STAFF Y OTROS --- */
+.staff-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f2f2f7;
+}
+
+.staff-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.role-dot.admin { background: var(--ios-blue); }
+.role-dot.coach { background: var(--ios-sage); }
+
+/* --- FINANZAS --- */
+.sales-card h4 { font-size: 11px; color: #86868b; margin-bottom: 10px; }
+.sale-qty { font-size: 12px; font-weight: 600; }
+.sale-total { font-size: 20px; font-weight: 800; color: var(--ios-dark); }
+
+/* ============================================================
+   MOBILE FIX: DOCK INFERIOR (BOTON SALIR INCLUIDO)
+   ============================================================ */
 @media (max-width: 768px) {
     .admin-sidebar {
-        width: auto; height: 75px; margin: 0; padding: 0 25px;
-        position: fixed; bottom: 25px; left: 20px; right: 20px;
-        top: auto; flex-direction: row; background: rgba(29, 29, 31, 0.95);
-        backdrop-filter: blur(20px); border-radius: 40px; 
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+        width: 95%;
+        left: -2%;
+        bottom: 15px;
+        height: 70px;
+        flex-direction: row;
+        padding: 0 10px;
+        justify-content: space-between; /* Mantiene el nav y el salir separados */
     }
-    .sidebar-top { width: 100%; display: flex; align-items: center; }
-    .admin-logo, .sidebar-bottom, .admin-nav button span { display: none; }
-    .admin-nav { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
-    .admin-nav button { padding: 0; width: 55px; height: 55px; justify-content: center; border-radius: 50%; }
-    .admin-nav button.active { background: var(--ios-blue); transform: translateY(-8px); box-shadow: 0 10px 20px rgba(143, 217, 251, 0.4); }
-    .admin-nav button svg { font-size: 24px; }
 
-    .admin-main { margin-left: 0; width: 100%; padding: 30px 20px 130px; }
-    .metrics-grid { grid-template-columns: 1fr; }
-    .dashboard-grid-dual { grid-template-columns: 1fr; }
-    .search-box-pro { width: 100% !important; }
-    .fake-chart { padding: 20px; gap: 10px; }
-    .bar { width: 40px; }
+    .sidebar-top {
+        flex: 1;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .admin-nav {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .sidebar-bottom {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .btn-logout {
+        padding: 12px !important;
+        width: auto !important;
+        background: rgba(255, 59, 48, 0.2) !important;
+    }
+
+    .btn-logout span, .admin-nav button span {
+        display: none; /* Solo iconos en mobile */
+    }
+
+    .admin-logo { display: none; }
 }
 
-/* --- ANIMATIONS --- */
-@keyframes liquid-pulse {
-    0%, 100% { border-radius: 50%; transform: scale(1); }
-    33% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-    66% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+/* --- ANIMACIONES --- */
+.animate-ios-entry {
+    animation: fadeInSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-ios-entry { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Estilos de Modal Expediente (SweetAlert2) */
-.glass-card-swal { border-radius: var(--radius-lg) !important; background: rgba(255, 255, 255, 0.9) !important; backdrop-filter: blur(20px) !important; }
-.swal-section { margin-bottom: 15px; padding: 20px; background: #f5f5f7; border-radius: 20px; border: 1px solid #eee; }
-.swal-section.warning { border-left: 5px solid var(--ios-gold); background: rgba(180, 144, 68, 0.05); }
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   SISTEMA DE FORMULARIOS ADMIN (BOOZ HQ)
+   ============================================================ */
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+/* Contenedor de inputs con etiquetas flotantes simuladas */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.input-group label {
+    font-size: 11px;
+    color: #8e8e93;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 4px;
+}
+
+/* Estilo unificado para inputs, selects y textareas */
+.input-group input, 
+.input-group select, 
+.input-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: #f2f2f7; /* Gris sutil iOS */
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-main);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ios-dark);
+    transition: all 0.2s ease;
+}
+
+/* Focus State Premium */
+.input-group input:focus, 
+.input-group select:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(143, 217, 251, 0.15);
+}
+
+/* Placeholder sutil */
+.input-group input::placeholder {
+    color: #c7c7cc;
+    font-weight: 400;
+}
+
+/* Grid interna del formulario (Hora/Cupo) */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Específicos para Selects */
+.input-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238e8e93' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    cursor: pointer;
+}
+
+/* --- VARIANTES DE CONTENEDORES DE FORMULARIO --- */
+
+.form-container {
+    padding: 10px; /* Espacio interno para que el glass-card no ahogue el form */
+}
+
+/* Para la sección de Staff: Vista dividida */
+.split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Caja de información/lista junto al formulario */
+.info-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.staff-list-detailed {
+    margin-top: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Ajustes para inputs de tipo Date y Time (iOS Style) */
+input[type="date"], 
+input[type="time"] {
+    position: relative;
+}
+
+/* Mobile Collapse para el Formulario */
+@media (max-width: 768px) {
+    .form-grid, .split-view {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-form {
+        gap: 15px;
+    }
+
+    .input-group input, 
+    .input-group select {
+        padding: 16px; /* Touch target más grande para dedos */
+        font-size: 16px; /* Evita el auto-zoom de iOS Safari */
+    }
+}
+
+.footer{
+    visibility: hidden;
+}
