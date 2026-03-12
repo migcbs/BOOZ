@@ -142,9 +142,9 @@ app.post('/api/signup', async (req, res) => {
             contactoEmergencia, tipoSangre, alergias 
         } = req.body;
 
-        // Validación básica de seguridad
-        if (!nombre || !email || !password) {
-            return res.status(400).json({ error: "Nombre, email y password son obligatorios" });
+        // Validación crítica: Prisma no aceptará valores undefined en campos obligatorios
+        if (!nombre || !apellido || !email || !password) {
+            return res.status(400).json({ error: "Campos obligatorios faltantes" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -153,12 +153,12 @@ app.post('/api/signup', async (req, res) => {
             data: {
                 nombre,
                 apellido,
-                email: email.toLowerCase().trim(), // .trim() extra para seguridad
+                email: email.toLowerCase().trim(),
                 password: hashedPassword,
-                telefono,
-                contactoEmergencia, 
-                tipoSangre,         
-                alergias,           
+                telefono: telefono || null,
+                contactoEmergencia: contactoEmergencia || null,
+                tipoSangre: tipoSangre || null,
+                alergias: alergias || null,
                 role: 'cliente',
                 tipoCliente: 'REGULAR', 
                 creditosDisponibles: 0,
@@ -169,14 +169,8 @@ app.post('/api/signup', async (req, res) => {
         const { password: _, ...safeUser } = newUser;
         res.json({ success: true, user: safeUser });
     } catch (e) {
-        console.error("Error en Signup:", e);
-        
-        // Si el error es por email duplicado (código P2002 de Prisma)
-        if (e.code === 'P2002') {
-            return res.status(409).json({ error: "Este correo ya está registrado." });
-        }
-
-        res.status(500).json({ error: "Error interno en el servidor." });
+        console.error("Error detallado en Signup:", e);
+        res.status(500).json({ error: "Error interno, revisa los logs de Vercel." });
     }
 });
 
