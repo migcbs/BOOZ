@@ -142,7 +142,7 @@ app.post('/api/signup', async (req, res) => {
             contactoEmergencia, tipoSangre, alergias 
         } = req.body;
 
-        // Validación crítica: Prisma no aceptará valores undefined en campos obligatorios
+        // Validación crítica
         if (!nombre || !apellido || !email || !password) {
             return res.status(400).json({ error: "Campos obligatorios faltantes" });
         }
@@ -169,8 +169,15 @@ app.post('/api/signup', async (req, res) => {
         const { password: _, ...safeUser } = newUser;
         res.json({ success: true, user: safeUser });
     } catch (e) {
-        console.error("Error detallado en Signup:", e);
-        res.status(500).json({ error: "Error interno, revisa los logs de Vercel." });
+        // Log para Vercel (muy importante)
+        console.error("❌ ERROR DETALLADO EN SIGNUP:", e);
+
+        // Respuesta al frontend para debuggear rápido
+        res.status(500).json({ 
+            error: "Error interno en el servidor", 
+            detalle: e.message,
+            codigo: e.code 
+        });
     }
 });
 
