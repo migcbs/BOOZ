@@ -3,12 +3,13 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const { addDays, parseISO, getDay, startOfDay } = require('date-fns');
-const Stripe = require('stripe');
+const Stripe = require('stripe'); // Importamos la librería, pero NO inicializamos aún
 
-// 🟢 Adecuación: Inicialización perezosa para evitar que el servidor falle al arrancar
+// 🟢 Adecuación: Inicialización perezosa (Lazy loading)
+// Esto asegura que Stripe solo se cree cuando realmente se va a usar.
 const getStripe = () => {
     if (!process.env.STRIPE_SECRET_KEY) {
-        console.error("❌ CRÍTICO: STRIPE_SECRET_KEY no definida");
+        console.error("❌ CRÍTICO: STRIPE_SECRET_KEY no definida en Vercel");
         return null;
     }
     return new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -26,18 +27,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // 🟢 Adecuación de CORS
 app.use(cors({ 
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        const allowedOrigins = ['http://localhost:3000', 'https://booz.vercel.app'];
-        if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('CORS: Origen no permitido por Booz Studio'), false);
-        }
-        return callback(null, true);
-    }, 
+    origin: ['http://localhost:3000', 'https://booz.vercel.app'],
     credentials: true 
 }));
 
@@ -45,7 +38,7 @@ app.use(cors({
 // WEBHOOK DE STRIPE
 // ======================================================
 app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    const stripe = getStripe();
+    const stripe = getStripe(); // Inicialización perezosa
     if (!stripe) return res.status(500).send("Stripe no configurado");
     
     const sig = req.headers['stripe-signature'];
