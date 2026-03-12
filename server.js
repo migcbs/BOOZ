@@ -137,16 +137,28 @@ const COSTOS = {
 
 app.post('/api/signup', async (req, res) => {
     try {
-        const { nombre, apellido, email, password, telefono } = req.body;
+        const { 
+            nombre, apellido, email, password, telefono, 
+            contactoEmergencia, tipoSangre, alergias 
+        } = req.body;
+
+        // Validación básica de seguridad
+        if (!nombre || !email || !password) {
+            return res.status(400).json({ error: "Nombre, email y password son obligatorios" });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const newUser = await prisma.user.create({
             data: {
                 nombre,
                 apellido,
-                email: email.toLowerCase(),
+                email: email.toLowerCase().trim(), // .trim() extra para seguridad
                 password: hashedPassword,
                 telefono,
+                contactoEmergencia, 
+                tipoSangre,         
+                alergias,           
                 role: 'cliente',
                 tipoCliente: 'REGULAR', 
                 creditosDisponibles: 0,
@@ -158,7 +170,13 @@ app.post('/api/signup', async (req, res) => {
         res.json({ success: true, user: safeUser });
     } catch (e) {
         console.error("Error en Signup:", e);
-        res.status(500).json({ error: "El email ya está registrado o los datos son inválidos." });
+        
+        // Si el error es por email duplicado (código P2002 de Prisma)
+        if (e.code === 'P2002') {
+            return res.status(409).json({ error: "Este correo ya está registrado." });
+        }
+
+        res.status(500).json({ error: "Error interno en el servidor." });
     }
 });
 
