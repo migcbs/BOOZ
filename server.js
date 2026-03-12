@@ -589,7 +589,9 @@ app.post('/api/create-payment-intent', async (req, res) => {
 // ======================================================
 
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(3001, () => console.log('Local server running on port 3001'));
+    app.listen(3001, () => {
+        console.log('✅ Local server running on port 3001');
+    });
 }
 
 
