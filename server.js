@@ -588,10 +588,6 @@ app.post('/api/create-payment-intent', async (req, res) => {
 // 6. LANZAMIENTO
 // ======================================================
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`🚀 BOOZ BACKEND LOCAL EN PUERTO ${PORT}`);
-    });
-}
+
 
 module.exports = app;
