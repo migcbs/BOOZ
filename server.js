@@ -5,7 +5,7 @@ const cors = require('cors');
 const { addDays, parseISO, getDay, startOfDay } = require('date-fns');
 const Stripe = require('stripe');
 
-// 🟢 Adecuación: Inicialización perezosa para evitar que el servidor falle al arrancar si falta la clave
+// 🟢 Adecuación: Inicialización perezosa para evitar que el servidor falle al arrancar
 const getStripe = () => {
     if (!process.env.STRIPE_SECRET_KEY) {
         console.error("❌ CRÍTICO: STRIPE_SECRET_KEY no definida");
@@ -34,14 +34,16 @@ app.use(cors({
         if (!origin) return callback(null, true);
         const allowedOrigins = ['http://localhost:3000', 'https://booz.vercel.app'];
         if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('CORS: Origen no permitido'), false);
+            return callback(new Error('CORS: Origen no permitido por Booz Studio'), false);
         }
         return callback(null, true);
     }, 
     credentials: true 
 }));
 
+// ======================================================
 // WEBHOOK DE STRIPE
+// ======================================================
 app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const stripe = getStripe();
     if (!stripe) return res.status(500).send("Stripe no configurado");
@@ -94,7 +96,9 @@ app.use(express.json({ limit: '15mb' }));
 
 const COSTOS = { 'LMV': 1099, 'MJ': 699, 'SUELTA': 95 };
 
+// ======================================================
 // 1. AUTENTICACIÓN
+// ======================================================
 app.post('/api/signup', async (req, res) => {
     try {
         const { nombre, apellido, email, password, telefono, contactoEmergencia, tipoSangre, alergias } = req.body;
@@ -121,7 +125,9 @@ app.post('/api/login', async (req, res) => {
     } catch (e) { console.error("Error Login:", e); res.status(500).json({ message: "Error en servidor" }); }
 });
 
+// ======================================================
 // 2. COACH
+// ======================================================
 app.get('/api/coach/clientes', async (req, res) => {
     try { const clientes = await prisma.user.findMany({ where: { role: 'cliente' }, orderBy: { nombre: 'asc' } }); res.json(clientes); } catch (e) { res.status(500).json({ error: "Error" }); }
 });
@@ -142,7 +148,9 @@ app.delete('/api/coach/clientes/:id', async (req, res) => {
     try { await prisma.$transaction([ prisma.class.deleteMany({ where: { userId: req.params.id.trim() } }), prisma.user.delete({ where: { id: req.params.id.trim() } }) ]); res.json({ success: true }); } catch (e) { res.status(500).json({ error: "Error" }); }
 });
 
+// ======================================================
 // 3. CLASES
+// ======================================================
 app.get('/api/clases/disponibles', async (req, res) => {
     try { const clases = await prisma.class.findMany({ where: { userId: null }, orderBy: { fecha: 'asc' } }); res.json(clases || []); } catch (e) { res.status(500).json([]); }
 });
@@ -183,7 +191,9 @@ app.delete('/api/admin/clases-reset', async (req, res) => {
     try { await prisma.class.deleteMany({}); res.json({ success: true }); } catch (e) { res.status(500).json({ error: "Error" }); }
 });
 
+// ======================================================
 // 4. RESERVAS
+// ======================================================
 app.post('/api/reservas', async (req, res) => {
     try {
         const { email, claseId, metodoPago, numeroCamilla } = req.body;
@@ -208,7 +218,7 @@ app.post('/api/reservas/lista-espera', async (req, res) => {
         const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
         await prisma.waitingList.create({ data: { claseId, userId: user.id } });
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: "Error" }); }
+    } catch (e) { res.status(500).json({ error: "Error al anotar en lista" }); }
 });
 
 app.post('/api/reservas/cancelar', async (req, res) => {
@@ -227,7 +237,9 @@ app.get('/api/user/:email', async (req, res) => {
     } catch (e) { res.status(500).json({ error: "Error" }); }
 });
 
+// ======================================================
 // 5. ADMIN Y ESTADÍSTICAS
+// ======================================================
 app.get('/api/admin/usuarios-sistema', async (req, res) => {
     try { const u = await prisma.user.findMany({ include: { reservas: true } }); res.json(u); } catch (e) { res.status(500).json({ error: "Error" }); }
 });
@@ -244,6 +256,20 @@ app.get('/api/admin/stats-ventas', async (req, res) => {
         resumen.totalIngresos = (resumen.LMV * COSTOS.LMV) + (resumen.MJ * COSTOS.MJ) + (resumen.SUELTA * COSTOS.SUELTA);
         res.json(resumen);
     } catch (e) { res.status(500).json({ error: "Error" }); }
+});
+
+app.get('/api/admin/lista-espera', async (req, res) => {
+    try {
+        const lista = await prisma.waitingList.findMany({
+            include: { user: { select: { nombre: true, apellido: true, email: true, telefono: true } }, clase: { select: { nombre: true, fecha: true } } },
+            orderBy: { createdAt: 'asc' }
+        });
+        res.json(lista);
+    } catch (e) { res.status(500).json({ error: "Error" }); }
+});
+
+app.delete('/api/admin/lista-espera/:id', async (req, res) => {
+    try { await prisma.waitingList.delete({ where: { id: req.params.id } }); res.json({ success: true }); } catch (e) { res.status(500).json({ error: "No se pudo eliminar" }); }
 });
 
 // 6. STRIPE INTENT
