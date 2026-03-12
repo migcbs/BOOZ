@@ -588,6 +588,9 @@ app.post('/api/create-payment-intent', async (req, res) => {
 // 6. LANZAMIENTO
 // ======================================================
 
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3001, () => console.log('Local server running on port 3001'));
+}
 
 
 module.exports = app;
