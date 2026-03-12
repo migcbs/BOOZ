@@ -3,6 +3,8 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const { addDays, parseISO, getDay, startOfDay } = require('date-fns');
+const Stripe = require('stripe');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // 🟢 Adecuación para Prisma en Serverless (Vercel)
 let prisma;
@@ -34,6 +36,91 @@ app.use(cors({
     }, 
     credentials: true 
 }));
+
+// IMPORTANTE: Para el Webhook necesitamos el body en formato RAW.
+// Debes poner esta ruta ANTES de app.use(express.json())
+// ======================================================
+// WEBHOOK DE STRIPE (Actualizado para pagos de Billetera y Checkout)
+// ======================================================
+
+// 1. ENDPOINT: WEBHOOK (Debe ir antes de express.json())
+app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(
+            req.body, 
+            sig, 
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+    } catch (err) {
+        console.error(`❌ Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Manejo de Pago desde el Modal (Billetera / Recargas)
+    if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        const userEmail = paymentIntent.metadata.email || paymentIntent.receipt_email;
+        const monto = paymentIntent.amount / 100;
+
+        console.log(`💰 Pago exitoso (Billetera) de $${monto} para: ${userEmail}`);
+
+        try {
+            await prisma.user.update({
+                where: { email: userEmail.toLowerCase() },
+                data: {
+                    // Regla Booz: $95 MXN = 1 Crédito
+                    creditosDisponibles: { increment: Math.floor(monto / 95) }
+                }
+            });
+        } catch (error) {
+            console.error("Error al actualizar créditos:", error);
+        }
+    }
+
+    // Manejo de Pago desde Checkout (Planes fijos)
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const userEmail = session.customer_email;
+        const paqueteRef = session.metadata.paqueteRef;
+
+        try {
+            await prisma.user.update({
+                where: { email: userEmail.toLowerCase() },
+                data: {
+                    suscripcionActiva: true,
+                    tipoCliente: paqueteRef,
+                    creditosDisponibles: paqueteRef === 'SUELTA' ? { increment: 1 } : undefined
+                }
+            });
+        } catch (error) {
+            console.error("Error al actualizar plan:", error);
+        }
+    }
+
+    res.json({ received: true });
+});
+
+// 2. ENDPOINT: CREAR INTENCIÓN DE PAGO (Para el Modal)
+app.post('/api/create-payment-intent', async (req, res) => {
+    try {
+        const { monto, email } = req.body;
+        const amountInCents = Math.round(parseFloat(monto) * 100);
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amountInCents,
+            currency: 'mxn',
+            receipt_email: email,
+            metadata: { email, tipo: 'recarga_billetera' },
+        });
+
+        res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 app.use(express.json({ limit: '15mb' })); 
 
@@ -441,6 +528,40 @@ app.delete('/api/admin/lista-espera/:id', async (req, res) => {
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: "No se pudo eliminar el registro" });
+    }
+});
+
+// ======================================================
+// NUEVA SECCIÓN: STRIPE PAYMENT INTENT (Para pagos dentro del Modal)
+// ======================================================
+
+app.post('/api/create-payment-intent', async (req, res) => {
+    try {
+        const { monto, email } = req.body;
+
+        // Validar que el monto sea correcto (mínimo 50 MXN según tu lógica)
+        // Stripe requiere centavos, por eso multiplicamos por 100
+        const amountInCents = Math.round(parseFloat(monto) * 100);
+
+        if (amountInCents < 5000) { // 5000 centavos = 50 pesos
+            return res.status(400).json({ error: "El monto mínimo es de $50 MXN" });
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amountInCents,
+            currency: 'mxn',
+            receipt_email: email,
+            metadata: { 
+                email: email,
+                tipo: 'recarga_billetera' 
+            },
+        });
+
+        // Enviamos el secreto al frontend para que Stripe pueda finalizar el pago
+        res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (e) {
+        console.error("Error Stripe PaymentIntent:", e);
+        res.status(500).json({ error: e.message });
     }
 });
 
