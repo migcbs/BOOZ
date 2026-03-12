@@ -238,7 +238,7 @@ export default function Tienda({ isModal, onClose, userEmail }) {
                     
                     <div className="secure-footer">
                         <p className="secure-text">
-                            💳 Transacción protegida por cifrado de 256 bits
+                            💳 Transacción protegida por cifrado de 256 bits.
                         </p>
                     </div>
                 </form>
