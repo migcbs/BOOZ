@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import ProfileEditForm from './ProfileEditForm';
 import Tienda from './Tienda';
-import './Perfil.css';
+import './Styles.css';
 import authFetch from '../../authFetch';
 
 const getUpcomingBooking = (bookings) => {
@@ -169,10 +169,15 @@ export default function Perfil() {
     return (
         <div className="profile-page-container animate-ios-entry">
             {showTienda && (
-                <Tienda 
-                    isModal={showTienda} 
-                    onClose={() => setShowTienda(false)} 
-                    userEmail={fullUser.email} 
+                <Tienda
+                    isModal={showTienda}
+                    onClose={() => setShowTienda(false)}
+                    userEmail={fullUser.email}
+                    onCreditosActualizados={(nuevosCreditos) => {
+                        setFullUser(u => ({ ...u, creditosDisponibles: nuevosCreditos }));
+                        const stored = JSON.parse(localStorage.getItem('booz_user') || '{}');
+                        localStorage.setItem('booz_user', JSON.stringify({ ...stored, creditosDisponibles: nuevosCreditos }));
+                    }}
                 />
             )}
 
