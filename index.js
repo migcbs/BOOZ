@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
@@ -89,8 +88,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
             await prisma.user.update({
                 where: { email: userEmail.toLowerCase() },
                 data: {
-                    creditosDisponibles: { increment: Math.floor(monto / 95) },
-                    // Guardamos referencia del pago para auditoría
+                    creditosDisponibles: { increment: Math.floor(monto) }, // 1 crédito = $1 MXN
                     ultimoPagoStripeId: paymentIntent.id
                 }
             });
@@ -214,7 +212,17 @@ app.get('/api/me', verifyToken, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.user.id },
-            include: { reservas: { orderBy: { fecha: 'asc' } } }
+            include: {
+                reservas: {
+                    orderBy: { fecha: 'asc' },
+                    select: {
+                        id: true, nombre: true, fecha: true, paqueteRef: true,
+                        cupoMaximo: true, inscritos: true, color: true,
+                        imageUrl: true, tematica: true, descripcion: true,
+                        numeroCamilla: true, userId: true, createdAt: true
+                    }
+                }
+            }
         });
         if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
         const { password: _, ...safeUser } = user;
@@ -314,7 +322,14 @@ app.get('/api/clases/disponibles', async (req, res) => {
     try {
         const clases = await prisma.class.findMany({
             where: { userId: null },
-            orderBy: { fecha: 'asc' }
+            orderBy: { fecha: 'asc' },
+            select: {
+                id: true, nombre: true, tematica: true, descripcion: true,
+                paqueteRef: true, fecha: true, color: true, imageUrl: true,
+                cupoMaximo: true, inscritos: true, numeroCamilla: true,
+                userId: true, createdAt: true,
+                espera: { select: { id: true } }
+            }
         });
         res.json(clases || []);
     } catch (e) {
@@ -511,7 +526,17 @@ app.post('/api/reservas',
                 return await tx.user.update({
                     where: { id: user.id },
                     data: updateData,
-                    include: { reservas: { orderBy: { fecha: 'asc' } } }
+                    include: {
+                reservas: {
+                    orderBy: { fecha: 'asc' },
+                    select: {
+                        id: true, nombre: true, fecha: true, paqueteRef: true,
+                        cupoMaximo: true, inscritos: true, color: true,
+                        imageUrl: true, tematica: true, descripcion: true,
+                        numeroCamilla: true, userId: true, createdAt: true
+                    }
+                }
+            }
                 });
             });
 
@@ -567,7 +592,13 @@ app.post('/api/reservas/cancelar',
                 return res.status(403).json({ message: 'No puedes cancelar reservas de otros usuarios' });
             }
 
-            const reserva = await prisma.class.findUnique({ where: { id: reservaId } });
+            const reserva = await prisma.class.findUnique({
+                where: { id: reservaId },
+                select: {
+                    id: true, paqueteRef: true, userId: true,
+                    cupoMaximo: true, inscritos: true
+                }
+            });
             if (!reserva) return res.status(404).json({ message: 'Reserva no encontrada' });
             if (reserva.userId !== req.user.id && req.user.role === 'cliente') {
                 return res.status(403).json({ message: 'Esta reserva no te pertenece' });
@@ -631,7 +662,17 @@ app.get('/api/user/:email',
         try {
             const user = await prisma.user.findUnique({
                 where: { email: req.params.email.toLowerCase() },
-                include: { reservas: { orderBy: { fecha: 'asc' } } }
+                include: {
+                reservas: {
+                    orderBy: { fecha: 'asc' },
+                    select: {
+                        id: true, nombre: true, fecha: true, paqueteRef: true,
+                        cupoMaximo: true, inscritos: true, color: true,
+                        imageUrl: true, tematica: true, descripcion: true,
+                        numeroCamilla: true, userId: true, createdAt: true
+                    }
+                }
+            }
             });
             if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
             const { password: _, ...safeUser } = user;
@@ -677,7 +718,10 @@ app.get('/api/admin/stats-ventas',
     requireRole('admin'),
     async (req, res) => {
         try {
-            const reservas = await prisma.class.findMany({ where: { NOT: { userId: null } } });
+            const reservas = await prisma.class.findMany({
+                where: { NOT: { userId: null } },
+                select: { id: true, paqueteRef: true }
+            });
             const LMV    = reservas.filter(r => r.paqueteRef === 'LMV').length;
             const MJ     = reservas.filter(r => r.paqueteRef === 'MJ').length;
             const SUELTA = reservas.filter(r => r.paqueteRef === 'SUELTA').length;
@@ -704,8 +748,8 @@ app.get('/api/admin/stats-financieras',
             const todasReservas = await prisma.class.findMany({
                 where: { NOT: { userId: null } },
                 select: {
-                    id: true, fecha: true, paqueteRef: true,
-                    metodoPago: true, userId: true
+                    id: true, fecha: true, paqueteRef: true, userId: true
+                    // metodoPago excluido — columna pendiente de migración
                 }
             });
             console.log('[stats-financieras] paso 1 OK:', todasReservas.length);
@@ -748,7 +792,7 @@ app.get('/api/admin/stats-financieras',
                 const fin = new Date(ahora.getFullYear(), ahora.getMonth() - i + 1, 0);
                 const reservasMes = todasReservas.filter(r => {
                     const f = new Date(r.fecha);
-                    return f >= d && f <= fin && r.metodoPago !== 'CORTESIA';
+                    return f >= d && f <= fin && true /* sin filtro metodoPago */;
                 });
                 const ingreso = reservasMes.reduce((s, r) => s + (PRECIOS[r.paqueteRef] || 0), 0);
                 ingresosPorMes.push({
@@ -761,7 +805,7 @@ app.get('/api/admin/stats-financieras',
             // ── INGRESOS POR DÍA DE LA SEMANA ────────────────────────────────
             const diasNom = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             const porDia = Array(7).fill(0).map((_, i) => ({ dia: diasNom[i], ingreso: 0, count: 0 }));
-            todasReservas.filter(r => r.metodoPago !== 'CORTESIA').forEach(r => {
+            todasReservas.filter(r => true /* sin filtro metodoPago */).forEach(r => {
                 const d = new Date(r.fecha).getDay();
                 porDia[d].ingreso += PRECIOS[r.paqueteRef] || 0;
                 porDia[d].count++;
@@ -771,9 +815,9 @@ app.get('/api/admin/stats-financieras',
 
             // ── MIX DE PAQUETES (ingresos) ────────────────────────────────────
             const mixPaquetes = {
-                LMV:   todasReservas.filter(r => r.paqueteRef === 'LMV'   && r.metodoPago !== 'CORTESIA').length * PRECIOS.LMV,
-                MJ:    todasReservas.filter(r => r.paqueteRef === 'MJ'    && r.metodoPago !== 'CORTESIA').length * PRECIOS.MJ,
-                SUELTA:todasReservas.filter(r => r.paqueteRef === 'SUELTA' && r.metodoPago !== 'CORTESIA').length * PRECIOS.SUELTA,
+                LMV:   todasReservas.filter(r => r.paqueteRef === 'LMV'   && true /* sin filtro metodoPago */).length * PRECIOS.LMV,
+                MJ:    todasReservas.filter(r => r.paqueteRef === 'MJ'    && true /* sin filtro metodoPago */).length * PRECIOS.MJ,
+                SUELTA:todasReservas.filter(r => r.paqueteRef === 'SUELTA' && true /* sin filtro metodoPago */).length * PRECIOS.SUELTA,
             };
             const totalMix = mixPaquetes.LMV + mixPaquetes.MJ + mixPaquetes.SUELTA;
 
@@ -844,7 +888,7 @@ app.get('/api/admin/stats-financieras',
             // ── KPIs EJECUTIVOS ───────────────────────────────────────────────
             const totalClientes    = todosClientes.length;
             const activas          = todosClientes.filter(u => u.suscripcionActiva).length;
-            const totalReservas    = todasReservas.filter(r => r.metodoPago !== 'CORTESIA').length;
+            const totalReservas    = todasReservas.filter(r => true /* sin filtro metodoPago */).length;
             const totalIngresosEst = totalMix;
             const ltv              = activas > 0 ? Math.round(totalIngresosEst / activas) : 0;
             const asistenciaMes    = totalClientes > 0
