@@ -24,10 +24,22 @@ export default function Navbar() {
   const location  = useLocation();
   const navigate  = useNavigate();
 
-  // ✅ Leer rol desde booz_user (clave correcta)
-  const storedUser = localStorage.getItem("booz_user");
-  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  // ✅ Leer rol con useState — se actualiza en cada cambio de ruta
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const s = localStorage.getItem("booz_user");
+      return s ? JSON.parse(s) : null;
+    } catch { return null; }
+  });
   const role = currentUser?.role || "";
+
+  // Re-leer el usuario cada vez que cambia la ruta
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("booz_user");
+      setCurrentUser(s ? JSON.parse(s) : null);
+    } catch { setCurrentUser(null); }
+  }, [location.pathname]);
 
   const hideNavbar =
     location.pathname === "/login"     ||
