@@ -1,0 +1,334 @@
+/* ======================================================
+   WHATSAPP.CSS — BOOZ STUDIO 2026
+   ====================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+    --blue:        #8FD9FB;
+    --blue-dark:   #5BC4F5;
+    --blue-glow:   rgba(143, 217, 251, 0.25);
+    --sage:        #A9B090;
+    --red:         #FC7358;
+    --green-wa:    #25D366;
+    --green-wa-dk: #1FAF50;
+    --font:        "Nunito", sans-serif;
+    --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+    --transition:  all 0.35s var(--ease);
+    --radius-card: 28px;
+    --radius-inner:16px;
+    --shadow-sm:   0 4px 16px rgba(0,0,0,0.06);
+    --shadow-md:   0 12px 32px rgba(0,0,0,0.10);
+    --shadow-blue: 0 10px 28px rgba(143,217,251,0.25);
+}
+
+/* ======================================================
+   BOTÓN FLOTANTE
+   ====================================================== */
+.floating-whatsapp-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 58px;
+    height: 58px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(37,211,102,0.18), var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.floating-whatsapp-btn:hover {
+    transform: scale(1.1) rotate(8deg);
+    box-shadow: 0 14px 36px rgba(37,211,102,0.28);
+    border-color: rgba(37,211,102,0.2);
+}
+
+.floating-whatsapp-btn:active {
+    transform: scale(0.95);
+}
+
+/* ======================================================
+   OVERLAY
+   ====================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(29,29,31,0.50);
+    backdrop-filter: blur(8px) saturate(0.8);
+    -webkit-backdrop-filter: blur(8px) saturate(0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: overlayIn 0.25s ease both;
+}
+
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ======================================================
+   TARJETA MODAL
+   ====================================================== */
+.whatsapp-modal-card {
+    background: #fff;
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(143,217,251,0.15);
+    padding: 36px 30px 30px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    box-shadow: var(--shadow-md);
+    animation: modalPop 0.45s var(--ease) both;
+    font-family: var(--font);
+}
+
+/* Línea de acento verde WhatsApp en la parte superior */
+.whatsapp-modal-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-wa), transparent);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.93) translateY(20px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* ======================================================
+   BOTÓN CERRAR
+   ====================================================== */
+.btn-close-whatsapp-modal {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: #f2f2f7;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #8e8e93;
+    transition: var(--transition);
+}
+
+.btn-close-whatsapp-modal:hover {
+    background: var(--red);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* ======================================================
+   TÍTULO Y SUBTÍTULO
+   ====================================================== */
+.whatsapp-modal-card h3 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    margin: 0 0 6px;
+    font-family: var(--font);
+}
+
+.modal-subtitle {
+    font-size: 0.85rem;
+    color: #8e8e93;
+    font-weight: 600;
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+/* ======================================================
+   GRUPOS DE CAMPO
+   ====================================================== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    font-size: 0.68rem;
+    font-weight: 900;
+    color: #8e8e93;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-left: 4px;
+}
+
+/* ======================================================
+   INPUTS
+   ====================================================== */
+.input-field {
+    width: 100%;
+    background: #f7f8fa;
+    border: 1.5px solid transparent;
+    padding: 13px 16px;
+    border-radius: var(--radius-inner);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1d1d1f;
+    transition: var(--transition);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}
+
+.input-field::placeholder {
+    color: #c7c7cc;
+    font-weight: 500;
+}
+
+.input-field:focus {
+    background: #fff;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(143,217,251,0.12);
+    transform: translateY(-1px);
+}
+
+/* Select con flecha personalizada */
+.input-field select,
+select.input-field {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238FD9FB' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 42px;
+    cursor: pointer;
+}
+
+/* Campo condicional con animación de entrada */
+.form-group:last-of-type {
+    animation: fadeField 0.3s var(--ease) both;
+}
+
+@keyframes fadeField {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ======================================================
+   BOTONES DE ACCIÓN
+   ====================================================== */
+.modal-actions-whatsapp {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Botón enviar WhatsApp */
+.btn-whatsapp-send {
+    width: 100%;
+    background: linear-gradient(135deg, var(--green-wa), var(--green-wa-dk));
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-inner);
+    font-family: var(--font);
+    font-weight: 900;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    box-shadow: 0 10px 28px rgba(37,211,102,0.25);
+    min-height: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de barrido al hover */
+.btn-whatsapp-send::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-100%);
+    transition: transform 0.4s var(--ease);
+}
+
+.btn-whatsapp-send:hover::after  { transform: translateX(0); }
+.btn-whatsapp-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(37,211,102,0.35);
+}
+.btn-whatsapp-send:active { transform: scale(0.97); }
+
+/* Botón cerrar secundario */
+.btn-cerrar-modal-whatsapp {
+    width: 100%;
+    background: transparent;
+    color: #8e8e93;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-inner);
+    font-family: var(--font);
+    font-weight: 800;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 44px;
+}
+
+.btn-cerrar-modal-whatsapp:hover {
+    color: var(--red);
+    background: rgba(252,115,88,0.06);
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+@media (max-width: 600px) {
+    .floating-whatsapp-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 52px;
+        height: 52px;
+    }
+
+    .modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .whatsapp-modal-card {
+        border-radius: 28px 28px 0 0;
+        max-width: 100%;
+        padding: 28px 22px 32px;
+        animation: slideSheet 0.4s var(--ease) both;
+    }
+
+    .whatsapp-modal-card::before {
+        border-radius: 28px 28px 0 0;
+    }
+
+    @keyframes slideSheet {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0);    }
+    }
+}

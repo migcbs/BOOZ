@@ -1,27 +1,33 @@
+/* ======================================================
+   RESERVA.CSS — BOOZ STUDIO 2026
+   Modal de reserva homologado a la paleta Booz
+   ====================================================== */
+
 :root {
-    --ios-blue: #8FD9FB;
-    --ios-sage: #A9B090;
-    --ios-gold: #B49044;
-    --ios-red: #FC7358;
-    --ios-green: #34C759;
-    --glass-bg: rgba(255, 255, 255, 1); 
-    --glass-border: rgba(255, 255, 255, 1);
-    --font-main: "Nunito", sans-serif;
-    --shadow-premium: 0 40px 80px rgba(0, 0, 0, 0.2);
+    --blue:        #8FD9FB;
+    --blue-dark:   #5BC4F5;
+    --blue-glow:   rgba(143,217,251,0.25);
+    --sage:        #A9B090;
+    --red:         #FC7358;
+    --green:       #34C759;
+    --font:        "Nunito", sans-serif;
+    --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+    --transition:  all 0.35s var(--ease);
+    --radius-card: 32px;
+    --radius-inner:18px;
+    --shadow-lg:   0 40px 80px rgba(0,0,0,0.18);
+    --shadow-blue: 0 10px 28px rgba(143,217,251,0.28);
 }
 
-/* ----------------------------------- */
-/* OVERLAY Y ENTRADA                   */
-/* ----------------------------------- */
+/* ======================================================
+   OVERLAY
+   ====================================================== */
 .popup-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    inset: 0;
+    background: rgba(29, 29, 31, 0.55);
+    backdrop-filter: blur(8px) saturate(0.8);
+    -webkit-backdrop-filter: blur(8px) saturate(0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -29,51 +35,39 @@
     padding: 20px;
 }
 
+/* ======================================================
+   TARJETA MODAL
+   ====================================================== */
 .popup-card-solid {
-    background: #ffffff;
+    background: #fff;
     width: 100%;
-    max-width: 500px;
+    max-width: 480px;
     max-height: 90vh;
-    border-radius: 35px;
+    border-radius: var(--radius-card);
     position: relative;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-premium);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
+    border: 1px solid rgba(143,217,251,0.15);
 }
 
-/* ----------------------------------- */
-/* HEADER DEL MODAL                    */
-/* ----------------------------------- */
-.modal-header-solid {
-    padding: 40px 30px 20px;
-    text-align: center;
+.animate-ios-pop {
+    animation: iosPop 0.5s var(--ease) both;
 }
 
-.date-badge-mini {
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    color: var(--ios-blue);
-    background: rgba(143, 217, 251, 0.1);
-    padding: 6px 15px;
-    border-radius: 50px;
-    display: inline-block;
-    margin-bottom: 15px;
+@keyframes iosPop {
+    from { opacity: 0; transform: scale(0.92) translateY(30px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
-.modal-header-solid h2 {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #1d1d1f;
-    margin: 0;
-    text-transform: capitalize;
-}
-
+/* ======================================================
+   BOTÓN CERRAR
+   ====================================================== */
 .close-x-btn {
     position: absolute;
-    top: 25px;
-    right: 25px;
+    top: 20px;
+    right: 20px;
     background: #f2f2f7;
     border: none;
     width: 32px;
@@ -84,245 +78,418 @@
     justify-content: center;
     cursor: pointer;
     color: #8e8e93;
-    transition: all 0.2s;
+    transition: var(--transition);
     z-index: 10;
 }
 
 .close-x-btn:hover {
-    background: #e5e5e7;
-    color: #1d1d1f;
+    background: var(--red);
+    color: #fff;
+    transform: rotate(90deg);
 }
 
-/* ----------------------------------- */
-/* CUERPO SCRROLLEABLE                 */
-/* ----------------------------------- */
+/* ======================================================
+   HEADER
+   ====================================================== */
+.modal-header-solid {
+    padding: 36px 28px 18px;
+    text-align: center;
+    background: linear-gradient(160deg, #f8fdff, #fff);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.date-badge-mini {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--blue-dark);
+    background: rgba(143,217,251,0.12);
+    border: 1px solid rgba(143,217,251,0.25);
+    padding: 5px 14px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.modal-header-solid h2 {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #1d1d1f;
+    margin: 0 0 10px;
+    text-transform: capitalize;
+}
+
+/* ✅ Créditos en el header */
+.user-credits-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #8e8e93;
+    background: #f7f8fa;
+    padding: 5px 12px;
+    border-radius: 50px;
+}
+
+.user-credits-mini svg { color: var(--blue); }
+
+/* ======================================================
+   BODY SCROLLEABLE
+   ====================================================== */
 .modal-body-scroll {
-    padding: 0 30px 30px;
+    padding: 20px 24px 10px;
     overflow-y: auto;
     flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: #e5e5ea transparent;
 }
 
+.modal-body-scroll::-webkit-scrollbar       { width: 4px; }
+.modal-body-scroll::-webkit-scrollbar-thumb { background: #e5e5ea; border-radius: 4px; }
+
 .section-title {
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: #1d1d1f;
-    margin: 25px 0 15px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 20px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title svg { color: var(--blue); }
+
+/* Loading dentro del modal */
+.modal-loading {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 20px 0;
+    color: var(--sage);
+    font-size: 0.85rem;
+    font-weight: 700;
 }
 
-.section-title svg {
-    color: var(--ios-blue);
+/* Estado vacío */
+.empty-modal-state {
+    text-align: center;
+    padding: 24px;
+    color: #8e8e93;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: #f7f8fa;
+    border-radius: var(--radius-inner);
 }
 
-/* ----------------------------------- */
-/* FILAS DE SELECCIÓN (STACKS)         */
-/* ----------------------------------- */
-.clases-stack, .paquetes-stack {
+/* ======================================================
+   LISTA DE CLASES
+   ====================================================== */
+.clases-stack {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
-.clase-row, .paquete-row {
-    background: #f5f5f7;
-    padding: 18px 22px;
-    border-radius: 20px;
+.clase-row {
+    background: #f7f8fa;
+    padding: 16px 18px;
+    border-radius: var(--radius-inner);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid transparent;
+    transition: var(--transition);
 }
 
-.clase-row:hover, .paquete-row:hover {
-    background: #ebebed;
-    transform: scale(1.02);
+.clase-row:hover:not(.full) {
+    background: #fff;
+    border-color: rgba(143,217,251,0.3);
+    box-shadow: var(--shadow-blue);
+    transform: translateX(3px);
 }
 
-.clase-row.selected, .paquete-row.selected {
-    background: #ffffff;
-    border-color: var(--ios-blue);
-    box-shadow: 0 10px 25px rgba(143, 217, 251, 0.2);
+.clase-row.selected {
+    background: #fff;
+    border-color: var(--blue);
+    box-shadow: var(--shadow-blue);
+}
+
+.clase-row.full {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Dot de color de la clase */
+.clase-color-dot {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(143,217,251,0.4);
+}
+
+.clase-info-main {
+    flex: 1;
+    min-width: 0;
 }
 
 .clase-info-main strong {
     display: block;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: #1d1d1f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tematica-txt {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    color: #8e8e93;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.clase-time {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--blue);
+    flex-shrink: 0;
+}
+
+/* ======================================================
+   CAMILLAS
+   ====================================================== */
+.camilla-section {
+    animation: fadeUp 0.3s var(--ease) both;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}
+
+.camilla-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.camilla-node {
+    height: 52px;
+    border-radius: 14px;
+    border: 1.5px solid #e5e5ea;
+    background: #fff;
+    font-family: var(--font);
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.camilla-node:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    transform: scale(1.05);
+}
+
+.camilla-node.active {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    border-color: var(--blue);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-blue);
+}
+
+/* ======================================================
+   ESTADO DE PLAN / PAGO
+   ====================================================== */
+.active-plan-status {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(143,217,251,0.07);
+    border: 1px dashed rgba(143,217,251,0.4);
+    border-radius: var(--radius-inner);
+    padding: 18px;
+}
+
+.active-plan-status strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #1d1d1f;
+}
+
+.active-plan-status p {
+    margin: 3px 0 0;
+    font-size: 0.78rem;
     color: #8e8e93;
     font-weight: 600;
 }
 
-.clase-time, .pkg-price-tag {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--ios-blue);
-}
-
-/* ----------------------------------- */
-/* CAMILLAS (GRID)                     */
-/* ----------------------------------- */
-.camilla-selector-grid {
+/* Opciones de pago */
+.payment-options-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 10px;
 }
 
-.camilla-node {
-    height: 50px;
-    border-radius: 15px;
-    border: 1px solid #e5e5e7;
-    background: white;
-    font-weight: 800;
-    color: #1d1d1f;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.camilla-node:hover {
-    border-color: var(--ios-blue);
-}
-
-.camilla-node.active {
-    background: var(--ios-blue);
-    color: white;
-    border-color: var(--ios-blue);
-    transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(143, 217, 251, 0.4);
-}
-
-/* ----------------------------------- */
-/* STATUS PLAN ACTIVO                  */
-/* ----------------------------------- */
-.active-plan-status {
-    background: rgba(52, 199, 89, 0.1); /* Verde iOS sutil */
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px dashed var(--ios-green);
-}
-
-.active-info {
+.pay-card {
+    background: #f7f8fa;
+    padding: 18px 14px;
+    border-radius: var(--radius-inner);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: var(--transition);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #555;
+    text-align: center;
 }
 
-.active-info strong {
-    color: #1d1d1f;
-    display: block;
+.pay-card svg { color: var(--sage); transition: var(--transition); }
+
+.pay-card:hover {
+    background: #fff;
+    border-color: rgba(143,217,251,0.3);
+    transform: translateY(-2px);
 }
 
-.active-info p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #8e8e93;
+.pay-card.active {
+    background: #fff;
+    border-color: var(--blue);
+    box-shadow: var(--shadow-blue);
+    color: var(--blue-dark);
 }
 
-/* ----------------------------------- */
-/* FOOTER Y BOTÓN                      */
-/* ----------------------------------- */
+.pay-card.active svg { color: var(--blue); }
+
+/* ======================================================
+   FOOTER
+   ====================================================== */
 .modal-footer-solid {
-    padding: 20px 30px 40px;
-    background: white;
+    padding: 16px 24px 28px;
+    background: #fff;
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
 
 .btn-primary-booz {
     width: 100%;
-    padding: 18px;
-    border-radius: 20px;
+    padding: 17px;
+    border-radius: var(--radius-inner);
     border: none;
-    background: #8FD9FB; /* Negro Apple */
-    color: white;
-    font-weight: 800;
-    font-size: 1rem;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    font-family: var(--font);
+    font-weight: 900;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: var(--transition);
+    box-shadow: var(--shadow-blue);
+    position: relative;
+    overflow: hidden;
 }
 
-.btn-primary-booz:hover:not(:disabled) {
-    background: var(--ios-blue);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(143, 217, 251, 0.4);
+.btn-primary-booz::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-100%);
+    transition: transform 0.4s var(--ease);
 }
+
+.btn-primary-booz:hover:not(:disabled)::after { transform: translateX(0); }
+.btn-primary-booz:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(143,217,251,0.40);
+}
+
+.btn-primary-booz:active:not(:disabled) { transform: scale(0.98); }
 
 .btn-primary-booz:disabled {
-    background: #e5e5e7;
+    background: #e5e5ea;
     color: #aeaeb2;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
-/* ----------------------------------- */
-/* ANIMACIONES                         */
-/* ----------------------------------- */
-.animate-ios-pop {
-    animation: iosPop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
-}
-
-@keyframes iosPop {
-    from { opacity: 0; transform: scale(0.8) translateY(50px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.animate-ios-entry {
-    animation: fadeInSlide 0.4s ease-out;
-}
-
-@keyframes fadeInSlide {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ----------------------------------- */
-/* RESPONSIVE                          */
-/* ----------------------------------- */
-@media (max-width: 600px) {
-    .popup-card-solid {
-        max-height: 100vh;
-        border-radius: 30px 30px 0 0;
-        position: fixed;
-        bottom: 0;
-    }
-    
-    .popup-overlay {
-        align-items: flex-end;
-        padding: 0;
-    }
-}
-
+/* Lista de espera */
 .btn-primary-booz.waitlist-mode {
-    background: #FFB347; /* Un naranja suave estilo iOS para precaución/espera */
-    color: white;
+    background: linear-gradient(135deg, #FFB347, #FF9500);
+    box-shadow: 0 10px 28px rgba(255,149,0,0.25);
 }
 
-.payment-options-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+@media (max-width: 600px) {
+    .popup-overlay  { padding: 0; align-items: flex-end; }
+
+    .popup-card-solid {
+        max-height: 93vh;
+        border-radius: 30px 30px 0 0;
+        /* ✅ Sheet desde abajo en móvil */
+        animation: slideSheet 0.45s var(--ease) both;
+    }
+
+    @keyframes slideSheet {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0);    }
+    }
+
+    .camilla-selector-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .modal-header-solid { padding: 28px 22px 16px; }
+    .modal-body-scroll  { padding: 16px 18px 8px; }
+    .modal-footer-solid { padding: 14px 18px 24px; }
 }
 
-.pay-card {
-    background: #f5f5f7;
-    padding: 20px;
-    border-radius: 20px;
+/* ======================================================
+   FLYER DE CLASE EN EL POPUP
+   ====================================================== */
+.popup-flyer {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+.popup-flyer-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    animation: zoomIn 0.6s var(--ease) both;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(1.05); opacity: 0.7; }
+    to   { transform: scale(1);    opacity: 1;   }
+}
+
+.popup-flyer-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.pay-card.active {
-    border-color: #8FD9FB;
-    background: white;
-    box-shadow: 0 10px 20px rgba(143, 217, 251, 0.2);
+    justify-content: flex-end;
+    padding: 20px 24px;
 }

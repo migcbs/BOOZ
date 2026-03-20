@@ -1,0 +1,382 @@
+/* ======================================================
+   TIENDA.CSS — BOOZ STUDIO 2026
+   Modal de recarga de billetera
+   ====================================================== */
+
+:root {
+    --blue:       #8FD9FB;
+    --blue-dark:  #5BC4F5;
+    --red:        #FC7358;
+    --green:      #34C759;
+    --orange:     #FF9500;
+    --dark:       #1d1d1f;
+    --muted:      #8e8e93;
+    --font:       "Nunito", sans-serif;
+    --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ======================================================
+   OVERLAY
+   ====================================================== */
+.tienda-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(29,29,31,0.55);
+    backdrop-filter: blur(8px) saturate(0.8);
+    -webkit-backdrop-filter: blur(8px) saturate(0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+    animation: tiendaOverlayIn 0.25s ease both;
+}
+
+@keyframes tiendaOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ======================================================
+   MODAL
+   ====================================================== */
+.tienda-modal {
+    background: #fff;
+    border-radius: 28px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.18);
+    border: 1px solid rgba(143,217,251,0.15);
+    animation: tiendaPop 0.4s var(--ease) both;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: #e5e5ea transparent;
+}
+
+.tienda-modal::-webkit-scrollbar       { width: 4px; }
+.tienda-modal::-webkit-scrollbar-thumb { background: #e5e5ea; border-radius: 4px; }
+
+@keyframes tiendaPop {
+    from { opacity: 0; transform: scale(0.94) translateY(20px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+.tienda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 0;
+    margin-bottom: 6px;
+}
+
+.tienda-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--dark);
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    margin: 0;
+}
+
+.tienda-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #f2f2f7;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+    font-size: 0.85rem;
+}
+
+.tienda-close:hover {
+    background: var(--red);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* ======================================================
+   BODY
+   ====================================================== */
+.tienda-body {
+    padding: 18px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.tienda-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ======================================================
+   MONTOS RÁPIDOS
+   ====================================================== */
+.tienda-montos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.tienda-monto-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 8px 14px;
+    background: #f7f8fa;
+    border: 1.5px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+    font-family: var(--font);
+}
+
+.tienda-monto-btn:hover {
+    border-color: rgba(143,217,251,0.3);
+    background: rgba(143,217,251,0.05);
+    transform: translateY(-2px);
+}
+
+.tienda-monto-btn.active {
+    border-color: var(--blue);
+    background: rgba(143,217,251,0.08);
+    box-shadow: 0 6px 18px rgba(143,217,251,0.20);
+}
+
+.tienda-monto-valor {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--dark);
+    letter-spacing: -0.5px;
+}
+
+.tienda-monto-btn.active .tienda-monto-valor { color: var(--blue); }
+
+.tienda-monto-sub {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+/* Badge popular */
+.tienda-popular-badge {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--orange);
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font);
+}
+
+/* ======================================================
+   MONTO PERSONALIZADO
+   ====================================================== */
+.tienda-custom { display: flex; flex-direction: column; gap: 7px; }
+
+.tienda-label {
+    font-size: 0.67rem;
+    font-weight: 900;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.tienda-custom-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f7f8fa;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.3s var(--ease);
+}
+
+.tienda-custom-input-wrapper:focus-within {
+    background: #fff;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(143,217,251,0.10);
+}
+
+.tienda-peso-sign {
+    padding: 0 4px 0 16px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--blue);
+    font-family: var(--font);
+}
+
+.tienda-custom-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 13px 8px;
+    font-family: var(--font);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark);
+    outline: none;
+}
+
+.tienda-custom-input::-webkit-outer-spin-button,
+.tienda-custom-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.tienda-mxn-label {
+    padding: 0 16px 0 4px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-family: var(--font);
+}
+
+/* ======================================================
+   RESUMEN
+   ====================================================== */
+.tienda-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(143,217,251,0.06);
+    border: 1px solid rgba(143,217,251,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    animation: fadeIn 0.3s ease both;
+    font-family: var(--font);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.tienda-resumen span:first-child {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.tienda-resumen-monto {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: var(--blue);
+}
+
+/* ======================================================
+   BOTÓN CONTINUAR
+   ====================================================== */
+.tienda-btn-continuar {
+    width: 100%;
+    padding: 16px;
+    background: #e5e5ea;
+    border: none;
+    border-radius: 16px;
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #aeaeb2;
+    cursor: not-allowed;
+    transition: all 0.3s var(--ease);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tienda-btn-continuar.active {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(143,217,251,0.30);
+}
+
+.tienda-btn-continuar.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(143,217,251,0.40);
+}
+
+/* ======================================================
+   BOTÓN VOLVER
+   ====================================================== */
+.tienda-back-btn {
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-family: var(--font);
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    align-self: flex-start;
+    transition: all 0.2s ease;
+}
+
+.tienda-back-btn:hover { opacity: 0.7; }
+
+/* ======================================================
+   LOADING OVERLAY
+   ====================================================== */
+.tienda-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.90);
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-family: var(--font);
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.tienda-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e5e5ea;
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: tiendaSpin 0.8s linear infinite;
+}
+
+@keyframes tiendaSpin { to { transform: rotate(360deg); } }
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+@media (max-width: 600px) {
+    .tienda-overlay { padding: 0; align-items: flex-end; }
+    .tienda-modal {
+        border-radius: 24px 24px 0 0;
+        max-height: 95vh;
+        animation: tiendaSheet 0.4s var(--ease) both;
+    }
+    @keyframes tiendaSheet {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+    }
+    .tienda-montos-grid { grid-template-columns: repeat(2, 1fr); }
+}

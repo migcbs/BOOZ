@@ -1,0 +1,264 @@
+/* ======================================================
+   STRIPE PAYMENT FORM — BOOZ STUDIO 2026
+   ====================================================== */
+
+:root {
+    --blue:       #8FD9FB;
+    --blue-dark:  #5BC4F5;
+    --red:        #FC7358;
+    --green:      #34C759;
+    --dark:       #1d1d1f;
+    --muted:      #8e8e93;
+    --font:       "Nunito", sans-serif;
+    --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    --transition: all 0.3s var(--ease);
+}
+
+/* ======================================================
+   FORMULARIO
+   ====================================================== */
+.spf-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-family: var(--font);
+}
+
+/* ======================================================
+   RESUMEN DEL PAGO
+   ====================================================== */
+.spf-summary {
+    background: rgba(143,217,251,0.06);
+    border: 1px solid rgba(143,217,251,0.2);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spf-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.spf-summary-equal {
+    padding-top: 8px;
+    border-top: 1px solid rgba(143,217,251,0.2);
+    font-weight: 700;
+}
+
+.spf-summary-monto {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--blue);
+    letter-spacing: -0.5px;
+}
+
+.spf-credits-badge {
+    background: var(--blue);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.spf-rate-note {
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ======================================================
+   CAMPO DE TARJETA
+   ====================================================== */
+.spf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.spf-label {
+    font-size: 0.67rem;
+    font-weight: 900;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.spf-card-wrapper {
+    padding: 14px 16px;
+    background: #f7f8fa;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    transition: var(--transition);
+}
+
+.spf-card-wrapper.ready {
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(143,217,251,0.10);
+}
+
+/* ======================================================
+   ERROR
+   ====================================================== */
+.spf-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(252,115,88,0.06);
+    border: 1px solid rgba(252,115,88,0.2);
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--red);
+}
+
+/* ======================================================
+   SEGURIDAD
+   ====================================================== */
+.spf-secure {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: center;
+    justify-content: center;
+}
+
+/* ======================================================
+   BOTONES
+   ====================================================== */
+.spf-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.spf-btn-cancel {
+    flex: 1;
+    padding: 14px;
+    background: transparent;
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font);
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--muted);
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.spf-btn-cancel:hover { background: #f2f2f7; color: var(--dark); }
+
+.spf-btn-pay {
+    flex: 2;
+    padding: 14px;
+    background: #e5e5ea;
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font);
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #aeaeb2;
+    cursor: not-allowed;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.spf-btn-pay.ready {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(143,217,251,0.30);
+}
+
+.spf-btn-pay.ready:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(143,217,251,0.40);
+}
+
+.spf-btn-pay:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* Spinner */
+.spf-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spf-spin 0.7s linear infinite;
+}
+
+@keyframes spf-spin { to { transform: rotate(360deg); } }
+
+/* ======================================================
+   ESTADO DE ÉXITO
+   ====================================================== */
+.spf-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 16px;
+    text-align: center;
+    font-family: var(--font);
+    animation: spf-pop 0.5s var(--ease) both;
+}
+
+@keyframes spf-pop {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.spf-success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(52,199,89,0.12);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.spf-success h3 {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--dark);
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.spf-success p {
+    font-size: 0.9rem;
+    color: var(--dark);
+    margin: 0;
+    font-weight: 600;
+}
+
+.spf-success strong { color: var(--blue); }
+
+.spf-success-sub {
+    font-size: 0.75rem !important;
+    color: var(--muted) !important;
+    font-weight: 500 !important;
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // Añadimos FaInstagram
 import { FaSave, FaTimes, FaCamera, FaUserCircle, FaStethoscope, FaInstagram } from 'react-icons/fa';
-import './Styles.css';
+import './Perfil.css';
 
 export default function ProfileEditForm({ initialData, onSave, onCancel }) {
     const [form, setForm] = useState({

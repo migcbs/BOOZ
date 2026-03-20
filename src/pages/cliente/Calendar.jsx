@@ -1,38 +1,34 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { startOfMonth, startOfWeek, addDays, format, isSameMonth, isToday, getDay } from "date-fns";
 import { es } from 'date-fns/locale';
-import { FaChevronLeft, FaChevronRight, FaCalendarCheck } from "react-icons/fa"; 
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ReservaPopup from "./ReservaPopup";
 import "./Calendar.css";
-// 🟢 IMPORTACIÓN DINÁMICA (Ajustada a 2 niveles si estás en src/pages/cliente)
-import API_BASE_URL from '../../apiConfig'; 
+import API_BASE_URL from '../../apiConfig';
 
 export default function CalendarPage() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [weekOffset, setWeekOffset] = useState(0); 
-  const [userCredits, setUserCredits] = useState(0);
-  const [availability, setAvailability] = useState({}); 
+  const [currentDate, setCurrentDate]     = useState(new Date());
+  const [isMobile, setIsMobile]           = useState(window.innerWidth <= 768);
+  const [weekOffset, setWeekOffset]       = useState(0);
+  const [userCredits, setUserCredits]     = useState(0);
+  const [availability, setAvailability]   = useState({});
   const [selectedDayData, setSelectedDayData] = useState(null);
+  const [loading, setLoading]             = useState(true);
 
+  // ✅ CORRECCIÓN: clave booz_user
   const fetchUserCredits = useCallback(() => {
-    // 🟢 Agregamos un try-catch o validación para evitar errores de null
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("booz_user");
     if (storedUser) {
-        const user = JSON.parse(storedUser);
-        setUserCredits(user?.creditosDisponibles || 0);
+      const user = JSON.parse(storedUser);
+      setUserCredits(user?.creditosDisponibles || 0);
     }
   }, []);
 
   const loadAvailability = useCallback(async () => {
     try {
-      /**
-       * 🟢 ADECUACIÓN PARA VERCEL:
-       * Usamos API_BASE_URL. El backend procesará /api/clases/disponibles
-       */
+      setLoading(true);
       const response = await fetch(`${API_BASE_URL}/clases/disponibles`);
       const clases = await response.json();
-      
       const newAvail = {};
       clases.forEach(c => {
         const key = format(new Date(c.fecha), 'yyyy-MM-dd');
@@ -40,8 +36,10 @@ export default function CalendarPage() {
         newAvail[key].push(c);
       });
       setAvailability(newAvail);
-    } catch (e) { 
-        console.error("Error cargando disponibilidad:", e); 
+    } catch (e) {
+      console.error("Error cargando disponibilidad:", e);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -54,102 +52,125 @@ export default function CalendarPage() {
   }, [fetchUserCredits, loadAvailability]);
 
   const daysToRender = (() => {
-    let start = isMobile 
-      ? addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), weekOffset * 7) 
+    let start = isMobile
+      ? addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), weekOffset * 7)
       : startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
     return Array.from({ length: isMobile ? 7 : 35 }, (_, i) => addDays(start, i));
   })();
 
   return (
-    <div className="calendar-container page-content-padded animate-ios-entry" style={{fontFamily: "'Nunito', sans-serif"}}> 
-      
+    <div className="calendar-container page-content-padded">
+
+      {/* HEADER */}
       <div className="calendar-header">
-        <button onClick={() => isMobile ? setWeekOffset(w => w - 1) : setCurrentDate(d => addDays(d, -30))} className="nav-btn-glass">
+        <button
+          onClick={() => isMobile ? setWeekOffset(w => w - 1) : setCurrentDate(d => addDays(d, -30))}
+          className="nav-btn-glass"
+          aria-label="Anterior"
+        >
           <FaChevronLeft />
         </button>
-        
+
         <div className="calendar-title-group">
-            <h2 className="calendar-title">
-                {isMobile 
-                  ? `Semana ${format(daysToRender[0], 'dd MMM', { locale: es })}` 
-                  : format(currentDate, 'MMMM yyyy', { locale: es }).toUpperCase()}
-            </h2>
-            <span className="credits-badge">Tus créditos: <b>{userCredits}</b></span>
+          <h2 className="calendar-title">
+            {isMobile
+              ? `Semana ${format(daysToRender[0], 'dd MMM', { locale: es })}`
+              : format(currentDate, 'MMMM yyyy', { locale: es }).toUpperCase()}
+          </h2>
+          {/* ✅ Badge de créditos más visible */}
+          <span className="credits-badge">
+            Tus créditos: <b>{userCredits}</b>
+          </span>
         </div>
-        
-        <button onClick={() => isMobile ? setWeekOffset(w => w + 1) : setCurrentDate(d => addDays(d, 30))} className="nav-btn-glass">
+
+        <button
+          onClick={() => isMobile ? setWeekOffset(w => w + 1) : setCurrentDate(d => addDays(d, 30))}
+          className="nav-btn-glass"
+          aria-label="Siguiente"
+        >
           <FaChevronRight />
         </button>
       </div>
 
-      <div className="calendar-grid">
-        {daysToRender.map((day) => {
-            const dateKey = format(day, 'yyyy-MM-dd');
-            const classes = availability[dateKey] || [];
-            const isGray = !isSameMonth(day, currentDate);
-            const dayOfWeek = getDay(day);
+      {/* GRID */}
+      {loading ? (
+        <div className="calendar-loading">
+          <div className="calendar-spinner" />
+          <p>Cargando clases...</p>
+        </div>
+      ) : (
+        <div className="calendar-grid">
+          {daysToRender.map((day) => {
+            const dateKey   = format(day, 'yyyy-MM-dd');
+            const classes   = availability[dateKey] || [];
+            const isGray    = !isSameMonth(day, currentDate);
+            const hasClases = classes.length > 0;
 
             return (
-              <div 
-                key={dateKey} 
-                className={`day-card 
-                  ${isGray && !isMobile ? 'grayed-out' : ''} 
-                  ${isToday(day) ? 'today-card' : ''} 
-                  ${classes.length > 0 ? 'has-sessions' : ''}
+              <div
+                key={dateKey}
+                className={`day-card
+                  ${isGray && !isMobile ? 'grayed-out' : ''}
+                  ${isToday(day) ? 'today-card' : ''}
+                  ${hasClases ? 'has-sessions' : ''}
                 `}
-                onClick={() => setSelectedDayData({ 
-                  date: day, 
+                onClick={() => setSelectedDayData({
+                  date: day,
                   dayName: format(day, 'EEEE', { locale: es }),
-                  availableClasses: classes 
+                  availableClasses: classes
                 })}
               >
+                {/* Día */}
                 <div className="day-header-info">
-                    <span className="day-number">{format(day, 'd')}</span>
-                    <span className="day-name-mini">
-                        {format(day, 'EEE', { locale: es }).toUpperCase()}
-                    </span>
+                  <span className="day-name-mini">
+                    {format(day, 'EEE', { locale: es }).toUpperCase()}
+                  </span>
+                  <span className="day-number">{format(day, 'd')}</span>
                 </div>
-                
+
+                {/* Sesiones */}
                 <div className="sessions-preview">
-                  {classes.length > 0 ? (
+                  {hasClases ? (
                     <>
-                      {classes.slice(0, 4).map((clase, idx) => (
-                        <div 
-                          key={idx} 
+                      {classes.slice(0, 3).map((clase, idx) => (
+                        <div
+                          key={idx}
                           className="session-dot-line"
-                          style={{ borderLeft: `3px solid ${clase.color || '#8FD9FB'}` }}
+                          style={{ borderLeftColor: clase.color || '#8FD9FB' }}
                         >
-                          <b>{format(new Date(clase.fecha), 'HH:mm')}</b> &nbsp; {clase.nombre}
+                          <b>{format(new Date(clase.fecha), 'HH:mm')}</b>
+                          <span>{clase.nombre}</span>
                         </div>
                       ))}
-                      {classes.length > 4 && (
-                        <span className="more-sessions">+{classes.length - 4} clases más</span>
+                      {classes.length > 3 && (
+                        <span className="more-sessions">+{classes.length - 3} más</span>
                       )}
                     </>
                   ) : (
-                    <div style={{ opacity: 0.3, fontSize: '10px', marginTop: '10px', fontWeight: 700 }}>
-                      DISPONIBLE
-                    </div>
+                    <span className="no-class-label">Sin clase</span>
                   )}
                 </div>
 
-                <button className={`btn-reservar-ios ${classes.length > 0 ? 'pulse-btn' : ''}`}>
-                  {classes.length > 0 ? "VER CLASES" : "SIN CLASE"}
+                {/* Botón */}
+                <button className={`btn-reservar-ios ${hasClases ? 'pulse-btn' : ''}`}>
+                  {hasClases ? `Ver ${classes.length} clase${classes.length > 1 ? 's' : ''}` : 'Disponible'}
                 </button>
               </div>
             );
-        })}
-      </div>
+          })}
+        </div>
+      )}
 
+      {/* MODAL */}
       {selectedDayData && (
-          <ReservaPopup 
-            dayData={selectedDayData} 
-            close={() => { 
-              setSelectedDayData(null); 
-              fetchUserCredits();
-              loadAvailability(); 
-            }} 
-          />
+        <ReservaPopup
+          dayData={selectedDayData}
+          close={() => {
+            setSelectedDayData(null);
+            fetchUserCredits();
+            loadAvailability();
+          }}
+        />
       )}
     </div>
   );

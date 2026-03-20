@@ -7,6 +7,7 @@ datasource db {
   url      = env("POSTGRES_PRISMA_URL")
 }
 
+// ✅ CORRECCIÓN: Enums bien definidos y usados en los campos correspondientes
 enum Role {
   cliente
   coach
@@ -24,11 +25,19 @@ enum TipoPaquete {
   SUELTA
 }
 
+enum MetodoPago {
+  CREDITOS
+  SUSCRIPCION
+  CORTESIA  // Para asignaciones manuales de admin/coach
+}
+
 model User {
   id                  String          @id @default(uuid())
   email               String          @unique
   password            String?
-  role                String          @default("cliente")
+
+  // ✅ CORRECCIÓN: role usa el enum Role, no String
+  role                Role            @default(cliente)
 
   // --- Información Personal ---
   nombre              String
@@ -52,6 +61,9 @@ model User {
   paqueteTipo         TipoPaquete?
   vencimientoPlan     DateTime?
 
+  // ✅ NUEVO: Referencia al último pago Stripe para auditoría
+  ultimoPagoStripeId  String?
+
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
@@ -62,21 +74,25 @@ model User {
 
 model Class {
   id            String      @id @default(uuid())
-  nombre        String      
-  tematica      String?     
+  nombre        String
+  tematica      String?
   descripcion   String?     @db.Text
   paqueteRef    TipoPaquete @default(SUELTA)
-  
-  fecha         DateTime    
+
+  fecha         DateTime
   color         String?     @default("#89CFF0")
   imageUrl      String?     @db.Text
-  
+
   // Lógica de Capacidad
   cupoMaximo    Int         @default(8)
   inscritos     Int         @default(0)
-  numeroCamilla Int?        // Específico para reservas individuales
-  
-  // Relación con el Cliente (Cuando la clase ya es una reserva individual)
+  numeroCamilla Int?
+
+  // ✅ NUEVO: Guardamos cómo se pagó esta reserva para
+  // devolver crédito correctamente al cancelar
+  metodoPago    MetodoPago?
+
+  // Relación con el Cliente (null = clase maestra/plantilla, con userId = reserva individual)
   userId        String?
   user          User?       @relation("UserReservas", fields: [userId], references: [id])
 
@@ -84,7 +100,10 @@ model Class {
   espera        WaitingList[]
 
   createdAt     DateTime    @default(now())
+
   @@index([fecha])
+  @@index([userId])          // ✅ NUEVO: índice para consultas de reservas por usuario
+  @@index([paqueteRef])      // ✅ NUEVO: índice para filtros por tipo de clase
 }
 
 model WaitingList {
@@ -93,8 +112,20 @@ model WaitingList {
   userId    String
   clase     Class    @relation(fields: [claseId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  prioridad Int      @default(1) // Por si quieres manejar prioridades VIP
+  prioridad Int      @default(1)
   createdAt DateTime @default(now())
 
-  @@unique([claseId, userId]) // Evita que un usuario se anote dos veces a la misma lista
+  @@unique([claseId, userId])
+  @@index([claseId, createdAt]) // ✅ NUEVO: para obtener el primero en espera eficientemente
+}
+
+// ✅ NUEVO: Tabla para idempotencia de webhooks de Stripe
+// Evita que un mismo evento se procese dos veces si Stripe reintenta
+model ProcessedStripeEvent {
+  id            String   @id @default(uuid())
+  stripeEventId String   @unique
+  type          String   // payment_intent.succeeded, checkout.session.completed, etc.
+  processedAt   DateTime @default(now())
+
+  @@index([stripeEventId])
 }

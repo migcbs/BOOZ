@@ -15,6 +15,7 @@
   align-items: center;
   justify-content: center;
   background-color: #000; /* Fondo negro por si el video tarda en cargar */
+  margin-top: -60px;
 }
 
 /* El contenedor que se mueve con JS (Parallax) */
