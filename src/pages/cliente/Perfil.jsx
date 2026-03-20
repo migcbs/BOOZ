@@ -171,12 +171,14 @@ export default function Perfil() {
             {showTienda && (
                 <Tienda
                     isModal={showTienda}
-                    onClose={() => setShowTienda(false)}
+                    onClose={async () => {
+                        setShowTienda(false);
+                        // Recargar perfil completo para reflejar créditos actualizados
+                        await loadProfileData();
+                    }}
                     userEmail={fullUser.email}
                     onCreditosActualizados={(nuevosCreditos) => {
                         setFullUser(u => ({ ...u, creditosDisponibles: nuevosCreditos }));
-                        const stored = JSON.parse(localStorage.getItem('booz_user') || '{}');
-                        localStorage.setItem('booz_user', JSON.stringify({ ...stored, creditosDisponibles: nuevosCreditos }));
                     }}
                 />
             )}
