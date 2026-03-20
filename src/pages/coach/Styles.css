@@ -751,3 +751,311 @@ input[type="date"].coach-input {
         border-radius: 14px;
     }
 }
+
+/* ============================================================
+   COACH HOME — CLASES NUEVAS (añadir al final de Styles.css)
+   ============================================================ */
+
+/* Accesos rápidos del dashboard */
+.ch-quick-link {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--font-main);
+}
+
+.ch-quick-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.09);
+}
+
+.ch-ql-label {
+    margin: 0;
+    font-weight: 900;
+    font-size: 0.88rem;
+    color: #1d1d1f;
+    text-transform: uppercase;
+}
+
+.ch-ql-sub {
+    margin: 3px 0 0;
+    font-size: 0.72rem;
+    color: #8e8e93;
+    font-weight: 600;
+}
+
+/* Tarjeta de clase del día */
+.ch-clase-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f7f8fa;
+    border-radius: 16px;
+    border-left: 4px solid #8FD9FB;
+    transition: all 0.3s ease;
+}
+
+.ch-clase-card:hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.ch-clase-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.ch-clase-nombre {
+    margin: 0;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ch-clase-meta {
+    margin: 2px 0 0;
+    font-size: 0.72rem;
+    color: #8e8e93;
+    font-weight: 600;
+}
+
+/* Tarjeta mini de cliente */
+.client-card-mini {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f7f8fa;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+.client-card-mini:hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* Stat value */
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #8FD9FB;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-top: 6px;
+    display: block;
+}
+
+/* Search box wrapper */
+.search-box-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    color: #aeaeb2;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Responsive coach home */
+@media (max-width: 768px) {
+    .ch-quick-link { flex-direction: row; align-items: center; gap: 14px; }
+    .ch-clase-card { flex-wrap: wrap; }
+}
+
+/* ============================================================
+   COACH HOME — CLASES NUEVAS (añadir al final de Styles.css)
+   ============================================================ */
+
+/* Accesos rápidos del dashboard */
+.ch-quick-link {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--font-main);
+}
+
+.ch-quick-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.09);
+}
+
+.ch-ql-label {
+    margin: 0;
+    font-weight: 900;
+    font-size: 0.88rem;
+    color: #1d1d1f;
+    text-transform: uppercase;
+}
+
+.ch-ql-sub {
+    margin: 3px 0 0;
+    font-size: 0.72rem;
+    color: #8e8e93;
+    font-weight: 600;
+}
+
+/* Tarjeta de clase del día */
+.ch-clase-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f7f8fa;
+    border-radius: 16px;
+    border-left: 4px solid #8FD9FB;
+    transition: all 0.3s ease;
+}
+
+.ch-clase-card:hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.ch-clase-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.ch-clase-nombre {
+    margin: 0;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ch-clase-meta {
+    margin: 2px 0 0;
+    font-size: 0.72rem;
+    color: #8e8e93;
+    font-weight: 600;
+}
+
+/* Tarjeta mini de cliente */
+.client-card-mini {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f7f8fa;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+.client-card-mini:hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* Stat value */
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #8FD9FB;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-top: 6px;
+    display: block;
+}
+
+/* Search box wrapper */
+.search-box-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    color: #aeaeb2;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Responsive coach home */
+@media (max-width: 768px) {
+    .ch-quick-link { flex-direction: row; align-items: center; gap: 14px; }
+    .ch-clase-card { flex-wrap: wrap; }
+}
+
+/* ======================================================
+   OVERRIDE: pantalla completa para todas las páginas coach
+   (agrega al final de Styles.css)
+   ====================================================== */
+
+/* Quitar el max-width y centrado — ahora lo maneja CoachLayout */
+.coach-container,
+.coach-view-container,
+.admin-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* El greeting del home */
+.ch-greeting {
+    margin-bottom: 28px;
+}
+
+/* Stats row full width */
+.stats-row {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+/* Coach grid full width */
+.coach-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+@media (max-width: 900px) {
+    .coach-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

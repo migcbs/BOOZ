@@ -1,12 +1,22 @@
 /* ======================================================
-   REGISTER.CSS — BOOZ STUDIO
+   AUTH.CSS — BOOZ STUDIO
+   Archivo unificado para Login.js y Register.js
+   Importar en ambos componentes:
+   import './Auth.css';
    ====================================================== */
 
+/* ------------------------------------------------------
+   VARIABLES DE MARCA
+------------------------------------------------------- */
 :root {
     --ios-blue:       #8FD9FB;
-    --ios-blue-dark:  #5BC4F5;
+    --ios-blue-dark:  #5BC4F5;       /* Para hover y estados activos */
+    --ios-blue-glow:  rgba(143, 217, 251, 0.30);
+    --ios-sage:       #A9B090;
+    --ios-gold:       #B49044;
     --ios-red:        #FC7358;
     --ios-red-soft:   rgba(252, 115, 88, 0.10);
+    --ios-green:      #34C759;
     --glass-bg:       #FFFFFF;
     --input-bg:       #F2F2F7;
     --label-color:    #888;
@@ -23,13 +33,27 @@
 }
 
 /* ------------------------------------------------------
-   TARJETA
+   CENTRADO DE PÁGINA
+   Centra la tarjeta tanto en login (corta) como
+   en register (larga con scroll)
+------------------------------------------------------- */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 16px 80px;
+    box-sizing: border-box;
+}
+
+/* ------------------------------------------------------
+   TARJETA PRINCIPAL
 ------------------------------------------------------- */
 .auth-container {
     font-family: var(--font-main);
-    width: 90%;
-    max-width: 500px;
-    padding: 36px 36px 44px;
+    width: 100%;
+    max-width: 460px;
+    padding: 44px 36px;
     background: var(--glass-bg);
     border-radius: var(--radius-card);
     border: 1px solid rgba(255, 255, 255, 0.9);
@@ -38,90 +62,60 @@
     flex-direction: column;
     box-sizing: border-box;
     position: relative;
-    margin: 40px auto 80px;
     animation: auth-pop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes auth-pop {
     from { opacity: 0; transform: translateY(18px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
 /* ------------------------------------------------------
-   BOTÓN DE REGRESO
-------------------------------------------------------- */
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    color: var(--ios-blue);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    transition: var(--transition);
-    width: fit-content;
-}
-
-.back-button:hover {
-    color: var(--ios-blue-dark);
-    transform: translateX(-3px);
-}
-
-.back-button svg {
-    font-size: 0.8rem;
-}
-
-/* ------------------------------------------------------
-   TÍTULO Y SUBTÍTULO
+   TÍTULO
 ------------------------------------------------------- */
 .auth-title {
     color: var(--ios-blue);
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     font-weight: 800;
     text-align: center;
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     letter-spacing: -0.5px;
     text-transform: uppercase;
 }
 
+/* Subtítulo opcional debajo del título */
 .auth-subtitle {
     text-align: center;
     font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 600;
-    margin: 0 0 28px;
+    margin: 0 0 32px;
+}
+
+/* Separador visual cuando no hay subtítulo */
+.auth-title + .input-group,
+.auth-title + .error-badge {
+    margin-top: 28px;
 }
 
 /* ------------------------------------------------------
-   ETIQUETA DE SECCIÓN
+   BADGE DE ERROR INLINE (Login)
 ------------------------------------------------------- */
-.form-section-label {
-    font-size: 0.68rem;
-    font-weight: 800;
-    color: var(--ios-blue);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 24px 0 14px 4px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(143, 217, 251, 0.25);
-}
-
-.form-section-label:first-of-type {
-    margin-top: 4px;
-}
-
-/* ------------------------------------------------------
-   FILA DE DOS COLUMNAS
-------------------------------------------------------- */
-.input-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+.error-badge {
+    background: var(--ios-red-soft);
+    color: var(--ios-red);
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid rgba(252, 115, 88, 0.20);
+    animation: auth-pop 0.3s ease both;
 }
 
 /* ------------------------------------------------------
-   INPUTS
+   GRUPOS DE CAMPO
 ------------------------------------------------------- */
 .input-group {
     margin-bottom: 18px;
@@ -139,22 +133,28 @@
     letter-spacing: 0.6px;
 }
 
+/* ------------------------------------------------------
+   INPUTS
+------------------------------------------------------- */
 .auth-input {
     width: 100%;
     padding: 14px 18px;
     border-radius: var(--radius-input);
     background: var(--input-bg);
     border: 2px solid transparent;
-    font-size: 16px;
+    font-size: 16px;           /* Evita zoom en Safari/iOS */
     font-family: var(--font-main);
     color: var(--text-primary);
     transition: var(--transition);
     outline: none;
     box-sizing: border-box;
-    -webkit-appearance: none;
+    -webkit-appearance: none;  /* Normaliza en Safari */
 }
 
-.auth-input::placeholder { color: #C7C7CC; font-weight: 500; }
+.auth-input::placeholder {
+    color: #C7C7CC;
+    font-weight: 500;
+}
 
 .auth-input:focus {
     background: #fff;
@@ -163,35 +163,29 @@
     transform: translateY(-1px);
 }
 
-.auth-input[type="date"] { color: #555; font-size: 0.95rem; }
-.auth-input:disabled { opacity: 0.55; cursor: not-allowed; }
-
-/* Select */
-.auth-select {
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238FD9FB' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 42px;
+/* Fecha — normalizar apariencia */
+.auth-input[type="date"] {
+    color: #555;
+    font-size: 0.95rem;
 }
 
-/* Textarea */
-.auth-textarea {
-    resize: none;
-    line-height: 1.5;
-    padding-top: 13px;
-    min-height: 72px;
+/* Disabled (para el botón mientras carga) */
+.auth-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 /* ------------------------------------------------------
-   CONTRASEÑA
+   CAMPO DE CONTRASEÑA
 ------------------------------------------------------- */
 .password-wrapper {
     position: relative;
     width: 100%;
 }
 
-.password-wrapper .auth-input { padding-right: 50px; }
+.password-wrapper .auth-input {
+    padding-right: 50px; /* Espacio para el ícono */
+}
 
 .toggle-pass {
     position: absolute;
@@ -205,6 +199,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 6px;
     border-radius: 8px;
     transition: var(--transition);
@@ -215,13 +210,13 @@
 .toggle-pass:active { transform: translateY(-50%) scale(0.85); }
 
 /* ------------------------------------------------------
-   CHECKBOX
+   CHECKBOX PREMIUM
 ------------------------------------------------------- */
 .checkbox-label {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin: 8px 0 26px 4px;
+    margin: 8px 0 28px 4px;
     cursor: pointer;
 }
 
@@ -236,7 +231,7 @@
     position: relative;
     cursor: pointer;
     transition: var(--transition);
-    margin-top: 2px;
+    margin-top: 1px; /* Alinear con la primera línea del texto */
 }
 
 .checkbox-label input[type="checkbox"]:checked {
@@ -263,7 +258,72 @@
 }
 
 /* ------------------------------------------------------
-   POPUP DE ERRORES
+   BOTÓN PRINCIPAL
+------------------------------------------------------- */
+.auth-button {
+    width: 100%;
+    padding: 16px;
+    background: var(--ios-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-button);
+    font-size: 1rem;
+    font-family: var(--font-main);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    box-shadow: var(--shadow-button);
+    transition: var(--transition);
+    margin-top: 8px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.auth-button:hover:not(:disabled) {
+    background: var(--ios-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(143, 217, 251, 0.45);
+}
+
+.auth-button:active:not(:disabled) {
+    transform: scale(0.97) translateY(0);
+    box-shadow: var(--shadow-button);
+}
+
+.auth-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ------------------------------------------------------
+   FOOTER DEL FORMULARIO (¿Ya tienes cuenta?)
+------------------------------------------------------- */
+.auth-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.auth-secondary-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.auth-link-highlight {
+    color: var(--ios-blue);
+    text-decoration: none;
+    font-weight: 800;
+    transition: var(--transition);
+}
+
+.auth-link-highlight:hover {
+    color: var(--ios-blue-dark);
+    text-decoration: underline;
+}
+
+/* ------------------------------------------------------
+   POPUP DE ERRORES (ErrorNotification)
 ------------------------------------------------------- */
 .error-notification-popup {
     background: var(--ios-red-soft);
@@ -309,81 +369,37 @@
 .close-btn:hover { opacity: 0.7; }
 
 /* ------------------------------------------------------
-   BOTÓN PRINCIPAL
+   OCULTAR FOOTER EN PANTALLAS AUTH
 ------------------------------------------------------- */
-.auth-button {
-    width: 100%;
-    padding: 17px;
-    background: var(--ios-blue);
-    color: white;
-    border: none;
-    border-radius: var(--radius-button);
-    font-size: 1.05rem;
-    font-family: var(--font-main);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    box-shadow: var(--shadow-button);
-    transition: var(--transition);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.auth-button:hover:not(:disabled) {
-    background: var(--ios-blue-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(143, 217, 251, 0.45);
-}
-
-.auth-button:active:not(:disabled) { transform: scale(0.97); }
-
-.auth-button:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* ------------------------------------------------------
-   FOOTER
-------------------------------------------------------- */
-.auth-footer { margin-top: 24px; text-align: center; }
-
-.auth-secondary-text {
-    font-size: 0.88rem;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
-.auth-link-highlight {
-    color: var(--ios-blue);
-    text-decoration: none;
-    font-weight: 800;
-    transition: var(--transition);
-}
-
-.auth-link-highlight:hover {
-    color: var(--ios-blue-dark);
-    text-decoration: underline;
-}
-
 .footer { visibility: hidden; }
 
 /* ------------------------------------------------------
-   MÓVIL
+   RESPONSIVIDAD MÓVIL
 ------------------------------------------------------- */
 @media (max-width: 480px) {
+    .auth-page {
+        padding: 40px 12px 60px;
+    }
+
     .auth-container {
-        width: 94%;
-        padding: 28px 20px 36px;
+        padding: 32px 20px;
         border-radius: 28px;
-        margin: 24px auto 60px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     }
 
-    .input-row { grid-template-columns: 1fr; gap: 0; }
-    .auth-title { font-size: 1.5rem; }
-    .input-group { margin-bottom: 14px; }
-    .auth-input { padding: 13px 15px; }
-    .auth-button { padding: 15px; font-size: 1rem; }
-    .checkbox-text { font-size: 0.8rem; }
+    .auth-title {
+        font-size: 1.5rem;
+    }
+
+    .input-group {
+        margin-bottom: 14px;
+    }
+
+    .auth-input {
+        padding: 13px 15px;
+    }
+
+    .auth-button {
+        padding: 15px;
+    }
 }

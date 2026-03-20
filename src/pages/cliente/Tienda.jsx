@@ -1,248 +1,175 @@
-import React, { useState, useEffect } from 'react';
-import { 
-    FaTimes, FaDollarSign, FaLock, FaUser, 
-    FaCreditCard, FaCalendarAlt, FaShieldAlt, 
-    FaCheckCircle, FaExclamationTriangle 
-} from 'react-icons/fa';
-import { 
-    CardNumberElement, 
-    CardExpiryElement, 
-    CardCvcElement, 
-    useStripe, 
-    useElements 
-} from '@stripe/react-stripe-js';
-import './Styles.css';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import { FaTimes, FaWallet, FaBolt } from 'react-icons/fa';
+import StripePaymentForm from './StripePaymentForm';
+import authFetch from '../../authFetch';
+import Swal from 'sweetalert2';
+import './Tienda.css';
 
-export default function Tienda({ isModal, onClose, userEmail }) {
-    const stripe = useStripe();
-    const elements = useElements();
-    
-    // Estados de Formulario
-    const [monto, setMonto] = useState('');
-    const [titular, setTitular] = useState('');
-    const [loading, setLoading] = useState(false);
-    
-    // Estados de Feedback Visual
-    const [status, setStatus] = useState('idle'); // idle | processing | success | error
-    const [errorMessage, setErrorMessage] = useState('');
+// Carga Stripe una sola vez con tu clave pública
+const stripePromise = process.env.REACT_APP_STRIPE_PUBLIC_KEY
+    ? loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
+    : null;
 
-    // Limpiar estados al cerrar o abrir modal
-    useEffect(() => {
-        if (!isModal) {
-            setStatus('idle');
-            setMonto('');
-            setTitular('');
-            setErrorMessage('');
-        }
-    }, [isModal]);
+// Montos predefinidos de recarga rápida
+const MONTOS_RAPIDOS = [100, 200, 500, 1000];
 
-    if (!isModal) return null;
+export default function Tienda({ isModal, onClose, onCreditosActualizados }) {
+    const [montoSeleccionado, setMontoSeleccionado] = useState(null);
+    const [montoCustom,       setMontoCustom]       = useState('');
+    const [showForm,          setShowForm]          = useState(false);
+    const [loadingRefresh,    setLoadingRefresh]    = useState(false);
 
-    // Configuración estética de los campos de Stripe
-    const elementStyles = {
-        style: {
-            base: {
-                color: "#8FD9FB", // Azul Booz
-                fontFamily: '"Orbitron", sans-serif', // O la fuente que uses en tu CSS
-                fontSize: '16px',
-                fontSmoothing: "antialiased",
-                "::placeholder": {
-                    color: "rgba(143, 217, 251, 0.4)",
-                },
-                iconColor: "#8FD9FB",
-            },
-            invalid: {
-                color: "#ff4d4d",
-                iconColor: "#ff4d4d",
-            }
-        }
+    const montoFinal = montoSeleccionado || parseInt(montoCustom) || 0;
+
+    const handleMontoRapido = (m) => {
+        setMontoSeleccionado(m);
+        setMontoCustom('');
     };
 
-    const handleProceedToPay = async (e) => {
-        e.preventDefault();
-        
-        if (!stripe || !elements) return;
+    const handleCustom = (v) => {
+        setMontoCustom(v);
+        setMontoSeleccionado(null);
+    };
 
-        // Validaciones preventivas
-        if (!monto || parseFloat(monto) < 50) {
-            setErrorMessage("El monto mínimo de recarga es $50.00 MXN");
-            setStatus('error');
+    const handleContinuar = () => {
+        if (montoFinal < 10) {
+            Swal.fire('Aviso', 'El monto mínimo de recarga es $10 MXN', 'info');
             return;
         }
-
-        setLoading(true);
-        setStatus('processing');
-        setErrorMessage('');
-
-        try {
-            // 1. Llamada al Backend para obtener el Client Secret
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-            const response = await fetch(`${apiUrl}/api/create-payment-intent`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    monto: parseFloat(monto), 
-                    email: userEmail 
-                })
-            });
-
-            if (!response.ok) throw new Error("Error al conectar con el servidor de pagos.");
-            
-            const { clientSecret } = await response.json();
-
-            // 2. Confirmación del pago con Stripe Elements
-            const result = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: elements.getElement(CardNumberElement),
-                    billing_details: {
-                        name: titular,
-                        email: userEmail,
-                    }
-                }
-            });
-
-            if (result.error) {
-                setErrorMessage(result.error.message);
-                setStatus('error');
-            } else if (result.paymentIntent.status === 'succeeded') {
-                setStatus('success');
-                // Auto-cierre después de mostrar el éxito por 3 segundos
-                setTimeout(() => {
-                    onClose();
-                }, 3000);
-            }
-        } catch (err) {
-            console.error("Payment Error:", err);
-            setErrorMessage("Hubo un problema técnico. Intenta más tarde.");
-            setStatus('error');
-        } finally {
-            setLoading(false);
-        }
+        setShowForm(true);
     };
 
-    // Renderizado del estado de ÉXITO
-    if (status === 'success') {
-        return (
-            <div className="popup-overlay">
-                <div className="popup-card glass-card tienda-modal-container success-state">
-                    <FaCheckCircle className="success-icon-anim" />
-                    <h2 className="card-title-accent">¡Pago Confirmado!</h2>
-                    <p className="popup-subtitle">Tus créditos se han actualizado correctamente.</p>
-                    <p className="success-amount-text">${monto} MXN agregados</p>
-                    <button className="btn-confirmar-pago" onClick={onClose}>Listo</button>
+    const handleSuccess = async (paymentIntentId, monto) => {
+        // Esperar a que el webhook procese (normalmente < 2s)
+        setLoadingRefresh(true);
+        await new Promise(r => setTimeout(r, 2000));
+
+        // Refrescar los créditos del usuario desde la API
+        try {
+            const res  = await authFetch('/me');
+            const data = await res.json();
+            if (data?.creditosDisponibles !== undefined) {
+                // Actualizar localStorage con los nuevos créditos
+                const stored = JSON.parse(localStorage.getItem('booz_user') || '{}');
+                localStorage.setItem('booz_user', JSON.stringify({
+                    ...stored,
+                    creditosDisponibles: data.creditosDisponibles
+                }));
+                if (onCreditosActualizados) onCreditosActualizados(data.creditosDisponibles);
+            }
+        } catch (e) { console.error('Error al refrescar créditos:', e); }
+
+        setLoadingRefresh(false);
+
+        Swal.fire({
+            icon: 'success',
+            title: '¡Recarga exitosa!',
+            html: `<p>Se acreditaron <b style="color:#8FD9FB">${monto} créditos</b> a tu billetera Booz.</p>`,
+            confirmButtonColor: '#8FD9FB',
+            confirmButtonText: 'Perfecto'
+        }).then(() => onClose());
+    };
+
+    const content = (
+        <div className="tienda-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+            <div className="tienda-modal">
+
+                {/* Header */}
+                <div className="tienda-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <FaWallet color="#8FD9FB" size={18} />
+                        <h2 className="tienda-title">Recargar billetera</h2>
+                    </div>
+                    <button className="tienda-close" onClick={onClose}><FaTimes /></button>
                 </div>
-            </div>
-        );
-    }
 
-    return (
-        <div className="popup-overlay">
-            <div className="popup-card glass-card tienda-modal-container">
-                <button className="btn-close-modal" onClick={onClose} disabled={loading}>
-                    <FaTimes />
-                </button>
-                
-                <div className="checkout-header">
-                    <h2 className="card-title-accent">Billetera Booz</h2>
-                    <p className="popup-subtitle">Recarga créditos para tus próximas clases</p>
-                </div>
-
-                <form onSubmit={handleProceedToPay} className="checkout-form">
-                    {/* MONTO CON DISPLAY DINÁMICO */}
-                    <div className="amount-section">
-                        <label className="card-subtitle-small">MONTO A RECARGAR (MXN)</label>
-                        <div className="amount-input-wrapper">
-                            <FaDollarSign className="input-icon" />
-                            <input 
-                                type="number" 
-                                placeholder="0.00" 
-                                value={monto}
-                                onChange={(e) => setMonto(e.target.value)}
-                                className="input-amount-large"
-                                required
-                                min="50"
-                                disabled={loading}
-                            />
-                        </div>
-                    </div>
-
-                    {/* TITULAR */}
-                    <div className="input-group-booz">
-                        <label className="card-subtitle-small">NOMBRE DEL TITULAR</label>
-                        <div className="inner-input">
-                            <FaUser />
-                            <input 
-                                type="text" 
-                                placeholder="Nombre como aparece en tarjeta"
-                                value={titular}
-                                onChange={(e) => setTitular(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                        </div>
-                    </div>
-
-                    {/* TARJETA (Número) */}
-                    <div className="input-group-booz">
-                        <label className="card-subtitle-small">NÚMERO DE TARJETA</label>
-                        <div className="inner-input">
-                            <FaCreditCard />
-                            <div className="stripe-element-container">
-                                <CardNumberElement options={elementStyles} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="input-row-flex">
-                        {/* FECHA */}
-                        <div className="input-group-booz">
-                            <label className="card-subtitle-small">EXPIRACIÓN</label>
-                            <div className="inner-input">
-                                <FaCalendarAlt />
-                                <div className="stripe-element-container">
-                                    <CardExpiryElement options={elementStyles} />
-                                </div>
-                            </div>
-                        </div>
-                        {/* CVV */}
-                        <div className="input-group-booz">
-                            <label className="card-subtitle-small">CVV</label>
-                            <div className="inner-input">
-                                <FaShieldAlt />
-                                <div className="stripe-element-container">
-                                    <CardCvcElement options={elementStyles} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* MENSAJE DE ERROR DINÁMICO */}
-                    {status === 'error' && (
-                        <div className="error-banner">
-                            <FaExclamationTriangle />
-                            <span>{errorMessage}</span>
-                        </div>
-                    )}
-
-                    <button 
-                        type="submit" 
-                        className={`btn-confirmar-pago ${loading ? 'loading' : ''}`} 
-                        disabled={loading || !stripe}
-                    >
-                        {loading ? (
-                            <div className="spinner-booz"></div>
-                        ) : (
-                            <>PAGAR ${monto || '0.00'} MXN <FaLock style={{marginLeft: '10px'}}/></>
-                        )}
-                    </button>
-                    
-                    <div className="secure-footer">
-                        <p className="secure-text">
-                            💳 Transacción protegida por cifrado de 256 bits.
+                {!showForm ? (
+                    /* ── Selector de monto ── */
+                    <div className="tienda-body">
+                        <p className="tienda-subtitle">
+                            Elige cuánto quieres recargar. Cada peso = 1 crédito.
                         </p>
+
+                        {/* Montos rápidos */}
+                        <div className="tienda-montos-grid">
+                            {MONTOS_RAPIDOS.map(m => (
+                                <button
+                                    key={m}
+                                    className={`tienda-monto-btn ${montoSeleccionado === m ? 'active' : ''}`}
+                                    onClick={() => handleMontoRapido(m)}
+                                >
+                                    {m === 500 && <span className="tienda-popular-badge"><FaBolt size={9} /> Popular</span>}
+                                    <span className="tienda-monto-valor">${m}</span>
+                                    <span className="tienda-monto-sub">{m} créditos</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Monto personalizado */}
+                        <div className="tienda-custom">
+                            <label className="tienda-label">Otro monto (mín. $10)</label>
+                            <div className="tienda-custom-input-wrapper">
+                                <span className="tienda-peso-sign">$</span>
+                                <input
+                                    type="number"
+                                    min="10"
+                                    max="50000"
+                                    placeholder="0"
+                                    value={montoCustom}
+                                    onChange={e => handleCustom(e.target.value)}
+                                    className="tienda-custom-input"
+                                />
+                                <span className="tienda-mxn-label">MXN</span>
+                            </div>
+                        </div>
+
+                        {/* Resumen */}
+                        {montoFinal >= 10 && (
+                            <div className="tienda-resumen">
+                                <span>Vas a recargar</span>
+                                <span className="tienda-resumen-monto">{montoFinal} créditos por ${montoFinal} MXN</span>
+                            </div>
+                        )}
+
+                        <button
+                            className={`tienda-btn-continuar ${montoFinal >= 10 ? 'active' : ''}`}
+                            disabled={montoFinal < 10}
+                            onClick={handleContinuar}
+                        >
+                            Continuar al pago →
+                        </button>
                     </div>
-                </form>
+                ) : (
+                    /* ── Formulario de pago ── */
+                    <div className="tienda-body">
+                        <button
+                            className="tienda-back-btn"
+                            onClick={() => setShowForm(false)}
+                        >
+                            ← Cambiar monto
+                        </button>
+                        <Elements stripe={stripePromise}>
+                            <StripePaymentForm
+                                monto={montoFinal}
+                                onSuccess={handleSuccess}
+                                onClose={onClose}
+                            />
+                        </Elements>
+                    </div>
+                )}
+
+                {loadingRefresh && (
+                    <div className="tienda-loading-overlay">
+                        <div className="tienda-spinner" />
+                        <p>Confirmando tu recarga...</p>
+                    </div>
+                )}
             </div>
         </div>
     );
+
+    return isModal ? ReactDOM.createPortal(content, document.body) : content;
 }

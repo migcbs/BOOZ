@@ -1,326 +1,293 @@
-import React, { useState, useEffect } from "react"; 
-import { useNavigate } from "react-router-dom"; 
-import { 
-    FaUserPlus, FaCalendarPlus, FaSearch, FaStethoscope, 
-    FaSignOutAlt, FaUserCircle, FaPalette, FaCloudUploadAlt,
-    FaUsers, FaDumbbell, FaClock, FaCheckCircle, FaWhatsapp,
-    FaRegCalendarAlt, FaLayerGroup, FaInfoCircle
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+    FaUserCircle, FaSignOutAlt, FaCalendarAlt, FaUsers,
+    FaClock, FaChartBar, FaDumbbell, FaCheckCircle,
+    FaWhatsapp, FaUserPlus, FaSearch
 } from "react-icons/fa";
-import Swal from 'sweetalert2'; 
-import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
+import { format, parseISO, isToday, isThisWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
+import Swal from 'sweetalert2';
 import "./Styles.css";
-import API_BASE_URL from '../../apiConfig'; 
+import authFetch from '../../authFetch';
+import CoachLayout from './CoachLayout';
+import './CoachLayout.css';
 
 export default function CoachHome() {
     const navigate = useNavigate();
-    const [clientes, setClientes] = useState([]);
-    const [clasesActivas, setClasesActivas] = useState([]); 
-    const [espera, setEspera] = useState([]); 
-    const [searchTerm, setSearchTerm] = useState("");
+    const [clientes, setClientes]           = useState([]);
+    const [clasesHoy, setClasesHoy]         = useState([]);
+    const [clasesActivas, setClasesActivas] = useState([]);
+    const [espera, setEspera]               = useState([]);
+    const [loading, setLoading]             = useState(true);
+    const [searchTerm, setSearchTerm]       = useState("");
     const [selectedClaseId, setSelectedClaseId] = useState("");
-    const [tab, setTab] = useState("paquete");
 
-    const [form, setForm] = useState({
-        nombre: "",
-        tematica: "",
-        descripcion: "",
-        paqueteRef: "1", // Paquete 1 por defecto
-        hora: "06:00",
-        fechaInicio: format(new Date(), 'yyyy-MM-dd'),
-        color: "#8FD9FB",
-        imageUrl: "",
-        cupoMaximo: 8 
-    });
+    const storedUser = (() => {
+        try { return JSON.parse(localStorage.getItem('booz_user')) || {}; }
+        catch { return {}; }
+    })();
 
-    const HORARIOS_PRESET = ["06:00", "07:00", "08:00", "09:00", "10:00", "17:00", "18:00", "19:00", "20:00"];
-    
-    // ESTRUCTURA ESTRICTA BOOZ: 2 PAQUETES ÚNICOS
-    const PAQUETES_BOOZ = [
-        { id: "1", label: "PAQUETE 1: LUNES - MIÉRCOLES - VIERNES", diasNom: "L-M-V" },
-        { id: "2", label: "PAQUETE 2: MARTES - JUEVES", diasNom: "M-J" }
-    ];
-
-    useEffect(() => {
-        refreshData();
-    }, []);
+    useEffect(() => { refreshData(); }, []);
 
     const refreshData = async () => {
+        setLoading(true);
         try {
-            const resClientes = await fetch(`${API_BASE_URL}/coach/clientes`);
-            const dataClientes = await resClientes.json();
-            setClientes(dataClientes);
+            const [rc, rk, re] = await Promise.all([
+                authFetch('/clases/disponibles'),
+                authFetch('/coach/clientes'),
+                authFetch('/admin/lista-espera'),
+            ]);
+            const dc = await rc.json();
+            const dk = await rk.json();
+            const de = await re.json();
 
-            const resClases = await fetch(`${API_BASE_URL}/clases/disponibles`);
-            const dataClases = await resClases.json();
-            const sortedClases = dataClases.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-            setClasesActivas(sortedClases);
-
-            const resEspera = await fetch(`${API_BASE_URL}/admin/lista-espera`);
-            const dataEspera = await resEspera.json();
-            setEspera(dataEspera);
+            const clases = Array.isArray(dc) ? dc : [];
+            setClasesActivas(clases.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)));
+            setClasesHoy(clases.filter(c => isToday(new Date(c.fecha))));
+            setClientes(Array.isArray(dk) ? dk : []);
+            setEspera(Array.isArray(de) ? de : []);
         } catch (err) {
-            console.error("Error al refrescar datos:", err);
+            console.error("Error:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("booz_token");
+        localStorage.removeItem("booz_user");
         navigate("/login");
     };
 
-    const verExpediente = (c) => {
-        Swal.fire({
-            title: `<b style="font-family: 'Nunito', sans-serif;text-transform: uppercase;">${c.nombre} ${c.apellido}</b>`,
-            html: `
-                <div class="expediente-modal" style="text-align: left; font-size: 14px; line-height: 1.6; font-family: 'Nunito', sans-serif; padding: 10px; text-transform: uppercase;">
-                    <p><b style="color: black;">Instagram:</b> <span style="color: #8FD9FB;">@${c.instagram || 'no_registrado'}</span></p>
-                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 15px 0;" />
-                    <p><b style="color: black;">Teléfono:</b> ${c.telefono || 'Sin número'}</p>
-                    <p><b style="color: black;">Lesiones:</b> <span style="color: #FF3B30; font-weight: 600;">${c.lesiones || 'Ninguna reportada'}</span></p>
-                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 15px 0;" />
-                    <div style="background: rgba(143, 217, 251, 0.1); padding: 12px; border-radius: 15px;">
-                        <p style="margin: 0;"><b>Plan:</b> ${c.planNombre || 'Regular'}</p>
-                        <p style="margin: 0;"><b>Saldo Créditos:</b> ${c.creditosDisponibles || 0}</p>
-                    </div>
-                </div>
-            `,
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#8FD9FB'
-        });
-    };
-
-    const handlePublicar = async () => {
-        if (!form.nombre || !form.fechaInicio) return Swal.fire('Error', 'Faltan datos obligatorios', 'error');
-        
-        const endpoint = tab === "paquete" ? "crear-paquete" : "crear-suelta";
-        const pkgInfo = tab === "paquete" ? PAQUETES_BOOZ.find(p => p.id === form.paqueteRef) : null;
-
-        Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
+    const inscribirAlumnoManual = async (cliente) => {
+        if (!selectedClaseId) return Swal.fire('Atención', 'Selecciona la clase destino', 'info');
         try {
-            const response = await fetch(`${API_BASE_URL}/coach/${endpoint}`, {
+            const res = await authFetch('/reservas', {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...form,
-                    paqueteId: tab === "paquete" ? form.paqueteRef : null,
-                    esFinde: tab === "suelta" // El backend sabrá que es fuera de paquete
-                })
+                body: JSON.stringify({ email: cliente.email, claseId: selectedClaseId, metodoPago: 'CORTESIA' })
             });
-            if (response.ok) {
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: '¡Sincronizado!', 
-                    text: tab === 'paquete' ? `Paquete ${pkgInfo.diasNom} generado correctamente.` : 'Clase de fin de semana publicada.', 
-                    timer: 2000, 
-                    showConfirmButton: false 
-                });
-                setForm({ ...form, nombre: "", tematica: "", imageUrl: "" });
+            if (res?.ok) {
+                Swal.fire({ icon: 'success', title: `¡${cliente.nombre} inscrita!`, timer: 1500, showConfirmButton: false });
                 refreshData();
+            } else {
+                const d = await res?.json();
+                Swal.fire('Error', d?.message || 'No se pudo inscribir', 'error');
             }
-        } catch (error) { 
-            Swal.fire('Error', 'Error de conexión', 'error'); 
-        }
+        } catch { Swal.fire('Error', 'Error de conexión', 'error'); }
     };
 
     const resolverEspera = async (id) => {
-        const result = await Swal.fire({
-            title: '¿Asignar lugar?',
-            text: "Se notificará al alumno y se limpiará la lista.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#8FD9FB',
-            confirmButtonText: 'Confirmar'
+        const { isConfirmed } = await Swal.fire({
+            title: '¿Resolver este lugar?', icon: 'question',
+            showCancelButton: true, confirmButtonColor: '#8FD9FB', confirmButtonText: 'Confirmar'
         });
-
-        if (result.isConfirmed) {
-            try {
-                await fetch(`${API_BASE_URL}/admin/lista-espera/${id}`, { method: 'DELETE' });
-                refreshData();
-                Swal.fire('Listo', 'Lista actualizada.', 'success');
-            } catch (e) {
-                Swal.fire('Error', 'No se pudo actualizar.', 'error');
-            }
-        }
-    };
-
-    const inscribirAlumnoManual = async (cliente) => {
-        if (!selectedClaseId) return Swal.fire('Atención', 'Selecciona la clase destino arriba.', 'info');
-        const claseDestino = clasesActivas.find(c => c.id === selectedClaseId);
-        
+        if (!isConfirmed) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/reservas`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: cliente.email || cliente.correo,
-                    claseId: claseDestino.id,
-                    metodoPago: 'EFECTIVO'
-                })
-            });
-            if (response.ok) {
-                Swal.fire('¡Registrado!', `${cliente.nombre} ha sido inscrito.`, 'success');
-                refreshData();
-            } else {
-                const data = await response.json();
-                Swal.fire('Error', data.message || 'No se pudo inscribir.', 'error');
-            }
-        } catch (e) { 
-            Swal.fire('Error', 'Error al procesar inscripción', 'error'); 
-        }
+            await authFetch(`/admin/lista-espera/${id}`, { method: 'DELETE' });
+            refreshData();
+        } catch { Swal.fire('Error', 'No se pudo actualizar', 'error'); }
     };
 
-    const filteredClientes = clientes.filter(c => 
+    const clasesEstaSemana = clasesActivas.filter(c =>
+        isThisWeek(new Date(c.fecha), { weekStartsOn: 1 })
+    );
+
+    const filteredClientes = clientes.filter(c =>
         `${c.nombre} ${c.apellido}`.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const quickLinks = [
+        { icon: <FaCalendarAlt size={22} />, label: 'Calendario',     sub: `${clasesEstaSemana.length} clases esta semana`, path: '/coach/calendario', color: '#8FD9FB' },
+        { icon: <FaUsers size={22} />,       label: 'Alumnas',         sub: `${clientes.length} registradas`,               path: '/coach/clientes',   color: '#A9B090' },
+        { icon: <FaClock size={22} />,       label: 'Lista de espera', sub: `${espera.length} esperando`,                  path: '/coach/espera',     color: '#FF9500' },
+        { icon: <FaChartBar size={22} />,    label: 'Estadísticas',    sub: 'Ver métricas del estudio',                    path: '/coach/stats',      color: '#AF52DE' },
+        { icon: <FaDumbbell size={22} />,    label: 'Temáticas',       sub: 'Planifica el contenido',                      path: '/coach/rutinas',    color: '#34C759' },
+    ];
+
     return (
-        <div className="coach-container animate-ios-entry">
-            
-            <header className="dashboard-header-work">
-                <div className="header-left">
-                    <div className="role-indicator">
-                        <FaUserCircle color="#8FD9FB" />
-                        <span>Gestión de Centro <b>BOOZ</b></span>
-                    </div>
+        <CoachLayout>
+
+            {/* El header lo maneja CoachLayout */}
+            <div className="ch-greeting">
+                <h1 className="work-title">Hola, <b>{storedUser.nombre || 'Coach'}</b></h1>
+                <p style={{ color: '#8e8e93', fontSize: '0.9rem', fontWeight: 600, marginTop: 4, textTransform: 'capitalize' }}>
+                    {format(new Date(), "EEEE dd 'de' MMMM", { locale: es })}
+                </p>
+            </div>
+
+            {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '80px', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                    <div className="spinner-ios" style={{ borderTopColor: '#8FD9FB' }} />
+                    <p style={{ color: '#8e8e93', fontWeight: 700, fontSize: 14 }}>Cargando datos...</p>
                 </div>
-                <div className="header-right">
-                    <button className="btn-work-logout" onClick={handleLogout}>
-                        <FaSignOutAlt /> 
-                    </button>
-                </div>
-                    <h1 className="work-title">Panel <b>Coach</b></h1>
-            </header>
-            
-            <div className="coach-grid">
-                
-                {/* 1. SECCIÓN DE PROGRAMACIÓN - LÓGICA DE PAQUETES REFORZADA */}
-                <div className="glass-card">
-                    <h3 className="card-subtitle"><FaCalendarPlus color="#8FD9FB" /> Programar Calendario</h3>
-                    
-                    <div className="tab-header">
-                        <button className={tab === 'paquete' ? 'active' : ''} onClick={() => setTab('paquete')}>
-                            <FaLayerGroup /> PAQUETES (L-V)
-                        </button>
-                        <button className={tab === 'suelta' ? 'active' : ''} onClick={() => setTab('suelta')}>
-                            <FaRegCalendarAlt /> FIN DE SEMANA / ÚNICA
-                        </button>
-                    </div>
-
-                    <div className="form-container-coach">
-                        <label className="coach-label-mini">Nombre de Clase</label>
-                        <input className="coach-input" placeholder="Ej: HIIT TRX" value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})} />
-                        
-                        {tab === 'paquete' ? (
-                            <div className="form-group-booz" style={{background: 'rgba(143, 217, 251, 0.05)', padding: '15px', borderRadius: '15px', marginBottom: '15px', border: '1px dashed #8FD9FB'}}>
-                                <label className="coach-label-mini">Seleccionar Paquete de Días</label>
-                                <select className="coach-input" value={form.paqueteRef} onChange={e => setForm({...form, paqueteRef: e.target.value})}>
-                                    {PAQUETES_BOOZ.map(pkg => (
-                                        <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
-                                    ))}
-                                </select>
-                                <p style={{fontSize: '0.7rem', color: '#86868b', marginTop: '5px'}}>
-                                    <FaInfoCircle /> Esto generará automáticamente la clase los días del paquete por el resto del mes.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="form-group-booz" style={{background: 'rgba(169, 176, 144, 0.05)', padding: '15px', borderRadius: '15px', marginBottom: '15px', border: '1px dashed #A9B090'}}>
-                                <p style={{fontSize: '0.75rem', fontWeight: 800, color: '#A9B090', textAlign: 'center'}}>SÁBADOS / DOMINGOS / EVENTOS ESPECIALES</p>
-                            </div>
-                        )}
-
-                        <div className="coach-row-inputs">
-                            <div style={{flex: 1}}>
-                                <label className="coach-label-mini">Hora</label>
-                                <select className="coach-input" value={form.hora} onChange={e => setForm({...form, hora: e.target.value})}>
-                                    {HORARIOS_PRESET.map(h => <option key={h} value={h}>{h} hrs</option>)}
-                                </select>
-                            </div>
-                            <div style={{flex: 1}}>
-                                <label className="coach-label-mini">Fecha Inicio</label>
-                                <input type="date" className="coach-input" value={form.fechaInicio} onChange={e => setForm({...form, fechaInicio: e.target.value})} />
-                            </div>
-                        </div>
-
-                        <div className="coach-row-inputs" style={{alignItems: 'center'}}>
-                            <div className="color-picker-wrapper">
-                                <input type="color" className="color-picker-custom" value={form.color} onChange={e => setForm({...form, color: e.target.value})} />
-                            </div>
-                            <input type="number" className="coach-input" style={{width: '100px', marginBottom: 0}} placeholder="Cupo" value={form.cupoMaximo} onChange={e => setForm({...form, cupoMaximo: e.target.value})} />
-                            <button className="coach-btn-primary" onClick={handlePublicar} style={{marginTop: 0, flex: 1}}>
-                                {tab === 'paquete' ? 'Generar Paquete' : 'Publicar'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 2. LISTA DE ESPERA (CENTRO) */}
-                <div className="glass-card">
-                    <h3 className="card-subtitle"><FaClock color="#FF9500" /> Lista de Espera</h3>
-                    <div className="client-list-container" style={{maxHeight: '420px'}}>
-                        {espera.length > 0 ? espera.map(item => (
-                            <div key={item.id} className="client-card-mini" style={{borderLeft: '4px solid #FF9500'}}>
-                                <div className="client-text">
-                                    <strong>{item.user.nombre} {item.user.apellido}</strong>
-                                    <span>{item.clase.nombre}</span>
-                                    <span style={{color: '#FF9500', fontSize: '10px'}}>{format(parseISO(item.clase.fecha), 'eeee dd/MM HH:mm', {locale: es})}</span>
-                                </div>
-                                <div className="client-btns">
-                                    <a href={`https://wa.me/${item.user.telefono}`} target="_blank" rel="noreferrer" className="btn-icon-med">
-                                        <FaWhatsapp color="#25D366" />
-                                    </a>
-                                    <button className="btn-icon-add" onClick={() => resolverEspera(item.id)} style={{background: '#FF9500', color: 'white'}}>
-                                        <FaCheckCircle />
-                                    </button>
-                                </div>
-                            </div>
-                        )) : (
-                            <p style={{textAlign: 'center', opacity: 0.5, marginTop: '40px'}}>Sin solicitudes pendientes.</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* 3. INSCRIPCIÓN Y BUSCADOR (ABAJO - FULL WIDTH) */}
-                <div className="glass-card" style={{gridColumn: 'span 2'}}>
-                    <h3 className="card-subtitle"><FaUserPlus color="#A9B090" /> Registro de Asistencia Manual</h3>
-                    
-                    <div className="management-header" style={{display: 'flex', gap: '20px', marginBottom: '20px'}}>
-                        <select className="coach-input" style={{flex: 2, marginBottom: 0}} value={selectedClaseId} onChange={e => setSelectedClaseId(e.target.value)}>
-                            <option value="">-- SELECCIONA LA CLASE DESTINO --</option>
-                            {clasesActivas.map(c => (
-                                <option key={c.id} value={c.id}>
-                                    {format(new Date(c.fecha), 'eeee dd/MM', {locale: es})} - {format(new Date(c.fecha), 'HH:mm')} hrs - {c.nombre}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="search-box-wrapper" style={{flex: 1}}>
-                            <FaSearch className="search-icon" />
-                            <input className="coach-input-search" placeholder="BUSCAR ALUMNO..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                        </div>
-                    </div>
-
-                    <div className="client-grid-mini" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px'}}>
-                        {filteredClientes.slice(0, 12).map(cliente => (
-                            <div key={cliente.id} className="client-card-mini">
-                                <div className="avatar-mini">{cliente.nombre.charAt(0)}</div>
-                                <div className="client-text">
-                                    <strong>{cliente.nombre} {cliente.apellido}</strong>
-                                    <span className="user-email">{cliente.email}</span>
-                                    <span className={cliente.creditosDisponibles > 0 ? "plan-active" : "plan-none"}>
-                                        Créditos: {cliente.creditosDisponibles || 0}
-                                    </span>
-                                </div>
-                                <div className="client-btns">
-                                    <button className="btn-icon-med" onClick={() => verExpediente(cliente)}><FaStethoscope /></button>
-                                    <button className="btn-icon-add" onClick={() => inscribirAlumnoManual(cliente)}>+</button>
-                                </div>
+            ) : (
+                <>
+                    {/* MÉTRICAS */}
+                    <div className="stats-row" style={{ marginBottom: 30 }}>
+                        {[
+                            { label: 'Clases hoy',      value: clasesHoy.length,                                     color: '#8FD9FB' },
+                            { label: 'Esta semana',     value: clasesEstaSemana.length,                              color: '#A9B090' },
+                            { label: 'Alumnas activas', value: clientes.filter(c => c.suscripcionActiva).length,     color: '#34C759' },
+                            { label: 'En espera',       value: espera.length, color: espera.length > 0 ? '#FF9500' : '#aeaeb2' },
+                        ].map(m => (
+                            <div key={m.label} className="stat-card glass-card">
+                                <span className="stat-label">{m.label}</span>
+                                <span className="stat-value" style={{ color: m.color }}>{m.value}</span>
                             </div>
                         ))}
                     </div>
-                </div>
 
-            </div>
-        </div>
+                    {/* ACCESOS RÁPIDOS */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 12, marginBottom: 30 }}>
+                        {quickLinks.map(link => (
+                            <button key={link.path} onClick={() => navigate(link.path)}
+                                className="ch-quick-link"
+                                style={{ borderLeft: `4px solid ${link.color}` }}>
+                                <span style={{ color: link.color }}>{link.icon}</span>
+                                <div>
+                                    <p className="ch-ql-label">{link.label}</p>
+                                    <p className="ch-ql-sub">{link.sub}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="coach-grid">
+
+                        {/* CLASES DE HOY */}
+                        <div className="glass-card">
+                            <h3 className="card-subtitle">
+                                <FaCalendarAlt color="#8FD9FB" /> Clases de hoy
+                            </h3>
+                            {clasesHoy.length === 0 ? (
+                                <p style={{ color: '#8e8e93', fontSize: '0.85rem', textAlign: 'center', padding: '20px 0' }}>
+                                    No hay clases programadas para hoy.
+                                </p>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    {clasesHoy.map(c => {
+                                        const pct = Math.round((c.inscritos / Math.max(c.cupoMaximo, 1)) * 100);
+                                        return (
+                                            <div key={c.id} className="ch-clase-card"
+                                                style={{ borderLeftColor: c.color || '#8FD9FB' }}>
+                                                {c.imageUrl && (
+                                                    <img src={c.imageUrl} alt={c.nombre} className="ch-clase-img" />
+                                                )}
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <p className="ch-clase-nombre">{c.nombre}</p>
+                                                    <p className="ch-clase-meta">
+                                                        {format(new Date(c.fecha), 'HH:mm')} hrs
+                                                        {c.tematica && ` · ${c.tematica}`}
+                                                    </p>
+                                                </div>
+                                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                                    <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 900, color: pct >= 100 ? '#FC7358' : '#8FD9FB' }}>
+                                                        {c.inscritos}/{c.cupoMaximo}
+                                                    </p>
+                                                    <p style={{ margin: 0, fontSize: '0.62rem', color: '#aeaeb2', fontWeight: 700 }}>alumnas</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* LISTA DE ESPERA RÁPIDA */}
+                        <div className="glass-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                                <h3 className="card-subtitle" style={{ margin: 0 }}>
+                                    <FaClock color="#FF9500" /> Lista de espera
+                                </h3>
+                                {espera.length > 0 && (
+                                    <button onClick={() => navigate('/coach/espera')}
+                                        style={{ background: 'none', border: 'none', color: '#8FD9FB', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase' }}>
+                                        Ver todo →
+                                    </button>
+                                )}
+                            </div>
+                            {espera.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                                    <FaCheckCircle size={28} color="#34C759" style={{ marginBottom: 8 }} />
+                                    <p style={{ color: '#8e8e93', fontSize: '0.82rem', margin: 0 }}>Sin solicitudes pendientes</p>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    {espera.slice(0, 4).map(item => (
+                                        <div key={item.id} className="client-card-mini" style={{ borderLeft: '4px solid #FF9500' }}>
+                                            <div className="client-text">
+                                                <strong>{item.user.nombre} {item.user.apellido}</strong>
+                                                <span>{item.clase.nombre}</span>
+                                                <span style={{ color: '#FF9500', fontSize: '10px' }}>
+                                                    {format(parseISO(item.clase.fecha), 'eeee dd/MM HH:mm', { locale: es })}
+                                                </span>
+                                            </div>
+                                            <div className="client-btns">
+                                                {item.user.telefono && (
+                                                    <a href={`https://wa.me/${item.user.telefono}`} target="_blank" rel="noreferrer"
+                                                        className="btn-icon-med"
+                                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+                                                        <FaWhatsapp color="#25D366" />
+                                                    </a>
+                                                )}
+                                                <button className="btn-icon-add"
+                                                    onClick={() => resolverEspera(item.id)}
+                                                    style={{ background: '#FF9500', color: 'white' }}>
+                                                    <FaCheckCircle />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* INSCRIPCIÓN MANUAL */}
+                        <div className="glass-card" style={{ gridColumn: 'span 2' }}>
+                            <h3 className="card-subtitle">
+                                <FaUserPlus color="#A9B090" /> Inscripción manual rápida
+                            </h3>
+                            <div style={{ display: 'flex', gap: 14, marginBottom: 18, flexWrap: 'wrap' }}>
+                                <select className="coach-input" style={{ flex: 2, marginBottom: 0 }}
+                                    value={selectedClaseId} onChange={e => setSelectedClaseId(e.target.value)}>
+                                    <option value="">— Selecciona la clase destino —</option>
+                                    {clasesActivas.map(c => (
+                                        <option key={c.id} value={c.id}>
+                                            {format(new Date(c.fecha), 'eeee dd/MM', { locale: es })} · {format(new Date(c.fecha), 'HH:mm')} · {c.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="search-box-wrapper" style={{ flex: 1, minWidth: 180 }}>
+                                    <FaSearch className="search-icon" />
+                                    <input className="coach-input-search" placeholder="Buscar alumna..."
+                                        value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                                </div>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                                {filteredClientes.slice(0, 9).map(c => (
+                                    <div key={c.id} className="client-card-mini">
+                                        <div className="avatar-mini" style={{ fontWeight: 900, fontSize: '1rem', color: '#8FD9FB', background: 'rgba(143,217,251,0.1)' }}>
+                                            {c.profileImageUrl ? <img src={c.profileImageUrl} alt="perfil" /> : c.nombre.charAt(0)}
+                                        </div>
+                                        <div className="client-text">
+                                            <strong>{c.nombre} {c.apellido}</strong>
+                                            <span className="user-email">{c.email}</span>
+                                            <span className={c.creditosDisponibles > 0 ? "plan-active" : "plan-none"}>
+                                                {c.creditosDisponibles || 0} créditos
+                                            </span>
+                                        </div>
+                                        <div className="client-btns">
+                                            <button className="btn-icon-add" onClick={() => inscribirAlumnoManual(c)}>+</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                    </div>
+                </>
+            )}
+        </CoachLayout>
     );
 }

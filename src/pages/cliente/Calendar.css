@@ -1,228 +1,396 @@
+/* ======================================================
+   CALENDAR.CSS — BOOZ STUDIO 2026
+   ====================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
 :root {
-    --ios-blue: #8FD9FB;
-    --ios-sage: #A9B090;
-    --ios-gold: #B49044;
-    --ios-red: #FC7358;
-    --ios-green: #34C759;
-    --font-main: "Nunito", sans-serif;
-    --shadow-premium: 0 25px 50px rgba(0, 0, 0, 0.1);
+    --blue:         #8FD9FB;
+    --blue-dark:    #5BC4F5;
+    --blue-glow:    rgba(143, 217, 251, 0.25);
+    --sage:         #A9B090;
+    --red:          #FC7358;
+    --green:        #34C759;
+    --font:         "Nunito", sans-serif;
+    --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+    --transition:   all 0.35s var(--ease);
+    --radius-card:  24px;
+    --shadow-sm:    0 4px 16px rgba(0,0,0,0.05);
+    --shadow-md:    0 12px 32px rgba(0,0,0,0.09);
+    --shadow-blue:  0 10px 28px rgba(143,217,251,0.28);
 }
 
-/* 1. CONTENEDOR PADRE: Centra todo el calendario en la pantalla */
+/* ======================================================
+   CONTENEDOR
+   ====================================================== */
 .calendar-container {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 100px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centrado horizontal del bloque completo */
-    background: none; 
-    font-family: var(--font-main);
+    padding: 100px 24px 80px;
+    font-family: var(--font);
     box-sizing: border-box;
+    animation: fadeUp 0.5s var(--ease) both;
 }
 
-/* 2. HEADER: Tres columnas simétricas para que el título sea el centro real */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
 .calendar-header {
     display: grid;
-    grid-template-columns: 80px 1fr 80px; /* Columnas laterales fijas para no empujar el centro */
+    grid-template-columns: 52px 1fr 52px;
     align-items: center;
     width: 100%;
-    margin-bottom: 60px;
-    color: var(--ios-sage);
+    margin-bottom: 40px;
+    gap: 16px;
 }
 
 .calendar-title-group {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra el texto dentro de su columna */
+    align-items: center;
+    gap: 8px;
     text-align: center;
 }
 
 .calendar-title {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
     font-weight: 900;
-    color: var(--ios-sage);
+    color: var(--sage);
     letter-spacing: -1px;
     margin: 0;
     text-transform: uppercase;
 }
 
-.credits-info {
-    font-size: 0.9rem;
-    color: #86868b;
+/* ✅ Badge de créditos */
+.credits-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(143,217,251,0.10);
+    border: 1px solid rgba(143,217,251,0.25);
+    color: var(--blue-dark);
+    font-size: 0.78rem;
     font-weight: 700;
-    margin-top: 5px;
+    padding: 5px 14px;
+    border-radius: 50px;
 }
 
-/* Botones de navegación centrados en sus slots laterales */
+.credits-badge b {
+    color: var(--blue);
+    font-weight: 900;
+}
+
+/* Botones de navegación */
 .nav-btn-glass {
     justify-self: center;
-    background: white;
-    border: 1px solid rgba(0,0,0,0.05);
-    color: #86868b;
-    width: 42px;
-    height: 42px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.07);
+    color: var(--sage);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
 .nav-btn-glass:hover {
-    transform: scale(1.1);
-    background: #f5f5f7;
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+    box-shadow: var(--shadow-blue);
+    transform: scale(1.08);
 }
 
-/* 3. GRID: Centrado respecto al contenedor */
+/* ======================================================
+   LOADER
+   ====================================================== */
+.calendar-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 80px 0;
+    color: var(--sage);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.calendar-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e5e5ea;
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.calendar-spinner.small {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ======================================================
+   GRID DEL CALENDARIO
+   ====================================================== */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 25px;
+    gap: 14px;
     width: 100%;
-    justify-content: center;
 }
 
-/* 4. TARJETAS: Alineación interna centrada */
+/* ======================================================
+   TARJETA DÍA
+   ====================================================== */
 .day-card {
-    background: white;
-    min-height: 240px;
-    padding: 25px;
+    background: #fff;
+    min-height: 200px;
+    padding: 18px 14px 14px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra horizontalmente contenido interno */
-    justify-content: flex-start;
-    text-align: center; /* Centra el texto */
-    border-radius: 28px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    align-items: center;
+    text-align: center;
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: var(--transition);
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.4s var(--ease) both;
+}
+
+/* Acento azul en la parte superior al hover */
+.day-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.day-card:hover::before { opacity: 1; }
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .day-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-premium);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(143,217,251,0.2);
 }
 
 .day-card.has-sessions {
-    border-color: rgba(143, 217, 251, 0.4);
+    border-color: rgba(143,217,251,0.3);
+    background: linear-gradient(160deg, #fff, #f5fcff);
 }
 
-/* Cabecera del día centrada */
+.day-card.grayed-out {
+    opacity: 0.28;
+    pointer-events: none;
+}
+
+.day-card.today-card {
+    border: 2px solid var(--blue);
+    box-shadow: 0 0 0 4px rgba(143,217,251,0.12), var(--shadow-sm);
+}
+
+/* Cabecera del día */
 .day-header-info {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .day-name-mini {
-    font-size: 0.7rem;
-    font-weight: 800;
+    font-size: 0.62rem;
+    font-weight: 900;
     color: #aeaeb2;
     text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .day-number {
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-size: 1.7rem;
+    font-weight: 900;
     color: #1d1d1f;
-    margin-top: 5px;
+    line-height: 1.1;
+    margin-top: 2px;
+    transition: color 0.2s;
 }
 
-/* Color azul solo si hay sesiones para mayor claridad visual */
-.has-sessions .day-number {
-    color: var(--ios-blue);
-}
+.has-sessions .day-number { color: var(--blue); }
+.today-card .day-number   { color: var(--red) !important; }
 
-.today-card .day-number {
-    color: var(--ios-red) !important;
-}
-
-/* 5. SESIONES: Lista centrada */
+/* Sesiones dentro de la tarjeta */
 .sessions-preview {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra los items de sesión */
-    gap: 8px;
+    gap: 5px;
     width: 100%;
+    flex: 1;
+    overflow: hidden;
 }
 
 .session-dot-line {
-    font-size: 0.75rem;
-    padding: 4px 12px;
-    color: #1d1d1f;
-    border-left: 3px solid var(--ios-blue);
-    background: rgba(143, 217, 251, 0.05);
-    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    padding: 5px 8px;
+    background: rgba(143,217,251,0.06);
+    border-radius: 8px;
+    border-left: 3px solid var(--blue);
     font-weight: 700;
-    width: fit-content; /* El fondo solo ocupa lo que el texto necesite */
-    max-width: 100%;
+    color: #1d1d1f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: var(--transition);
+    text-align: left;
 }
 
-/* 6. BOTÓN: Centrado perfecto */
+.session-dot-line:hover {
+    background: rgba(143,217,251,0.12);
+}
+
+.session-dot-line b {
+    color: var(--blue);
+    flex-shrink: 0;
+}
+
+.session-dot-line span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.more-sessions {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.no-class-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #d1d1d6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+/* Botón reservar */
 .btn-reservar-ios {
     margin-top: auto;
-    width: 90%;
-    max-width: 160px; /* Ancho controlado para que se vea elegante */
-    padding: 12px;
-    border-radius: 16px;
+    width: 100%;
+    padding: 9px 0;
+    border-radius: 12px;
     border: none;
-    background: #f2f2f7; 
+    background: #f2f2f7;
     color: #aeaeb2;
+    font-family: var(--font);
     font-weight: 800;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    transition: all 0.3s ease;
-    align-self: center; /* Asegura el centrado si el padre es flex */
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 10px;
 }
 
-.has-sessions .btn-reservar-ios {
-    background: var(--ios-blue);
-    color: white !important;
-    box-shadow: 0 6px 15px rgba(143, 217, 251, 0.3);
+.has-sessions .btn-reservar-ios,
+.btn-reservar-ios.pulse-btn {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    box-shadow: var(--shadow-blue);
+    animation: softPulse 2.5s infinite;
 }
 
-/* ----------------------------------- */
-/* RESPONSIVE                          */
-/* ----------------------------------- */
-@media (max-width: 1200px) {
+@keyframes softPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(143,217,251,0.4); }
+    50%      { box-shadow: 0 0 0 6px rgba(143,217,251,0); }
+}
+
+
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+@media (max-width: 1100px) {
     .calendar-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
+    .calendar-container { padding: 90px 14px 60px; }
+
     .calendar-header {
-        grid-template-columns: 1fr; /* En móvil el título arriba y flechas abajo o a los lados */
-        gap: 20px;
+        grid-template-columns: 44px 1fr 44px;
+        margin-bottom: 24px;
     }
-    
-    .nav-btn-glass { display: none; } /* Ocultar flechas o reubicarlas según diseño móvil */
 
     .calendar-grid {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        gap: 10px;
     }
 
     .day-card {
-        width: 100%;
-        max-width: 400px;
-        min-height: auto;
         flex-direction: row;
-        justify-content: space-between;
-        padding: 20px;
+        min-height: auto;
+        padding: 16px 18px;
+        align-items: center;
+        text-align: left;
+        gap: 14px;
     }
 
+    .day-card::before { display: none; }
+
     .day-header-info {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 0;
-        align-items: flex-start;
+        min-width: 64px;
     }
+
+    .day-number { font-size: 1.4rem; }
+
+    .sessions-preview {
+        flex: 1;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .session-dot-line { font-size: 0.65rem; padding: 3px 7px; }
 
     .btn-reservar-ios {
         width: auto;
+        min-width: 90px;
         margin-top: 0;
+        padding: 10px 14px;
+        flex-shrink: 0;
     }
 }

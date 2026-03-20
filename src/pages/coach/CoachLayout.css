@@ -1,0 +1,268 @@
+/* ======================================================
+   COACHLAYOUT.CSS — BOOZ STUDIO 2026
+   Header + navegación compartida para todas las páginas coach
+   ====================================================== */
+
+:root {
+    --blue:       #8FD9FB;
+    --blue-dark:  #5BC4F5;
+    --sage:       #A9B090;
+    --red:        #FC7358;
+    --font:       "Nunito", sans-serif;
+    --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    --transition: all 0.3s var(--ease);
+    --nav-h:      64px;   /* altura del bottom nav en mobile */
+    --top-h:      60px;   /* altura del topbar */
+}
+
+/* ======================================================
+   WRAPPER PRINCIPAL
+   ====================================================== */
+.cl-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    font-family: var(--font);
+}
+
+/* ======================================================
+   TOP BAR
+   ====================================================== */
+.cl-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: var(--top-h);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    gap: 16px;
+}
+
+.cl-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+}
+
+/* Botón de regreso */
+.cl-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(143,217,251,0.10);
+    border: 1px solid rgba(143,217,251,0.25);
+    border-radius: 10px;
+    color: var(--blue);
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cl-back-btn:hover {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+    transform: translateX(-2px);
+}
+
+/* Título en el topbar */
+.cl-topbar-title {
+    min-width: 0;
+}
+
+.cl-topbar-title h1 {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cl-topbar-title p {
+    font-size: 0.72rem;
+    color: #8e8e93;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Botón de logout */
+.cl-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    background: rgba(252,115,88,0.08);
+    border: 1px solid rgba(252,115,88,0.2);
+    border-radius: 10px;
+    color: var(--red);
+    font-family: var(--font);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cl-logout-btn:hover {
+    background: var(--red);
+    color: #fff;
+    border-color: var(--red);
+}
+
+.cl-logout-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.cl-logout-btn:hover svg {
+    transform: translateX(3px);
+}
+
+/* ======================================================
+   CONTENIDO — ocupa todo el espacio disponible
+   ====================================================== */
+.cl-content {
+    flex: 1;
+    width: 100%;
+    /* Sin max-width — usa toda la pantalla */
+    padding: 28px 32px;
+    box-sizing: border-box;
+    /* En mobile dejamos espacio para el nav inferior */
+    padding-bottom: calc(28px + var(--nav-h));
+}
+
+/* ======================================================
+   NAVEGACIÓN INFERIOR — visible en mobile
+   ====================================================== */
+.cl-bottom-nav {
+    display: none; /* oculto en desktop */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-h);
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    z-index: 100;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+}
+
+.cl-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: #aeaeb2;
+    font-family: var(--font);
+    font-size: 0.55rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 6px 2px;
+}
+
+.cl-nav-item svg {
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+
+.cl-nav-item.active {
+    color: var(--blue);
+}
+
+.cl-nav-item.active svg {
+    transform: translateY(-2px);
+}
+
+.cl-nav-item:hover { color: var(--blue); }
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+
+/* Desktop: sidebar de navegación lateral */
+@media (min-width: 1024px) {
+    .cl-topbar {
+        padding: 0 40px;
+    }
+
+    .cl-content {
+        padding: 32px 40px;
+        padding-bottom: 32px; /* en desktop no hay nav inferior */
+    }
+}
+
+/* Tablet */
+@media (max-width: 1023px) and (min-width: 601px) {
+    .cl-content {
+        padding: 24px 24px;
+        padding-bottom: calc(24px + var(--nav-h));
+    }
+
+    .cl-bottom-nav {
+        display: flex;
+    }
+
+    /* En tablet el logout muestra solo el ícono */
+    .cl-logout-btn span { display: none; }
+    .cl-logout-btn { padding: 8px 10px; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .cl-topbar {
+        padding: 0 16px;
+        height: 54px;
+    }
+
+    .cl-topbar-title h1 { font-size: 0.9rem; }
+    .cl-topbar-title p  { display: none; }
+
+    .cl-back-btn span   { display: none; }
+    .cl-back-btn        { padding: 8px 10px; }
+
+    .cl-logout-btn span { display: none; }
+    .cl-logout-btn      { padding: 8px 10px; }
+
+    .cl-content {
+        padding: 16px 14px;
+        padding-bottom: calc(16px + var(--nav-h));
+    }
+
+    .cl-bottom-nav {
+        display: flex;
+    }
+}

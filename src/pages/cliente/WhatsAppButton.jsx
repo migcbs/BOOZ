@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FaWhatsapp } from 'react-icons/fa'; // 🟢 Importar el ícono de WhatsApp
 import { AiOutlineClose } from 'react-icons/ai'; // 🟢 Ícono para cerrar
-import "./Styles.css";
+import "./Whatsapp.css";
 
 // 💡 TU NÚMERO DE WHATSAPP (código de país + número, sin +, guiones o espacios)
 const WHATSAPP_NUMBER = "522212477126"; 

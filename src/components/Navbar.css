@@ -1,47 +1,93 @@
 /* ======================================================
-   CONFIGURACIÓN DE VARIABLES
+   NAVBAR.CSS — BOOZ STUDIO
    ====================================================== */
+
 :root {
-  --booz-blue: #8FD9FB;
-  --booz-dark: #1d1d1f;
-  --booz-red: #ff4d4d; /* Rojo para el logout hover */
-  --glass-white: rgba(255, 255, 255, 0.95);
+  --booz-blue:       #8FD9FB;
+  --booz-blue-dark:  #5BC4F5;
+  --booz-dark:       #1d1d1f;
+  --booz-red:        #ff4d4d;
+  --glass-white:     rgba(255, 255, 255, 0.95);
   --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ------------------------------------------------------
-   CONTENEDOR PRINCIPAL
-------------------------------------------------------- */
+/* ======================================================
+   ANIMACIONES
+   ====================================================== */
+
+/* Entrada del navbar al montar la página */
+@keyframes nav-drop-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-24px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Pulso suave del logo al hacer hover */
+@keyframes logo-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+
+/* Underline que crece desde el centro en los links */
+@keyframes link-underline {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Fade out al cerrar sesión */
+@keyframes nav-fade-out {
+  to { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+
+/* ======================================================
+   CONTENEDOR
+   ====================================================== */
 .navbar-container {
   position: fixed !important;
-  top: 0; 
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100% !important;
   max-width: 1400px;
   z-index: 9999;
   transition: var(--transition-smooth);
-  pointer-events: none; 
+  pointer-events: none;
   display: flex;
   justify-content: center;
 }
 
-.navbar-container.scrolled-container {
-  top: 20px !important;
-  width: max-content !important; 
-  min-width: 520px; 
-  pointer-events: auto;
-  padding: 0 30px; 
+/* Estado inicial — invisible */
+.navbar-container.nav-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-24px);
 }
 
-/* ------------------------------------------------------
-   NAVBAR (La barra interna)
-------------------------------------------------------- */
+/* Animación de entrada */
+.navbar-container.nav-visible {
+  animation: nav-drop-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Salida al hacer logout */
+.navbar-container.nav-leaving {
+  animation: nav-fade-out 0.35s ease forwards;
+  pointer-events: none;
+}
+
+.navbar-container.scrolled-container {
+  top: 20px !important;
+  width: max-content !important;
+  min-width: 520px;
+  pointer-events: auto;
+  padding: 0 30px;
+}
+
+/* ======================================================
+   NAVBAR INTERNO
+   ====================================================== */
 .navbar {
-  margin: 20px auto; 
+  margin: 20px auto;
   width: 97%;
-  padding: 15px 45px; 
-  border-radius: 100px; 
+  padding: 15px 45px;
+  border-radius: 100px;
   display: flex !important;
   justify-content: space-between;
   align-items: center;
@@ -57,14 +103,14 @@
   background: var(--glass-white) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(143, 217, 251, 0.2) !important; /* Borde sutil azulado */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(143, 217, 251, 0.2) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.10) !important;
   padding: 10px 45px !important;
 }
 
-/* ------------------------------------------------------
-   ESTRUCTURA Y SEPARADORES
-------------------------------------------------------- */
+/* ======================================================
+   ESTRUCTURA
+   ====================================================== */
 .nav-left, .nav-right {
   display: flex;
   align-items: center;
@@ -92,17 +138,16 @@
   margin-left: 20px;
   padding-left: 25px;
   padding-right: 5px;
-  border-left: 1.5px solid rgba(143, 217, 251, 0.4); 
+  border-left: 1.5px solid rgba(143, 217, 251, 0.4);
 }
 
-/* ------------------------------------------------------
-   TIPOGRAFÍA Y COLORES (SIEMPRE AZUL)
-------------------------------------------------------- */
-/* Forzamos el azul en todos los estados */
-.nav-logo, 
-.nav-link, 
-.social-icons a, 
-.nav-btn-profile, 
+/* ======================================================
+   TIPOGRAFÍA Y COLORES
+   ====================================================== */
+.nav-logo,
+.nav-link,
+.social-icons a,
+.nav-btn-profile,
 .nav-user-actions svg,
 .logout-btn {
   color: var(--booz-blue) !important;
@@ -111,87 +156,46 @@
   text-transform: uppercase;
 }
 
-/* Efecto hover general para links */
-.nav-link:hover, .social-icons a:hover {
+.nav-logo  { font-size: 1.6rem; font-weight: 900; letter-spacing: 2.5px; }
+.nav-link  { font-size: 0.8rem; font-weight: 800; letter-spacing: 1.2px; position: relative; }
+
+/* ✅ Underline animado en los links */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--booz-blue);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after { transform: scaleX(1); }
+
+.nav-link:hover,
+.social-icons a:hover  {
   filter: brightness(1.2);
   transform: translateY(-2px);
 }
 
-.nav-logo {
-  font-size: 1.6rem;
-  font-weight: 900;
-  letter-spacing: 2.5px;
-}
-
-.nav-link {
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-}
-
-/* ------------------------------------------------------
-   BOTONES (Efecto Logout Rojo)
-------------------------------------------------------- */
-.logout-btn {
-  background: rgba(143, 217, 251, 0.1);
-  border: 1.5px solid rgba(143, 217, 251, 0.3);
-  padding: 10px 22px;
-  border-radius: 50px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-/* 🟢 EL CAMBIO: HOVER ROJO PARA CERRAR SESIÓN */
-.logout-btn:hover {
-  color: #fff !important;
-  background: var(--booz-red) !important;
-  border-color: var(--booz-red) !important;
-  box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
-}
-
-/* ------------------------------------------------------
-   RESPONSIVE
-------------------------------------------------------- */
-@media (max-width: 1050px) {
-  .nav-center { display: none !important; }
-  .navbar-container.scrolled-container { min-width: 450px; }
-}
-
-@media (max-width: 600px) {
-  .social-icons { display: none !important; }
-  .navbar-container.scrolled-container { 
-    min-width: unset;
-    width: 95% !important; 
-    padding: 0 10px;
-  }
-  .navbar { padding: 10px 25px; }
-}
-
-
-
-
-
-
-
-
-
-
-
-/* ------------------------------------------------------
-   CONTENEDOR DEL LOGO (FIX: Alineación a la izquierda)
-------------------------------------------------------- */
+/* ======================================================
+   LOGO
+   ====================================================== */
 .logo-wrapper {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 🟢 FIX: Empuja el logo totalmente a la izquierda */
-  width: 140px; /* Espacio reservado */
-  height: 60px; 
+  justify-content: flex-start;
+  width: 140px;
+  height: 60px;
+  transition: var(--transition-smooth);
 }
 
 .nav-isologo-img {
-  max-height: 50%; /* Un poco más grande para que luzca */
+  max-height: 50%;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -199,66 +203,97 @@
   transition: var(--transition-smooth);
 }
 
-/* Cuando se hace scroll (Cápsula) */
-.navbar.scrolled .logo-wrapper {
-  width: 70px; /* Reducimos el espacio reservado */
-  height: 45px;
+/* ✅ Pulso suave al hacer hover en el logo */
+.nav-logo:hover .nav-isologo-img {
+  animation: logo-pulse 0.6s ease;
+  filter: brightness(1.1);
 }
 
-.navbar.scrolled .nav-isologo-img {
-  max-height: 70%; /* Que ocupe casi toda la cápsula */
+.navbar.scrolled .logo-wrapper    { width: 70px; height: 45px; }
+.navbar.scrolled .nav-isologo-img { max-height: 70%; }
+
+/* ======================================================
+   ÍCONO DE PERFIL
+   ====================================================== */
+.nav-btn-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(143, 217, 251, 0.08);
+  border: 1.5px solid rgba(143, 217, 251, 0.2);
+  transition: var(--transition-smooth);
 }
 
-/* ------------------------------------------------------
-   BLOQUE RESPONSIVO REFORZADO
-------------------------------------------------------- */
+/* ✅ Hover con relleno suave */
+.nav-btn-profile:hover {
+  background: rgba(143, 217, 251, 0.18);
+  border-color: rgba(143, 217, 251, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(143, 217, 251, 0.25);
+}
 
-/* Tablet / Laptops pequeñas */
+.nav-btn-profile:active {
+  transform: scale(0.92);
+}
+
+/* ======================================================
+   BOTÓN LOGOUT
+   ====================================================== */
+.logout-btn {
+  background: rgba(143, 217, 251, 0.08);
+  border: 1.5px solid rgba(143, 217, 251, 0.3);
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.logout-btn:hover:not(:disabled) {
+  color: #fff !important;
+  background: var(--booz-red) !important;
+  border-color: var(--booz-red) !important;
+  box-shadow: 0 0 18px rgba(255, 77, 77, 0.35);
+  transform: translateY(-2px);
+}
+
+.logout-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* ✅ Estado mientras cierra sesión */
+.logout-btn.logging-out {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
 @media (max-width: 1050px) {
-  .nav-center { 
-    display: none !important; /* Ocultamos links para no amontonar */
-  }
-  
-  .navbar-container.scrolled-container { 
-    min-width: 450px; 
-  }
-  
-  .logo-wrapper {
-    width: 110px; /* Logo más discreto */
-  }
+  .nav-center { display: none !important; }
+  .navbar-container.scrolled-container { min-width: 450px; }
+  .logo-wrapper { width: 110px; }
 }
 
-/* Mobile (Teléfonos) */
 @media (max-width: 600px) {
-  .social-icons { 
-    display: none !important; /* Quitamos redes para que quepa Perfil y Salir */
-  }
-
-  .navbar-container.scrolled-container { 
+  .social-icons { display: none !important; }
+  .navbar-container.scrolled-container {
     min-width: unset;
-    width: 95% !important; 
+    width: 95% !important;
     padding: 0 10px;
   }
-
-  .navbar { 
-    padding: 10px 20px; 
-    gap: 15px;
-  }
-
-  .logo-wrapper {
-    width: 90px; /* Logo más pequeño en móvil */
-    height: 40px;
-  }
-
-  .logout-btn {
-    padding: 8px 12px;
-    font-size: 0.65rem; /* Botón más compacto */
-  }
+  .navbar { padding: 10px 20px; gap: 15px; }
+  .logo-wrapper { width: 90px; height: 40px; }
+  .logout-btn { padding: 8px 12px; font-size: 0.65rem; }
 }
 
-/* Pantallas súper pequeñas (iPhone SE, etc) */
 @media (max-width: 380px) {
-  .logout-btn {
-    display: none; /* Si es muy pequeño, solo dejamos el icono de perfil y el logo */
-  }
+  .logout-btn { display: none; }
 }

@@ -2,56 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { 
     FaUserCircle, FaCreditCard, FaCalendarCheck, FaEnvelope, 
     FaEdit, FaCheckCircle, FaAngleRight, FaPhone, FaBirthdayCake, 
-    FaUserMd, FaBolt, FaInstagram, FaTimesCircle, FaStethoscope,
+    FaUserMd, FaBolt, FaTimesCircle, FaStethoscope,
     FaClock, FaMapMarkerAlt, 
     FaBed, FaTicketAlt, FaCalendarPlus 
 } from 'react-icons/fa';
-import { format, parseISO, isBefore, differenceInDays, subHours, isAfter } from 'date-fns';
+import { format, parseISO, isBefore, subHours, isAfter } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import ProfileEditForm from './ProfileEditForm';
-import Tienda from './Tienda'; 
-import './Styles.css';
-// 🟢 IMPORTACIÓN DINÁMICA
-import API_BASE_URL from '../../apiConfig'; 
+import Tienda from './Tienda';
+import './Perfil.css';
+import authFetch from '../../authFetch';
 
 const getUpcomingBooking = (bookings) => {
     if (!bookings || bookings.length === 0) return null;
     const today = new Date();
     const upcoming = bookings
         .map(b => ({ ...b, dateTime: typeof b.fecha === 'string' ? parseISO(b.fecha) : new Date(b.fecha) }))
-        .filter(b => isAfter(b.dateTime, today)) 
+        .filter(b => isAfter(b.dateTime, today))
         .sort((a, b) => a.dateTime - b.dateTime);
     return upcoming.length > 0 ? upcoming[0] : null;
 };
 
 export default function Perfil() {
     const navigate = useNavigate();
-    const [fullUser, setFullUser] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [showTienda, setShowTienda] = useState(false); 
-    const [loading, setLoading] = useState(true);
+    const [fullUser, setFullUser]     = useState(null);
+    const [isEditing, setIsEditing]   = useState(false);
+    const [showTienda, setShowTienda] = useState(false);
+    const [loading, setLoading]       = useState(true);
 
     const loadProfileData = async () => {
-        const sessionUser = JSON.parse(localStorage.getItem('user'));
-        const email = sessionUser?.email || sessionUser?.correo;
-        
+        // ✅ CORRECCIÓN: clave correcta booz_user
+        const sessionUser = JSON.parse(localStorage.getItem('booz_user'));
+        const email = sessionUser?.email;
+
         if (!email) return navigate('/login');
 
         try {
-            // 🟢 ACTUALIZACIÓN PARA VERCEL
-            const response = await fetch(`${API_BASE_URL}/user/${encodeURIComponent(email)}`);
-            if (response.ok) {
+            // ✅ authFetch agrega el token JWT automáticamente
+            const response = await authFetch(`/user/${encodeURIComponent(email)}`);
+            if (response && response.ok) {
                 const data = await response.json();
                 setFullUser(data);
-                // Mantenemos el localStorage fresco para otros componentes
-                localStorage.setItem('user', JSON.stringify(data));
+                // ✅ CORRECCIÓN: clave correcta booz_user
+                localStorage.setItem('booz_user', JSON.stringify(data));
             }
-        } catch (error) { 
-            console.error("Error cargando perfil:", error); 
-        } finally { 
-            setLoading(false); 
+        } catch (error) {
+            console.error("Error cargando perfil:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -60,7 +60,7 @@ export default function Perfil() {
     const downloadICS = (booking) => {
         const date = booking.dateTime;
         const startDate = format(date, "yyyyMMdd'T'HHmmss");
-        const endDate = format(new Date(date.getTime() + 60 * 60 * 1000), "yyyyMMdd'T'HHmmss");
+        const endDate   = format(new Date(date.getTime() + 60 * 60 * 1000), "yyyyMMdd'T'HHmmss");
 
         const icsContent = [
             "BEGIN:VCALENDAR",
@@ -86,19 +86,19 @@ export default function Perfil() {
 
     const handleSaveProfile = async (updatedData) => {
         try {
-            // 🟢 ACTUALIZACIÓN PARA VERCEL
-            const response = await fetch(`${API_BASE_URL}/user/update`, {
+            // ✅ authFetch agrega el token JWT automáticamente
+            const response = await authFetch(`/coach/update-expediente/${fullUser.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData)
             });
 
-            if (response.ok) {
+            if (response && response.ok) {
                 const result = await response.json();
                 setFullUser(result.user);
-                localStorage.setItem('user', JSON.stringify(result.user));
+                // ✅ CORRECCIÓN: clave correcta booz_user
+                localStorage.setItem('booz_user', JSON.stringify(result.user));
                 setIsEditing(false);
-                Swal.fire({ icon: 'success', title: 'Perfil Actualizado', timer: 1500 });
+                Swal.fire({ icon: 'success', title: 'Perfil Actualizado', timer: 1500, showConfirmButton: false });
             }
         } catch (error) {
             Swal.fire('Error', 'No se pudieron guardar los cambios en el servidor.', 'error');
@@ -106,8 +106,8 @@ export default function Perfil() {
     };
 
     const handleCancelarReserva = async (reservaId, fechaClase) => {
-        const ahora = new Date();
-        const claseDate = typeof fechaClase === 'string' ? parseISO(fechaClase) : new Date(fechaClase);
+        const ahora       = new Date();
+        const claseDate   = typeof fechaClase === 'string' ? parseISO(fechaClase) : new Date(fechaClase);
         const limiteCancelacion = subHours(claseDate, 24);
 
         if (isAfter(ahora, limiteCancelacion)) {
@@ -131,18 +131,21 @@ export default function Perfil() {
 
         if (confirm.isConfirmed) {
             try {
-                // 🟢 ACTUALIZACIÓN PARA VERCEL
-                const response = await fetch(`${API_BASE_URL}/reservas/cancelar`, {
+                // ✅ authFetch agrega el token JWT automáticamente
+                const response = await authFetch('/reservas/cancelar', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reservaId, userEmail: fullUser.email })
+                    body: JSON.stringify({ 
+                        reservaId, 
+                        userEmail: fullUser.email 
+                    })
                 });
-                if (response.ok) {
+
+                if (response && response.ok) {
                     await Swal.fire('Cancelada', 'Tu lugar se ha liberado y tu crédito ha vuelto a tu billetera.', 'success');
-                    loadProfileData(); 
+                    loadProfileData();
                 }
-            } catch (e) { 
-                Swal.fire('Error', 'Servidor no disponible.', 'error'); 
+            } catch (e) {
+                Swal.fire('Error', 'Servidor no disponible.', 'error');
             }
         }
     };
@@ -155,22 +158,34 @@ export default function Perfil() {
         </div>
     );
 
-    if (!fullUser) return <div className="profile-page-container">No se encontró el usuario.</div>;
+    if (!fullUser) return (
+        <div className="profile-page-container">
+            No se encontró el usuario.
+        </div>
+    );
 
     const upcomingBooking = getUpcomingBooking(fullUser.reservas || []);
 
     return (
         <div className="profile-page-container animate-ios-entry">
             {showTienda && (
-                <Tienda isModal={showTienda} onClose={() => setShowTienda(false)} userEmail={fullUser.email} />
+                <Tienda 
+                    isModal={showTienda} 
+                    onClose={() => setShowTienda(false)} 
+                    userEmail={fullUser.email} 
+                />
             )}
 
             {isEditing ? (
-                <ProfileEditForm initialData={fullUser} onSave={handleSaveProfile} onCancel={() => setIsEditing(false)} />
+                <ProfileEditForm 
+                    initialData={fullUser} 
+                    onSave={handleSaveProfile} 
+                    onCancel={() => setIsEditing(false)} 
+                />
             ) : (
                 <div className="profile-grid">
-                    
-                    {/* COLUMNA IZQUIERDA: RESUMEN Y WALLET */}
+
+                    {/* COLUMNA IZQUIERDA */}
                     <div className="summary-column">
                         <div className="profile-card glass-card personal-info-card">
                             <div className="profile-header-flex">
@@ -184,11 +199,14 @@ export default function Perfil() {
                                     <span className="user-role-badge">MIEMBRO BOOZ</span>
                                 </div>
                             </div>
-                            
+
                             <div className="contact-details-mini">
                                 <p><FaEnvelope /> {fullUser.email}</p>
                                 <p><FaPhone /> {fullUser.telefono || 'Sin teléfono'}</p>
-                                <p><FaBirthdayCake /> {fullUser.fechaNacimiento ? format(parseISO(fullUser.fechaNacimiento), 'dd MMM yyyy', { locale: es }) : 'N/A'}</p>
+                                <p><FaBirthdayCake /> {fullUser.fechaNacimiento 
+                                    ? format(parseISO(fullUser.fechaNacimiento), 'dd MMM yyyy', { locale: es }) 
+                                    : 'N/A'}
+                                </p>
                             </div>
 
                             <div className="medical-summary-grid">
@@ -198,7 +216,7 @@ export default function Perfil() {
                                     <span><FaUserMd /> {fullUser.contactoEmergencia || 'N/A'}</span>
                                 </div>
                             </div>
-                            
+
                             <button className="btn-edit-booz" onClick={() => setIsEditing(true)}>
                                 <FaEdit /> Editar Perfil
                             </button>
@@ -218,10 +236,10 @@ export default function Perfil() {
                         </div>
                     </div>
 
-                    {/* COLUMNA DERECHA: RESERVAS Y ACTIVIDAD */}
+                    {/* COLUMNA DERECHA */}
                     <div className="bookings-column">
                         <div className={`profile-card upcoming-card-premium glass-card ${upcomingBooking?.posterUrl ? 'has-poster' : ''}`}>
-                            
+
                             {upcomingBooking?.posterUrl && (
                                 <div className="upcoming-hero-image">
                                     <img src={upcomingBooking.posterUrl} alt="Poster" className="poster-img-full" />
@@ -277,9 +295,8 @@ export default function Perfil() {
                                                 <p>Booz Studio Central</p>
                                             </div>
                                         </div>
-
-                                        <button 
-                                            className="btn-cancel-reserva-full" 
+                                        <button
+                                            className="btn-cancel-reserva-full"
                                             onClick={() => handleCancelarReserva(upcomingBooking.id, upcomingBooking.fecha)}
                                         >
                                             <FaTimesCircle /> Cancelar Reservación
@@ -288,7 +305,12 @@ export default function Perfil() {
                                 ) : (
                                     <div className="empty-state">
                                         <p>No tienes clases programadas actualmente.</p>
-                                        <button className="btn-action-primary" onClick={() => navigate('/cliente/inicio')}>Ver Horarios Disponibles</button>
+                                        <button 
+                                            className="btn-action-primary" 
+                                            onClick={() => navigate('/cliente/inicio')}
+                                        >
+                                            Ver Horarios Disponibles
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -297,19 +319,24 @@ export default function Perfil() {
                         <div className="profile-card glass-card history-card">
                             <h3 className="card-title-accent">Actividad Reciente</h3>
                             <div className="history-list">
-                                {fullUser.reservas?.filter(r => isBefore(parseISO(r.fecha), new Date())).slice(0, 5).map(res => (
-                                    <div key={res.id} className="history-item">
-                                        <div className="history-dot"></div>
-                                        <div className="history-info">
-                                            <strong>{res.nombre}</strong>
-                                            <span>{format(parseISO(res.fecha), 'dd MMM, HH:mm', { locale: es })}</span>
+                                {fullUser.reservas
+                                    ?.filter(r => isBefore(parseISO(r.fecha), new Date()))
+                                    .slice(0, 5)
+                                    .map(res => (
+                                        <div key={res.id} className="history-item">
+                                            <div className="history-dot"></div>
+                                            <div className="history-info">
+                                                <strong>{res.nombre}</strong>
+                                                <span>{format(parseISO(res.fecha), 'dd MMM, HH:mm', { locale: es })}</span>
+                                            </div>
+                                            <FaCheckCircle className="icon-done" style={{ marginLeft: 'auto', color: '#34C759' }} />
                                         </div>
-                                        <FaCheckCircle className="icon-done" style={{marginLeft: 'auto', color: '#34C759'}} />
-                                    </div>
-                                ))}
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
+
                 </div>
             )}
         </div>
