@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
@@ -37,7 +35,12 @@ const app = express();
 // CORS
 // ======================================================
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://booz.vercel.app'],
+    origin: [
+        'http://localhost:3000',
+        'https://booz.vercel.app',
+        'https://booz-studio.com',
+        'https://www.booz-studio.com'
+    ],
     credentials: true
 }));
 
