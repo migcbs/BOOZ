@@ -27,6 +27,7 @@ export default function Register() {
   const [showPass, setShowPass]             = useState(false);
   const [errors, setErrors]                 = useState({});
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [showResponsiva, setShowResponsiva] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
