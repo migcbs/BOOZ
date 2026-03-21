@@ -58,7 +58,7 @@
    ====================================================== */
 .profile-page-container {
     max-width: 1100px;
-    margin: 150px auto 80px;
+    margin: 110px auto 80px;
     padding: 0 24px;
     font-family: var(--font);
     color: #1d1d1f;
@@ -78,6 +78,8 @@
     grid-template-columns: 340px 1fr;
     gap: 20px;
     align-items: start;
+    min-width: 0;
+    width: 100%;
 }
 
 /* ======================================================
@@ -93,6 +95,9 @@
     margin-bottom: 18px;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
 }
 
 .profile-card::before {
@@ -171,6 +176,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .user-role-badge {
@@ -1053,14 +1059,16 @@
    ====================================================== */
 @media (max-width: 960px) {
     .profile-grid        { grid-template-columns: 1fr; gap: 0; }
-    .summary-column      { order: 1; }
+    .summary-column      { order: 1; margin-top: 100px;}
     .bookings-column     { order: 2; }
 }
 
 @media (max-width: 600px) {
     .profile-page-container {
-        margin: 90px auto 50px;
-        padding: 0 14px;
+        margin: 120px auto 60px;
+        padding: 0 16px;
+        overflow-x: hidden;
+        max-width: 100vw;
     }
 
     .profile-card {
@@ -1096,4 +1104,111 @@
     .btn-save-sage,
     .btn-cancel-glass               { flex: none; width: 100%; }
     .profile-title                  { font-size: 1.4rem; }
+}
+
+/* ======================================================
+   MOBILE FIX — overflow y tamaños
+   ====================================================== */
+@media (max-width: 480px) {
+    html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+    }
+
+    .profile-page-container {
+        margin: 140px auto 60px;
+        padding: 0 12px;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .profile-card {
+        padding: 18px 16px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Nombre truncado */
+    .profile-name {
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: calc(100vw - 140px);
+    }
+
+    /* Header de perfil más compacto */
+    .profile-header-flex {
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .profile-pic-booz,
+    .avatar-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        flex-shrink: 0;
+    }
+
+    /* Contacto */
+    .contact-details-mini p {
+        font-size: 0.75rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Ficha médica */
+    .medical-summary-grid {
+        padding: 14px;
+    }
+
+    /* Billetera */
+    .credits-display .amount {
+        font-size: 2.4rem;
+    }
+
+    .btn-action-wallet,
+    .btn-edit-booz {
+        padding: 13px;
+        font-size: 0.78rem;
+    }
+
+    /* Tarjeta de evento */
+    .upcoming-body {
+        padding: 16px;
+    }
+
+    .upcoming-data-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .data-item.full {
+        grid-column: 1;
+    }
+
+    .upcoming-hero-image {
+        height: 170px;
+    }
+
+    /* Historia */
+    .history-item {
+        padding: 11px 13px;
+    }
+
+    .history-info strong {
+        font-size: 0.78rem;
+    }
 }
