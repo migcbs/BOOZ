@@ -14,6 +14,7 @@ export default function ReservaPopup({ dayData, close }) {
   const [camilla, setCamilla]             = useState(null);
   const [loading, setLoading]             = useState(false);
   const [loadingClases, setLoadingClases] = useState(true);
+  const [showJumpWarning, setShowJumpWarning] = useState(false);
 
   // ✅ CORRECCIÓN: clave booz_user con fallback seguro
   const user = (() => {
@@ -173,7 +174,7 @@ export default function ReservaPopup({ dayData, close }) {
                   <div
                     key={c.id}
                     className={`clase-row ${selectedClase?.id === c.id ? 'selected' : ''} ${llena ? 'full' : ''}`}
-                    onClick={() => !llena && setSelectedClase(c)}
+                    onClick={() => { if (!llena) { setSelectedClase(c); setShowJumpWarning(false); } }}
                   >
                     {/* Dot de color de la clase */}
                     <div
@@ -257,12 +258,41 @@ export default function ReservaPopup({ dayData, close }) {
 
         </div>
 
+        {/* AVISO JUMP&FLOW */}
+        {showJumpWarning && selectedClase?.tematica === 'Jump&Flow' && (
+          <div className="jumpflow-warning">
+            <div className="jumpflow-warning-header">
+              <span className="jumpflow-warning-icon">⚡</span>
+              <strong>Requisitos para Jump&Flow</strong>
+            </div>
+            <p>Antes de confirmar, asegúrate de cumplir con lo siguiente:</p>
+            <ul>
+              <li>✨ NO tener lesiones en rodillas/tobillos.</li>
+              <li>✨ Poder realizar cardio HIIT (elevar la frecuencia cardiaca).</li>
+            </ul>
+            <div className="jumpflow-warning-actions">
+              <button className="jumpflow-btn-cancel" onClick={() => setShowJumpWarning(false)}>
+                Cancelar
+              </button>
+              <button className="jumpflow-btn-confirm" onClick={() => { setShowJumpWarning(false); confirmar(); }}>
+                Sí, cumplo los requisitos
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* FOOTER */}
         <div className="modal-footer-solid">
           <button
             className={`btn-primary-booz ${estaLlena ? 'waitlist-mode' : ''}`}
-            onClick={confirmar}
-            disabled={loading || !selectedClase}
+            onClick={() => {
+              if (!estaLlena && selectedClase?.tematica === 'Jump&Flow') {
+                setShowJumpWarning(true);
+              } else {
+                confirmar();
+              }
+            }}
+            disabled={loading || !selectedClase || showJumpWarning}
           >
             {loading
               ? "Procesando..."

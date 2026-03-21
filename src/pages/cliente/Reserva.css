@@ -493,3 +493,103 @@
     justify-content: flex-end;
     padding: 20px 24px;
 }
+
+/* ======================================================
+   AVISO JUMP&FLOW
+   ====================================================== */
+.jumpflow-warning {
+    margin: 0 24px 16px;
+    background: linear-gradient(135deg, rgba(143,217,251,0.08), rgba(143,217,251,0.04));
+    border: 1.5px solid rgba(143,217,251,0.3);
+    border-radius: 18px;
+    padding: 18px 20px;
+    animation: fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.jumpflow-warning-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.jumpflow-warning-icon {
+    font-size: 1.2rem;
+}
+
+.jumpflow-warning-header strong {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.jumpflow-warning p {
+    font-size: 0.82rem;
+    color: #555;
+    font-weight: 600;
+    margin: 0 0 10px;
+}
+
+.jumpflow-warning ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.jumpflow-warning ul li {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    padding: 10px 14px;
+    background: rgba(143,217,251,0.08);
+    border-radius: 12px;
+    border-left: 3px solid #8FD9FB;
+}
+
+.jumpflow-warning-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.jumpflow-btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #8e8e93;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.jumpflow-btn-cancel:hover { background: #f5f5f7; }
+
+.jumpflow-btn-confirm {
+    flex: 2;
+    padding: 12px;
+    background: linear-gradient(135deg, #8FD9FB, #5BC4F5);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 6px 16px rgba(143,217,251,0.30);
+}
+
+.jumpflow-btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(143,217,251,0.40);
+}

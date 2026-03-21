@@ -108,8 +108,31 @@ function ClaseForm({ initialData, fecha, onSave, onClose, onDelete }) {
                 </div>
                 <div className="cc-field">
                     <label>Temática</label>
-                    <input className="cc-input" placeholder="Ej: Movilidad y respiraciónon" value={form.tematica}
-                        onChange={e => set('tematica', e.target.value)} />
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <input className="cc-input" placeholder="Ej: Movilidad y respiración"
+                            value={form.tematica === 'Jump&Flow' ? '' : form.tematica}
+                            disabled={form.tematica === 'Jump&Flow'}
+                            onChange={e => set('tematica', e.target.value)}
+                            style={{ flex: 1, opacity: form.tematica === 'Jump&Flow' ? 0.5 : 1 }} />
+                        <button
+                            type="button"
+                            onClick={() => set('tematica', form.tematica === 'Jump&Flow' ? '' : 'Jump&Flow')}
+                            style={{
+                                padding: '10px 14px', border: 'none', borderRadius: 10,
+                                background: form.tematica === 'Jump&Flow' ? '#8FD9FB' : '#f2f2f7',
+                                color: form.tematica === 'Jump&Flow' ? '#fff' : '#8e8e93',
+                                fontFamily: 'Nunito, sans-serif', fontWeight: 900,
+                                fontSize: '0.75rem', cursor: 'pointer', whiteSpace: 'nowrap',
+                                transition: 'all 0.2s ease', flexShrink: 0,
+                            }}>
+                            {form.tematica === 'Jump&Flow' ? '✓ Jump&Flow' : '+ Jump&Flow'}
+                        </button>
+                    </div>
+                    {form.tematica === 'Jump&Flow' && (
+                        <p style={{ fontSize: '0.68rem', color: '#8FD9FB', fontWeight: 700, marginTop: 5 }}>
+                            ⚡ Esta clase mostrará el aviso de requisitos al momento de reservar
+                        </p>
+                    )}
                 </div>
             </div>
 
