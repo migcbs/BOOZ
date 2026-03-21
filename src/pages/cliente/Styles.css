@@ -1692,7 +1692,7 @@ button {
 /* --- RESPONSIVIDAD --- */
 @media (max-width: 992px) {
     .profile-grid { grid-template-columns: 1fr; }
-    .profile-page-container { margin: 40px auto; }
+    .profile-page-container { margin: 20px 10px; }
 }
 
 /* --- MEJORAS DE UX EN FORMULARIO --- */
