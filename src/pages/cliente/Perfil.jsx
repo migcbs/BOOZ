@@ -86,22 +86,24 @@ export default function Perfil() {
 
     const handleSaveProfile = async (updatedData) => {
         try {
-            // ✅ authFetch agrega el token JWT automáticamente
             const response = await authFetch(`/coach/update-expediente/${fullUser.id}`, {
                 method: 'PUT',
                 body: JSON.stringify(updatedData)
             });
 
-            if (response && response.ok) {
-                const result = await response.json();
+            const result = await response?.json();
+
+            if (response?.ok && result?.user) {
                 setFullUser(result.user);
-                // ✅ CORRECCIÓN: clave correcta booz_user
                 localStorage.setItem('booz_user', JSON.stringify(result.user));
                 setIsEditing(false);
-                Swal.fire({ icon: 'success', title: 'Perfil Actualizado', timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: '¡Perfil actualizado!', timer: 1500, showConfirmButton: false });
+            } else {
+                Swal.fire('Error', result?.error || 'No se pudieron guardar los cambios.', 'error');
             }
         } catch (error) {
-            Swal.fire('Error', 'No se pudieron guardar los cambios en el servidor.', 'error');
+            console.error('Error guardando perfil:', error);
+            Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
         }
     };
 

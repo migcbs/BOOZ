@@ -266,30 +266,46 @@ app.get('/api/coach/clientes',
 
 app.put('/api/coach/update-expediente/:id',
     verifyToken,
-    requireRole('coach', 'admin'),
     async (req, res) => {
         const { id } = req.params;
+        const isCoachOrAdmin = req.user.role === 'coach' || req.user.role === 'admin';
+        const isOwner = req.user.id === id.trim();
+
+        // Solo coach/admin o el propio usuario pueden actualizar
+        if (!isCoachOrAdmin && !isOwner) {
+            return res.status(403).json({ error: 'No autorizado' });
+        }
+
         try {
             const {
                 nombre, apellido, telefono, instagram,
                 creditosDisponibles, suscripcionActiva,
-                lesiones, alergias, tipoSangre, contactoEmergencia
+                lesiones, alergias, tipoSangre, contactoEmergencia,
+                profileImageUrl, fechaNacimiento
             } = req.body;
 
-            // ✅ Validación básica de créditos
-            const creditos = parseInt(creditosDisponibles);
-            if (isNaN(creditos) || creditos < 0) {
-                return res.status(400).json({ error: 'creditosDisponibles debe ser un número positivo' });
+            // Campos que cualquier usuario puede editar en su propio perfil
+            const dataBase = {
+                nombre, apellido, telefono, instagram,
+                lesiones, alergias, tipoSangre, contactoEmergencia,
+                profileImageUrl: profileImageUrl || null,
+                fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento) : null,
+            };
+
+            // Campos que solo coach/admin pueden modificar
+            if (isCoachOrAdmin) {
+                const creditos = parseInt(creditosDisponibles);
+                if (!isNaN(creditos) && creditos >= 0) {
+                    dataBase.creditosDisponibles = creditos;
+                }
+                if (suscripcionActiva !== undefined) {
+                    dataBase.suscripcionActiva = String(suscripcionActiva) === 'true';
+                }
             }
 
             const updated = await prisma.user.update({
                 where: { id: id.trim() },
-                data: {
-                    nombre, apellido, telefono, instagram,
-                    creditosDisponibles: creditos,
-                    suscripcionActiva: String(suscripcionActiva) === 'true',
-                    lesiones, alergias, tipoSangre, contactoEmergencia
-                }
+                data: dataBase
             });
             const { password: _, ...safeUser } = updated;
             res.json({ success: true, user: safeUser });
