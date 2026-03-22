@@ -154,9 +154,9 @@ export default function Navbar() {
             </button>
           </div>
           <div className="social-icons">
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook"><FaFacebookF /></a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
-            <a href="https://tiktok.com"    target="_blank" rel="noreferrer" aria-label="TikTok"><FaTiktok /></a>
+            <a href="https://www.facebook.com/booz.studio" target="_blank" rel="noreferrer" aria-label="Facebook"><FaFacebookF /></a>
+            <a href="https://www.instagram.com/booz.studio/" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
+            <a href="https://www.tiktok.com/@booz.studio"    target="_blank" rel="noreferrer" aria-label="TikTok"><FaTiktok /></a>
           </div>
         </div>
 
