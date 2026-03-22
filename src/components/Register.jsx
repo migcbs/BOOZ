@@ -41,8 +41,6 @@ export default function Register() {
     if (!form.correo.includes("@"))             e.correo            = "Correo inválido.";
     if (form.password.length < 8)               e.password          = "Mínimo 8 caracteres.";
     if (form.password !== form.passwordConfirm) e.passwordConfirm   = "Las contraseñas no coinciden.";
-    if (!form.responsivaFirmada)                e.responsivaFirmada = "Acepta la responsiva para continuar.";
-
     setErrors(e);
     if (Object.keys(e).length > 0) {
       setShowErrorPopup(true);
@@ -53,12 +51,12 @@ export default function Register() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    if (!validate()) return;
-    // Mostrar responsiva antes de registrar
+    // Mostrar responsiva PRIMERO, antes de cualquier validación
     if (!form.responsivaFirmada) {
       setShowResponsiva(true);
       return;
     }
+    if (!validate()) return;
     setLoading(true);
 
     const userToSave = {
@@ -235,14 +233,14 @@ export default function Register() {
         </div>
 
         {/* Responsiva */}
-        <label className="checkbox-label">
-          <input type="checkbox" name="responsivaFirmada"
-            checked={form.responsivaFirmada} onChange={handleChange} />
-          <span className="checkbox-text">
-            Acepto la responsiva y los{" "}
-            <span className="auth-link-highlight">términos de Booz Studio</span>.
-          </span>
-        </label>
+        <p className="responsiva-aviso-texto">
+          Al registrarte aceptarás la{" "}
+          <button type="button"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: '#8FD9FB', fontWeight: 800, textDecoration: 'underline' }}
+            onClick={() => setShowResponsiva(true)}>
+            responsiva de participación
+          </button>{" "}de Booz Studio.
+        </p>
 
         <button id="btn-registrarme" className="auth-button" type="submit" disabled={loading}>
           {loading ? "Creando cuenta..." : "Registrarme"}
