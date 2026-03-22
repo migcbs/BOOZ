@@ -289,7 +289,7 @@ app.put('/api/coach/update-expediente/:id',
                 nombre, apellido, telefono, instagram,
                 lesiones, alergias, tipoSangre, contactoEmergencia,
                 profileImageUrl: profileImageUrl || null,
-                fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento) : null,
+                fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento + 'T12:00:00') : null,
             };
 
             // Campos que solo coach/admin pueden modificar
