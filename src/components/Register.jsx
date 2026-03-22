@@ -54,6 +54,11 @@ export default function Register() {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     if (!validate()) return;
+    // Mostrar responsiva antes de registrar
+    if (!form.responsivaFirmada) {
+      setShowResponsiva(true);
+      return;
+    }
     setLoading(true);
 
     const userToSave = {
@@ -239,7 +244,7 @@ export default function Register() {
           </span>
         </label>
 
-        <button className="auth-button" type="submit" disabled={loading}>
+        <button id="btn-registrarme" className="auth-button" type="submit" disabled={loading}>
           {loading ? "Creando cuenta..." : "Registrarme"}
         </button>
 
