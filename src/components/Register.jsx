@@ -257,6 +257,66 @@ export default function Register() {
         </p>
       </div>
 
+      {/* ── MODAL RESPONSIVA ── */}
+      {showResponsiva && (
+        <div className="responsiva-overlay" onClick={e => e.target === e.currentTarget && setShowResponsiva(false)}>
+          <div className="responsiva-modal">
+
+            <div className="responsiva-header">
+              <h3>Responsiva de Participación</h3>
+              <button className="responsiva-close" onClick={() => setShowResponsiva(false)}>✕</button>
+            </div>
+
+            <div className="responsiva-body">
+              <p className="responsiva-estudio">BOOZ Studio</p>
+
+              <p>Al inscribirme y participar en las clases de BOOZ Studio, me comprometo a realizar el ejercicio de manera consciente, prestando atención a mi cuerpo y siguiendo en todo momento las indicaciones de la instructora.</p>
+
+              <p>Declaro que es mi responsabilidad informar previamente sobre cualquier lesión, condición médica o limitación física, con el fin de que sea considerada durante la ejecución de la rutina.</p>
+
+              <p>Asimismo, me comprometo a comunicar de inmediato cualquier molestia, dolor o incomodidad que surja durante la clase.</p>
+
+              <p>Entiendo que mi bienestar depende también de escuchar a mi cuerpo y respetar sus límites.</p>
+
+              <div className="responsiva-firma-box">
+                <div className="responsiva-firma-row">
+                  <span className="responsiva-firma-label">Nombre</span>
+                  <span className="responsiva-firma-valor">
+                    {(form.nombre || form.apellido) ? `${form.nombre} ${form.apellido}`.trim() : '____________________'}
+                  </span>
+                </div>
+                <div className="responsiva-firma-row">
+                  <span className="responsiva-firma-label">Firma</span>
+                  <span className="responsiva-firma-valor responsiva-firma-check">
+                    ✓ Aceptación digital — botón "Acepto y registrarme"
+                  </span>
+                </div>
+                <div className="responsiva-firma-row">
+                  <span className="responsiva-firma-label">Fecha</span>
+                  <span className="responsiva-firma-valor">
+                    {new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="responsiva-footer">
+              <button className="responsiva-btn-cancel" onClick={() => setShowResponsiva(false)}>
+                Cancelar
+              </button>
+              <button className="responsiva-btn-accept" onClick={() => {
+                setForm(f => ({ ...f, responsivaFirmada: true }));
+                setShowResponsiva(false);
+                setTimeout(() => document.getElementById('btn-registrarme')?.click(), 100);
+              }}>
+                Acepto y registrarme
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
