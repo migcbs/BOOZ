@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import ErrorNotification from "./ErrorNotification";
@@ -258,7 +259,7 @@ export default function Register() {
       </div>
 
       {/* ── MODAL RESPONSIVA ── */}
-      {showResponsiva && (
+      {showResponsiva && ReactDOM.createPortal(
         <div className="responsiva-overlay" onClick={e => e.target === e.currentTarget && setShowResponsiva(false)}>
           <div className="responsiva-modal">
 
@@ -315,7 +316,7 @@ export default function Register() {
 
           </div>
         </div>
-      )}
+      , document.body)}
 
     </div>
   );
