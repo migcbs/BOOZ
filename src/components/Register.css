@@ -196,3 +196,12 @@
     .responsiva-btn-cancel,
     .responsiva-btn-accept { flex: none; width: 100%; }
 }
+
+.responsiva-aviso-texto {
+    font-size: 0.78rem;
+    color: #8e8e93;
+    font-weight: 600;
+    text-align: center;
+    margin: 4px 0 16px;
+    line-height: 1.5;
+}
