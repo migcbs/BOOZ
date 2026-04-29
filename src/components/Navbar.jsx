@@ -7,8 +7,6 @@ import IsologoBooz from './assets/isologo.png';
 const scrollToSection = (id) => {
   if (id === "inicio-section") {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-    document.body.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     const element = document.getElementById(id);
     if (element) {
@@ -19,21 +17,20 @@ const scrollToSection = (id) => {
 
 export default function Navbar() {
   const [scrolled, setScrolled]     = useState(false);
-  const [visible, setVisible]       = useState(false); // ✅ Para animación de entrada
-  const [loggingOut, setLoggingOut] = useState(false); // ✅ Para feedback visual del logout
-  const location  = useLocation();
-  const navigate  = useNavigate();
+  const [visible, setVisible]       = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // ✅ Leer rol con useState — se actualiza en cada cambio de ruta
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const s = localStorage.getItem("booz_user");
       return s ? JSON.parse(s) : null;
     } catch { return null; }
   });
+
   const role = currentUser?.role || "";
 
-  // Re-leer el usuario cada vez que cambia la ruta
   useEffect(() => {
     try {
       const s = localStorage.getItem("booz_user");
@@ -42,52 +39,48 @@ export default function Navbar() {
   }, [location.pathname]);
 
   const hideNavbar =
-    location.pathname === "/login"     ||
-    location.pathname === "/register"  ||
+    location.pathname === "/login"    ||
+    location.pathname === "/register" ||
     location.pathname.startsWith("/coach") ||
     location.pathname.startsWith("/admin");
 
-  const links = role === 'cliente' ? [
-    { id: "inicio-section",    label: "Inicio"     },
-    { id: "calendario-section", label: "Calendario" },
-    { id: "ubicacion-section", label: "Ubicación"  },
-  ] : [];
+  const links = [
+    { id: "inicio-section",     label: "Inicio"    },
+    { id: "calendario-section", label: "Clases"    },
+    { id: "ubicacion-section",  label: "Ubicación" },
+  ];
 
-  // ✅ Ruta de perfil según rol
   const perfilPath =
     role === 'admin' ? '/admin/perfil' :
     role === 'coach' ? '/coach/perfil' :
     '/cliente/perfil';
 
   const handleScroll = useCallback(() => {
-    const offset = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+    const offset = window.scrollY || document.documentElement.scrollTop;
     setScrolled(offset > 20);
   }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
-    document.body.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      document.body.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
 
-  // ✅ Animación de entrada al montar
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 80);
     return () => clearTimeout(t);
   }, []);
 
-  // ✅ CORRECCIÓN: logout limpia las claves correctas
   const handleLogout = () => {
     setLoggingOut(true);
     setTimeout(() => {
       localStorage.removeItem("booz_token");
       localStorage.removeItem("booz_user");
-      navigate("/login");
-    }, 350); // Pequeño delay para que se vea la animación
+      navigate("/cliente/home");
+      setLoggingOut(false); // Resetear estado por si acaso
+    }, 350);
   };
 
   const handleClientNavigation = (id, e) => {
@@ -103,11 +96,7 @@ export default function Navbar() {
   if (hideNavbar) return null;
 
   return (
-    <div className={`navbar-container 
-      ${scrolled  ? "scrolled-container" : ""} 
-      ${visible   ? "nav-visible"        : "nav-hidden"}
-      ${loggingOut ? "nav-leaving"       : ""}
-    `}>
+    <div className={`navbar-container ${scrolled ? "scrolled-container" : ""} ${visible ? "nav-visible" : "nav-hidden"} ${loggingOut ? "nav-leaving" : ""}`}>
       <nav className={`navbar ${scrolled ? "scrolled" : ""} navbar-${role}`}>
 
         {/* LOGO */}
@@ -141,22 +130,41 @@ export default function Navbar() {
         {/* ACCIONES */}
         <div className="nav-right">
           <div className="nav-user-actions">
-            {/* ✅ Perfil apunta a la ruta correcta según rol */}
-            <Link to={perfilPath} className="nav-btn-profile" aria-label="Mi perfil">
-              <FaUserCircle size={22} />
-            </Link>
-            <button
-              className={`nav-btn logout-btn ${loggingOut ? "logging-out" : ""}`}
-              onClick={handleLogout}
-              disabled={loggingOut}
-            >
-              {loggingOut ? "Saliendo..." : "Cerrar sesión"}
-            </button>
+            {currentUser ? (
+              <>
+                <Link to={perfilPath} className="nav-btn-profile" aria-label="Mi perfil">
+                  <FaUserCircle size={22} />
+                </Link>
+                <button
+                  className={`nav-btn logout-btn ${loggingOut ? "logging-out" : ""}`}
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                >
+                  {loggingOut ? "Saliendo..." : "Cerrar sesión"}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-btn-profile" aria-label="Iniciar sesión">
+                  <FaUserCircle size={22} />
+                </Link>
+                <Link to="/login" className="nav-btn logout-btn">
+                  Iniciar sesión
+                </Link>
+              </>
+            )}
           </div>
+
           <div className="social-icons">
-            <a href="https://www.facebook.com/booz.studio" target="_blank" rel="noreferrer" aria-label="Facebook"><FaFacebookF /></a>
-            <a href="https://www.instagram.com/booz.studio/" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
-            <a href="https://www.tiktok.com/@booz.studio"    target="_blank" rel="noreferrer" aria-label="TikTok"><FaTiktok /></a>
+            <a href="https://www.facebook.com/booz.studio" target="_blank" rel="noreferrer" aria-label="Facebook">
+              <FaFacebookF />
+            </a>
+            <a href="https://www.instagram.com/booz.studio/" target="_blank" rel="noreferrer" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="https://www.tiktok.com/@booz.studio" target="_blank" rel="noreferrer" aria-label="TikTok">
+              <FaTiktok />
+            </a>
           </div>
         </div>
 

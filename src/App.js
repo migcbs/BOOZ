@@ -29,15 +29,17 @@ function App() {
         <main className="main-content">
           <Routes>
 
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* ✅ Raíz pública → landing page */}
+            <Route path="/" element={<Navigate to="/cliente/home" replace />} />
 
             <Route path="/login"    element={<Login />} />
             <Route path="/register" element={<Register />} />
 
             {/* CLIENTE */}
-            <Route path="/cliente/home"
-              element={<ProtectedRoute element={ClienteHome} allowedRoles={["cliente"]} />}
-            />
+            {/* ✅ /cliente/home es pública — no requiere sesión */}
+            <Route path="/cliente/home" element={<ClienteHome />} />
+
+            {/* 🔒 Perfil sigue protegido */}
             <Route path="/cliente/perfil"
               element={<ProtectedRoute element={Perfil} allowedRoles={["cliente"]} />}
             />
