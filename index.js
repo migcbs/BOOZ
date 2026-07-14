@@ -223,7 +223,7 @@ app.get('/api/me', verifyToken, async (req, res) => {
                     select: {
                         id: true, nombre: true, fecha: true, paqueteRef: true,
                         cupoMaximo: true, inscritos: true, color: true,
-                        imageUrl: true, tematica: true, descripcion: true,
+                        imageUrl: true, tematica: true, descripcion: true, criterios: true,
                         numeroCamilla: true, userId: true, createdAt: true
                     }
                 }
@@ -348,7 +348,7 @@ app.get('/api/clases/disponibles', async (req, res) => {
                 id: true, nombre: true, tematica: true, descripcion: true,
                 paqueteRef: true, fecha: true, color: true, imageUrl: true,
                 cupoMaximo: true, inscritos: true, numeroCamilla: true,
-                userId: true, createdAt: true,
+                userId: true, createdAt: true, criterios: true,
                 espera: { select: { id: true } }
             }
         });
@@ -363,7 +363,7 @@ app.post('/api/coach/crear-paquete',
     requireRole('coach', 'admin'),
     async (req, res) => {
         try {
-            const { nombre, tematica, descripcion, paqueteRef, hora, fechaInicio, color, imageUrl, cupoMaximo } = req.body;
+            const { nombre, tematica, descripcion, paqueteRef, hora, fechaInicio, color, imageUrl, cupoMaximo, criterios } = req.body;
 
             // ✅ Validaciones
             if (!nombre || !paqueteRef || !hora || !fechaInicio) {
@@ -394,7 +394,8 @@ app.post('/api/coach/crear-paquete',
                         color: color || '#8FD9FB',
                         imageUrl: imageUrl || '',
                         cupoMaximo: Math.max(1, parseInt(cupoMaximo) || 8),
-                        inscritos: 0
+                        inscritos: 0,
+                        criterios: Array.isArray(criterios) ? criterios : []
                     });
                 }
             }
@@ -412,7 +413,7 @@ app.post('/api/coach/crear-suelta',
     requireRole('coach', 'admin'),
     async (req, res) => {
         try {
-            const { nombre, tematica, descripcion, hora, fechaInicio, color, imageUrl, cupoMaximo } = req.body;
+            const { nombre, tematica, descripcion, hora, fechaInicio, color, imageUrl, cupoMaximo, criterios } = req.body;
 
             if (!nombre || !hora || !fechaInicio) {
                 return res.status(400).json({ error: 'Faltan campos requeridos' });
@@ -432,7 +433,8 @@ app.post('/api/coach/crear-suelta',
                     color: color || '#8FD9FB',
                     imageUrl: imageUrl || '',
                     cupoMaximo: Math.max(1, parseInt(cupoMaximo) || 8),
-                    inscritos: 0
+                    inscritos: 0,
+                    criterios: Array.isArray(criterios) ? criterios : []
                 }
             });
             res.json({ success: true, clase: nueva });
@@ -467,6 +469,104 @@ app.delete('/api/admin/clases-reset',
             res.json({ success: true, eliminadas: count });
         } catch (e) {
             res.status(500).json({ error: 'Error en reset' });
+        }
+    }
+);
+
+// ======================================================
+// 3.5 CONFIGURACIÓN GLOBAL Y CRITERIOS (personalización admin)
+// ======================================================
+app.get('/api/config', async (req, res) => {
+    try {
+        const config = await prisma.siteConfig.upsert({
+            where: { id: 1 },
+            update: {},
+            create: { id: 1 },
+        });
+        res.json(config);
+    } catch (e) {
+        res.status(500).json({ error: 'Error al obtener configuración' });
+    }
+});
+
+app.put('/api/config',
+    verifyToken,
+    requireRole('admin'),
+    async (req, res) => {
+        try {
+            const { permitirEfectivo } = req.body;
+            const data = {};
+            if (typeof permitirEfectivo === 'boolean') data.permitirEfectivo = permitirEfectivo;
+
+            const config = await prisma.siteConfig.upsert({
+                where: { id: 1 },
+                update: data,
+                create: { id: 1, ...data },
+            });
+            res.json({ success: true, config });
+        } catch (e) {
+            res.status(500).json({ error: 'Error al actualizar configuración' });
+        }
+    }
+);
+
+app.get('/api/criterios', async (req, res) => {
+    try {
+        const soloActivos = req.query.todos !== 'true';
+        const criterios = await prisma.criterio.findMany({
+            where: soloActivos ? { activo: true } : undefined,
+            orderBy: { orden: 'asc' },
+        });
+        res.json(criterios);
+    } catch (e) {
+        res.status(500).json([]);
+    }
+});
+
+app.post('/api/criterios',
+    verifyToken,
+    requireRole('admin'),
+    async (req, res) => {
+        try {
+            const { nombre } = req.body;
+            if (!nombre || !nombre.trim()) {
+                return res.status(400).json({ error: 'El nombre es requerido' });
+            }
+            const ultimo = await prisma.criterio.findFirst({ orderBy: { orden: 'desc' } });
+            const criterio = await prisma.criterio.create({
+                data: { nombre: nombre.trim(), orden: (ultimo?.orden ?? -1) + 1 },
+            });
+            res.json({ success: true, criterio });
+        } catch (e) {
+            if (e.code === 'P2002') {
+                return res.status(400).json({ error: 'Ya existe un criterio con ese nombre' });
+            }
+            res.status(500).json({ error: 'Error al crear criterio' });
+        }
+    }
+);
+
+app.put('/api/criterios/:id',
+    verifyToken,
+    requireRole('admin'),
+    async (req, res) => {
+        try {
+            const { nombre, activo, orden } = req.body;
+            const data = {};
+            if (typeof nombre === 'string' && nombre.trim()) data.nombre = nombre.trim();
+            if (typeof activo === 'boolean') data.activo = activo;
+            if (typeof orden === 'number') data.orden = orden;
+
+            const criterio = await prisma.criterio.update({
+                where: { id: req.params.id },
+                data,
+            });
+            res.json({ success: true, criterio });
+        } catch (e) {
+            if (e.code === 'P2002') {
+                return res.status(400).json({ error: 'Ya existe un criterio con ese nombre' });
+            }
+            res.status(500).json({ error: 'Error al actualizar criterio' });
         }
     }
 );
@@ -523,7 +623,8 @@ app.post('/api/reservas',
                         tematica: claseMaestra.tematica || 'Clase',
                         descripcion: claseMaestra.descripcion || '',
                         color: claseMaestra.color || '#8FD9FB',
-                        imageUrl: claseMaestra.imageUrl || ''
+                        imageUrl: claseMaestra.imageUrl || '',
+                        criterios: claseMaestra.criterios || []
                     }
                 });
 
@@ -553,7 +654,7 @@ app.post('/api/reservas',
                     select: {
                         id: true, nombre: true, fecha: true, paqueteRef: true,
                         cupoMaximo: true, inscritos: true, color: true,
-                        imageUrl: true, tematica: true, descripcion: true,
+                        imageUrl: true, tematica: true, descripcion: true, criterios: true,
                         numeroCamilla: true, userId: true, createdAt: true
                     }
                 }
@@ -689,7 +790,7 @@ app.get('/api/user/:email',
                     select: {
                         id: true, nombre: true, fecha: true, paqueteRef: true,
                         cupoMaximo: true, inscritos: true, color: true,
-                        imageUrl: true, tematica: true, descripcion: true,
+                        imageUrl: true, tematica: true, descripcion: true, criterios: true,
                         numeroCamilla: true, userId: true, createdAt: true
                     }
                 }

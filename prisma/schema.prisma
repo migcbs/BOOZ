@@ -88,6 +88,9 @@ model Class {
   inscritos     Int         @default(0)
   numeroCamilla Int?
 
+  // ✅ NUEVO: Criterios/tags de la clase (ej. Jump&Glow, Silla wunda), multi-select
+  criterios     String[]    @default([])
+
   // ✅ NUEVO: Guardamos cómo se pagó esta reserva para
   // devolver crédito correctamente al cancelar
   metodoPago    MetodoPago?
@@ -128,4 +131,22 @@ model ProcessedStripeEvent {
   processedAt   DateTime @default(now())
 
   @@index([stripeEventId])
+}
+
+// ✅ NUEVO: Configuración global de la plataforma, editable desde el admin
+model SiteConfig {
+  id               Int      @id @default(1)
+  permitirEfectivo Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+}
+
+// ✅ NUEVO: Criterios/tags de clase administrables (ej. Jump&Glow, Silla wunda)
+model Criterio {
+  id        String   @id @default(uuid())
+  nombre    String   @unique
+  activo    Boolean  @default(true)
+  orden     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([activo, orden])
 }

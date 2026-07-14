@@ -26,7 +26,8 @@ const DEFAULT_FORM = {
     nombre: '', tematica: '', descripcion: '',
     tipo: 'suelta', paqueteRef: 'LMV',
     hora: '07:00', fechaInicio: '',
-    color: '#8FD9FB', imageUrl: '', cupoMaximo: 8
+    color: '#8FD9FB', imageUrl: '', cupoMaximo: 8,
+    criterios: []
 };
 
 // ──────────────────────────────────────────────
@@ -48,13 +49,31 @@ function ClaseForm({ initialData, fecha, onSave, onClose, onDelete }) {
     const [form, setForm] = useState(() => ({
         ...DEFAULT_FORM,
         fechaInicio: fecha ? format(fecha, 'yyyy-MM-dd') : '',
-        ...initialData
+        ...initialData,
+        criterios: initialData?.criterios || []
     }));
     const [preview, setPreview] = useState(initialData?.imageUrl || null);
     const [saving, setSaving] = useState(false);
+    const [criteriosDisponibles, setCriteriosDisponibles] = useState([]);
     const fileRef = useRef();
 
+    useEffect(() => {
+        authFetch('/criterios')
+            .then(res => res?.json())
+            .then(data => setCriteriosDisponibles(Array.isArray(data) ? data : []))
+            .catch(() => setCriteriosDisponibles([]));
+    }, []);
+
     const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+    const toggleCriterio = (nombre) => {
+        setForm(f => ({
+            ...f,
+            criterios: f.criterios.includes(nombre)
+                ? f.criterios.filter(c => c !== nombre)
+                : [...f.criterios, nombre]
+        }));
+    };
 
     const handleImage = e => {
         const file = e.target.files[0];
@@ -108,32 +127,39 @@ function ClaseForm({ initialData, fecha, onSave, onClose, onDelete }) {
                 </div>
                 <div className="cc-field">
                     <label>Temática</label>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <input className="cc-input" placeholder="Ej: Movilidad y respiración"
-                            value={form.tematica === 'Jump&Flow' ? '' : form.tematica}
-                            disabled={form.tematica === 'Jump&Flow'}
-                            onChange={e => set('tematica', e.target.value)}
-                            style={{ flex: 1, opacity: form.tematica === 'Jump&Flow' ? 0.5 : 1 }} />
-                        <button
-                            type="button"
-                            onClick={() => set('tematica', form.tematica === 'Jump&Flow' ? '' : 'Jump&Flow')}
-                            style={{
-                                padding: '10px 14px', border: 'none', borderRadius: 10,
-                                background: form.tematica === 'Jump&Flow' ? '#8FD9FB' : '#f2f2f7',
-                                color: form.tematica === 'Jump&Flow' ? '#fff' : '#8e8e93',
-                                fontFamily: 'Nunito, sans-serif', fontWeight: 900,
-                                fontSize: '0.75rem', cursor: 'pointer', whiteSpace: 'nowrap',
-                                transition: 'all 0.2s ease', flexShrink: 0,
-                            }}>
-                            {form.tematica === 'Jump&Flow' ? '✓ Jump&Flow' : '+ Jump&Flow'}
-                        </button>
-                    </div>
-                    {form.tematica === 'Jump&Flow' && (
-                        <p style={{ fontSize: '0.68rem', color: '#8FD9FB', fontWeight: 700, marginTop: 5 }}>
-                            ⚡ Esta clase mostrará el aviso de requisitos al momento de reservar
-                        </p>
-                    )}
+                    <input className="cc-input" placeholder="Ej: Movilidad y respiración"
+                        value={form.tematica}
+                        onChange={e => set('tematica', e.target.value)} />
                 </div>
+            </div>
+
+            <div className="cc-field">
+                <label>Criterios</label>
+                <div className="cc-criterios-select">
+                    {criteriosDisponibles.length === 0 && (
+                        <span style={{ fontSize: '0.72rem', color: '#8e8e93', fontWeight: 700 }}>
+                            No hay criterios activos. Créalos desde Configuración.
+                        </span>
+                    )}
+                    {criteriosDisponibles.map(c => {
+                        const active = form.criterios.includes(c.nombre);
+                        return (
+                            <button
+                                key={c.id}
+                                type="button"
+                                className={`cc-criterio-toggle ${active ? 'active' : ''}`}
+                                onClick={() => toggleCriterio(c.nombre)}
+                            >
+                                {active ? '✓ ' : '+ '}{c.nombre}
+                            </button>
+                        );
+                    })}
+                </div>
+                {form.criterios.includes('Jump&Glow') && (
+                    <p style={{ fontSize: '0.68rem', color: '#8FD9FB', fontWeight: 700, marginTop: 5 }}>
+                        ⚡ Esta clase mostrará el aviso de requisitos al momento de reservar
+                    </p>
+                )}
             </div>
 
             <div className="cc-field">
@@ -302,7 +328,8 @@ export default function CoachCalendar({ embedded = false }) {
                     fechaInicio: form.fechaInicio,
                     color:       form.color,
                     imageUrl:    form.imageUrl,
-                    cupoMaximo:  form.cupoMaximo
+                    cupoMaximo:  form.cupoMaximo,
+                    criterios:   form.criterios || []
                 })
             });
             if (res?.ok) {
@@ -386,7 +413,8 @@ export default function CoachCalendar({ embedded = false }) {
                     fechaInicio: format(targetDay, 'yyyy-MM-dd'),
                     color:       clase.color,
                     imageUrl:    clase.imageUrl,
-                    cupoMaximo:  clase.cupoMaximo
+                    cupoMaximo:  clase.cupoMaximo,
+                    criterios:   clase.criterios || []
                 })
             });
             if (res?.ok) {

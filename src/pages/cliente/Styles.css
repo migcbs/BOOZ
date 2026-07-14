@@ -2691,6 +2691,63 @@ button {
     color: var(--text-color, #333);
 }
 
+/* Pills de criterios */
+.criterio-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -6px 0 14px;
+}
+
+.criterio-pill {
+    background: rgba(143, 217, 251, 0.12);
+    border: 1.5px solid rgba(143, 217, 251, 0.4);
+    color: #1d1d1f;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    transition: transform 0.2s ease;
+}
+
+.criterio-pill:hover { transform: translateY(-1px); }
+
+/* Botón "Ver detalles" */
+.btn-ver-detalles {
+    grid-column: 1 / -1;
+    background: rgba(143, 217, 251, 0.1);
+    color: #8FD9FB;
+    border: 1px solid rgba(143, 217, 251, 0.3);
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-ver-detalles:hover {
+    background: #8FD9FB;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.history-item {
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.history-item:hover {
+    transform: translateX(2px);
+    background: rgba(143, 217, 251, 0.06);
+    border-radius: 10px;
+}
+
 /* Botón de Cancelar */
 .btn-cancel-reserva-full {
     grid-column: 1 / -1;
