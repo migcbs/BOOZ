@@ -5,7 +5,7 @@ import {
     FaWallet, FaCheckCircle, FaFileMedical, FaHistory,
     FaEnvelope, FaSignOutAlt, FaClock, FaTimes, FaSave,
     FaDownload, FaHeartbeat, FaBars, FaUserClock, FaWhatsapp,
-    FaEye, FaEyeSlash, FaChevronRight, FaPhone
+    FaEye, FaEyeSlash, FaChevronRight, FaPhone, FaCog
 } from 'react-icons/fa';
 import { format, isToday, isThisWeek, isThisMonth, parseISO, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -15,6 +15,7 @@ import './Styles.css';
 import authFetch from '../../authFetch';
 import CoachCalendar from '../coach/CoachCalendar';
 import AdminFinanzas from './AdminFinanzas';
+import AdminConfiguracion from './AdminConfiguracion';
 
 // ── TABS ──────────────────────────────────────────────────
 const TABS = [
@@ -25,6 +26,7 @@ const TABS = [
     { id: 'alta',      label: 'Nuevo usuario',icon: <FaUserPlus />   },
     { id: 'staff',     label: 'Equipo',       icon: <FaUserShield /> },
     { id: 'sales',     label: 'Finanzas',     icon: <FaWallet />     },
+    { id: 'config',    label: 'Configuración',icon: <FaCog />        },
 ];
 
 // ── VALIDACIONES ──────────────────────────────────────────
@@ -919,6 +921,15 @@ export default function AdminHome() {
                 {activeTab === 'sales' && (
                     <div className="adm-content animate-ios-entry">
                         <AdminFinanzas salesStats={salesStats} />
+                    </div>
+                )}
+
+                {/* ══════════════════════════════════════
+                    TAB: CONFIGURACIÓN
+                ══════════════════════════════════════ */}
+                {activeTab === 'config' && (
+                    <div className="adm-content animate-ios-entry">
+                        <AdminConfiguracion />
                     </div>
                 )}
 

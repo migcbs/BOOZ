@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    FaUserCircle, FaCreditCard, FaCalendarCheck, FaEnvelope, 
-    FaEdit, FaCheckCircle, FaAngleRight, FaPhone, FaBirthdayCake, 
+import {
+    FaUserCircle, FaCreditCard, FaCalendarCheck, FaEnvelope,
+    FaEdit, FaCheckCircle, FaAngleRight, FaPhone, FaBirthdayCake,
     FaUserMd, FaBolt, FaTimesCircle, FaStethoscope,
-    FaClock, FaMapMarkerAlt, 
-    FaBed, FaTicketAlt, FaCalendarPlus 
+    FaClock, FaMapMarkerAlt,
+    FaBed, FaTicketAlt, FaCalendarPlus, FaEye
 } from 'react-icons/fa';
 import { format, parseISO, isBefore, subHours, isAfter } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import ProfileEditForm from './ProfileEditForm';
 import Tienda from './Tienda';
+import DetalleReservaPopup from './DetalleReservaPopup';
 import './Styles.css';
 import authFetch from '../../authFetch';
 
@@ -31,6 +32,7 @@ export default function Perfil() {
     const [isEditing, setIsEditing]   = useState(false);
     const [showTienda, setShowTienda] = useState(false);
     const [loading, setLoading]       = useState(true);
+    const [detalleReserva, setDetalleReserva] = useState(null);
 
     const loadProfileData = async () => {
         // ✅ CORRECCIÓN: clave correcta booz_user
@@ -185,6 +187,13 @@ export default function Perfil() {
                 />
             )}
 
+            {detalleReserva && (
+                <DetalleReservaPopup
+                    booking={detalleReserva}
+                    close={() => setDetalleReserva(null)}
+                />
+            )}
+
             {isEditing ? (
                 <ProfileEditForm 
                     initialData={fullUser} 
@@ -247,11 +256,11 @@ export default function Perfil() {
 
                     {/* COLUMNA DERECHA */}
                     <div className="bookings-column">
-                        <div className={`profile-card upcoming-card-premium glass-card ${upcomingBooking?.posterUrl ? 'has-poster' : ''}`}>
+                        <div className={`profile-card upcoming-card-premium glass-card ${upcomingBooking?.imageUrl ? 'has-poster' : ''}`}>
 
-                            {upcomingBooking?.posterUrl && (
+                            {upcomingBooking?.imageUrl && (
                                 <div className="upcoming-hero-image">
-                                    <img src={upcomingBooking.posterUrl} alt="Poster" className="poster-img-full" />
+                                    <img src={upcomingBooking.imageUrl} alt="Poster" className="poster-img-full" />
                                     <div className="poster-overlay-gradient">
                                         <div className="poster-text-content">
                                             <span className="hero-tag-pill">PRÓXIMA SESIÓN</span>
@@ -294,7 +303,7 @@ export default function Perfil() {
                                             <FaTicketAlt className="item-icon" />
                                             <div>
                                                 <label>Paquete</label>
-                                                <p>{upcomingBooking.paqueteId || 'Individual'}</p>
+                                                <p>{upcomingBooking.paqueteRef || 'Individual'}</p>
                                             </div>
                                         </div>
                                         <div className="data-item full">
@@ -304,6 +313,24 @@ export default function Perfil() {
                                                 <p>Booz Studio Central</p>
                                             </div>
                                         </div>
+
+                                        {upcomingBooking.criterios?.length > 0 && (
+                                            <div className="data-item full" style={{ background: 'transparent', padding: '4px 0' }}>
+                                                <div className="criterio-pills-row" style={{ margin: 0 }}>
+                                                    {upcomingBooking.criterios.map(c => (
+                                                        <span key={c} className="criterio-pill">{c}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            className="btn-ver-detalles"
+                                            onClick={() => setDetalleReserva(upcomingBooking)}
+                                        >
+                                            <FaEye /> Ver detalles
+                                        </button>
+
                                         <button
                                             className="btn-cancel-reserva-full"
                                             onClick={() => handleCancelarReserva(upcomingBooking.id, upcomingBooking.fecha)}
@@ -332,7 +359,7 @@ export default function Perfil() {
                                     ?.filter(r => isBefore(parseISO(r.fecha), new Date()))
                                     .slice(0, 5)
                                     .map(res => (
-                                        <div key={res.id} className="history-item">
+                                        <div key={res.id} className="history-item" onClick={() => setDetalleReserva(res)}>
                                             <div className="history-dot"></div>
                                             <div className="history-info">
                                                 <strong>{res.nombre}</strong>

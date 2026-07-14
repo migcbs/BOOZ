@@ -593,6 +593,36 @@
 
 .cc-paquete-card.active strong { color: var(--blue); }
 
+/* Criterios (multi-select) */
+.cc-criterios-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cc-criterio-toggle {
+    padding: 9px 14px;
+    border: none;
+    border-radius: 10px;
+    background: #f2f2f7;
+    color: #8e8e93;
+    font-family: var(--font);
+    font-weight: 900;
+    font-size: 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+.cc-criterio-toggle:hover { transform: translateY(-1px); }
+.cc-criterio-toggle:active { transform: scale(0.96); }
+
+.cc-criterio-toggle.active {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: var(--shadow-blue);
+}
+
 /* Colores */
 .cc-colors {
     display: flex;

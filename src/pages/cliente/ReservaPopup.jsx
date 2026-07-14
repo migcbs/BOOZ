@@ -15,6 +15,7 @@ export default function ReservaPopup({ dayData, close }) {
   const [loading, setLoading]             = useState(false);
   const [loadingClases, setLoadingClases] = useState(true);
   const [showJumpWarning, setShowJumpWarning] = useState(false);
+  const [permitirEfectivo, setPermitirEfectivo] = useState(true);
 
   // ✅ CORRECCIÓN: clave booz_user con fallback seguro
   const user = (() => {
@@ -56,6 +57,13 @@ export default function ReservaPopup({ dayData, close }) {
     };
     fetchClases();
   }, [dayData.date]);
+
+  useEffect(() => {
+    authFetch('/config')
+      .then(res => res?.json())
+      .then(data => setPermitirEfectivo(data?.permitirEfectivo !== false))
+      .catch(() => setPermitirEfectivo(true));
+  }, []);
 
   const confirmar = async () => {
     if (!selectedClase) return Swal.fire("Aviso", "Selecciona un horario", "info");
@@ -246,24 +254,26 @@ export default function ReservaPopup({ dayData, close }) {
                 <FaWallet size={20} />
                 <span>{creditos} crédito{creditos !== 1 ? 's' : ''}</span>
               </div>
-              <div
-                className={`pay-card ${metodoPago === 'EFECTIVO' ? 'active' : ''}`}
-                onClick={() => setMetodoPago('EFECTIVO')}
-              >
-                <FaMoneyBillWave size={20} />
-                <span>Efectivo</span>
-              </div>
+              {permitirEfectivo && (
+                <div
+                  className={`pay-card ${metodoPago === 'EFECTIVO' ? 'active' : ''}`}
+                  onClick={() => setMetodoPago('EFECTIVO')}
+                >
+                  <FaMoneyBillWave size={20} />
+                  <span>Efectivo</span>
+                </div>
+              )}
             </div>
           )}
 
         </div>
 
-        {/* AVISO JUMP&FLOW */}
-        {showJumpWarning && selectedClase?.tematica === 'Jump&Flow' && (
+        {/* AVISO JUMP&GLOW */}
+        {showJumpWarning && selectedClase?.criterios?.includes('Jump&Glow') && (
           <div className="jumpflow-warning">
             <div className="jumpflow-warning-header">
               <span className="jumpflow-warning-icon">⚡</span>
-              <strong>Requisitos para Jump&Flow</strong>
+              <strong>Requisitos para Jump&Glow</strong>
             </div>
             <p>Antes de confirmar, asegúrate de cumplir con lo siguiente:</p>
             <ul>
@@ -286,7 +296,7 @@ export default function ReservaPopup({ dayData, close }) {
           <button
             className={`btn-primary-booz ${estaLlena ? 'waitlist-mode' : ''}`}
             onClick={() => {
-              if (!estaLlena && selectedClase?.tematica === 'Jump&Flow') {
+              if (!estaLlena && selectedClase?.criterios?.includes('Jump&Glow')) {
                 setShowJumpWarning(true);
               } else {
                 confirmar();

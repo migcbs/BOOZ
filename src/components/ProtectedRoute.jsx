@@ -19,25 +19,17 @@ function ProtectedRoute({ element: Component, allowedRoles, children }) {
       const token = localStorage.getItem("booz_token");
       const stored = localStorage.getItem("booz_user");
 
-      console.log('1️⃣ TOKEN:', token ? token.substring(0, 20) + '...' : 'NO HAY');
-      console.log('2️⃣ STORED:', stored ? 'existe' : 'NO HAY');
-      console.log('3️⃣ API_BASE_URL:', API_BASE_URL);
-
       if (!token || !stored) {
-        console.log('❌ Sin token → unauth');
         setStatus("unauth");
         return;
       }
 
       try {
-        console.log('4️⃣ Haciendo fetch a:', `${API_BASE_URL}/me`);
         const res = await fetch(`${API_BASE_URL}/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('5️⃣ Status respuesta:', res.status);
 
         if (res.status === 401 || res.status === 403) {
-          console.log('❌ Token rechazado por servidor');
           localStorage.removeItem("booz_token");
           localStorage.removeItem("booz_user");
           setStatus("unauth");
@@ -45,31 +37,24 @@ function ProtectedRoute({ element: Component, allowedRoles, children }) {
         }
 
         if (!res.ok) {
-          console.log('⚠️ Error servidor, usando datos locales');
           const localUser = JSON.parse(stored);
           setUser(localUser);
           const allowed = !allowedRoles || allowedRoles.includes(localUser.role);
-          console.log('6️⃣ Allowed con datos locales:', allowed);
           setStatus(allowed ? "ok" : "forbidden");
           return;
         }
 
         const freshUser = await res.json();
-        console.log('7️⃣ Usuario fresco:', freshUser.role);
         const allowed = !allowedRoles || allowedRoles.includes(freshUser.role);
-        console.log('8️⃣ Allowed:', allowed, '| allowedRoles:', allowedRoles);
         setStatus(allowed ? "ok" : "forbidden");
 
       } catch (err) {
-        console.log('💥 CATCH ERROR:', err.message);
         try {
           const localUser = JSON.parse(stored);
           const allowed = !allowedRoles || allowedRoles.includes(localUser.role);
-          console.log('9️⃣ Fallback local, allowed:', allowed);
           setUser(localUser);
           setStatus(allowed ? "ok" : "forbidden");
         } catch {
-          console.log('💀 Fallback también falló');
           setStatus("unauth");
         }
       }

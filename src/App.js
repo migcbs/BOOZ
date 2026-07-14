@@ -4,6 +4,7 @@ import "./App.css";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import Perfil      from "./pages/cliente/Perfil";
 import ClienteHome from "./pages/cliente/ClienteHome";
@@ -27,6 +28,7 @@ function App() {
       <div className="app-viewport">
         <Navbar />
         <main className="main-content">
+          <ErrorBoundary>
           <Routes>
 
             {/* ✅ Raíz pública → landing page */}
@@ -81,6 +83,7 @@ function App() {
             } />
 
           </Routes>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>
