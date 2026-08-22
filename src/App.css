@@ -64,6 +64,28 @@ html, body {
   }
 }
 
+/* Footer global (páginas de cliente sin CSS propio ya definían .footer distinto en admin/coach) */
+.footer {
+  width: 100%;
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8e8e93;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-legal-links a {
+  color: #8e8e93;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-legal-links a:hover { color: #5BC4F5; }
+
 /* Scrollbar Estético */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }

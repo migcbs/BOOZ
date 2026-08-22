@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import ProfileEditForm from './ProfileEditForm';
 import Tienda from './Tienda';
 import DetalleReservaPopup from './DetalleReservaPopup';
+import SEO from '../../components/SEO';
 import './Styles.css';
 import authFetch from '../../authFetch';
 
@@ -175,6 +176,7 @@ export default function Perfil() {
 
     return (
         <div className="profile-page-container animate-ios-entry">
+            <SEO title="Mi perfil" />
             {showTienda && (
                 <Tienda
                     isModal={showTienda}

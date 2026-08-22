@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import ErrorNotification from "./ErrorNotification";
 import "./Register.css";
 import API_BASE_URL from '../apiConfig.js';
+import SEO from './SEO';
 
 export default function Register() {
   const navigate  = useNavigate();
@@ -114,6 +115,7 @@ export default function Register() {
 
   return (
     <div className="auth-container">
+      <SEO title="Crear cuenta" description="Crea tu cuenta en BOOZ Studio y empieza a reservar tus clases de Pilates." />
 
       {/* Botón de regreso */}
       <Link to="/login" className="back-button" aria-label="Volver al inicio de sesión">
