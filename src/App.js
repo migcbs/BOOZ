@@ -5,6 +5,10 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CookieConsent from "./components/CookieConsent";
+
+import Terminos   from "./pages/legal/Terminos";
+import Privacidad from "./pages/legal/Privacidad";
 
 import Perfil      from "./pages/cliente/Perfil";
 import ClienteHome from "./pages/cliente/ClienteHome";
@@ -36,6 +40,8 @@ function App() {
 
             <Route path="/login"    element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/terminos"   element={<Terminos />} />
+            <Route path="/privacidad" element={<Privacidad />} />
 
             {/* CLIENTE */}
             {/* ✅ /cliente/home es pública — no requiere sesión */}
@@ -86,6 +92,7 @@ function App() {
           </ErrorBoundary>
         </main>
         <Footer />
+        <CookieConsent />
       </div>
     </BrowserRouter>
   );

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Login.css";
 import API_BASE_URL from '../apiConfig';
+import SEO from './SEO';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ export default function Login() {
 
   return (
     <div className="auth-container animate-ios-entry">
+      <SEO title="Iniciar sesión" description="Inicia sesión en tu cuenta de BOOZ Studio para reservar tus clases." />
       <h2 className="auth-title">Iniciar Sesión</h2>
 
       {error && (
