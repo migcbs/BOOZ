@@ -1271,6 +1271,16 @@ canvas {
 
 .cfg-switch.on .cfg-switch-knob { transform: translateX(22px); }
 
+.cfg-contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 700px) {
+    .cfg-contacto-grid { grid-template-columns: 1fr; }
+}
+
 .cfg-add-row {
     display: flex;
     gap: 10px;

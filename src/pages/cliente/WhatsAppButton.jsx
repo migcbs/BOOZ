@@ -1,15 +1,24 @@
 // WhatsAppButton.jsx (Botón Flotante y Modal de Contacto - FINAL)
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaWhatsapp } from 'react-icons/fa'; // 🟢 Importar el ícono de WhatsApp
 import { AiOutlineClose } from 'react-icons/ai'; // 🟢 Ícono para cerrar
 import "./Whatsapp.css";
+import API_BASE_URL from '../../apiConfig';
 
-// 💡 TU NÚMERO DE WHATSAPP (código de país + número, sin +, guiones o espacios)
-const WHATSAPP_NUMBER = "522212477126"; 
+// Fallback si el admin aún no configuró el número en /admin → Configuración
+const DEFAULT_WHATSAPP_NUMBER = "522212477126";
 
 export default function WhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState(DEFAULT_WHATSAPP_NUMBER);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/config`)
+      .then(res => res.json())
+      .then(data => { if (data?.whatsappNumber) setWhatsappNumber(data.whatsappNumber); })
+      .catch(() => {});
+  }, []);
   const [form, setForm] = useState({
     nombre: "",
     edad: "", 
@@ -44,7 +53,7 @@ export default function WhatsAppButton() {
     
     // 3. Codificar y abrir WhatsApp
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
     
     // 4. Cerrar y reiniciar

@@ -16,6 +16,9 @@ import DetalleReservaPopup from './DetalleReservaPopup';
 import SEO from '../../components/SEO';
 import './Styles.css';
 import authFetch from '../../authFetch';
+import API_BASE_URL from '../../apiConfig';
+
+const DEFAULT_STUDIO_NAME = 'Booz Studio Central';
 
 const getUpcomingBooking = (bookings) => {
     if (!bookings || bookings.length === 0) return null;
@@ -34,6 +37,7 @@ export default function Perfil() {
     const [showTienda, setShowTienda] = useState(false);
     const [loading, setLoading]       = useState(true);
     const [detalleReserva, setDetalleReserva] = useState(null);
+    const [studioName, setStudioName] = useState(DEFAULT_STUDIO_NAME);
 
     const loadProfileData = async () => {
         // ✅ CORRECCIÓN: clave correcta booz_user
@@ -60,6 +64,13 @@ export default function Perfil() {
 
     useEffect(() => { loadProfileData(); }, []);
 
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/config`)
+            .then(res => res.json())
+            .then(data => { if (data?.studioName) setStudioName(data.studioName); })
+            .catch(() => {});
+    }, []);
+
     const downloadICS = (booking) => {
         const date = booking.dateTime;
         const startDate = format(date, "yyyyMMdd'T'HHmmss");
@@ -73,7 +84,7 @@ export default function Perfil() {
             `DTEND:${endDate}`,
             `SUMMARY:Clase Booz: ${booking.nombre}`,
             `DESCRIPTION:Temática: ${booking.tematica || 'General'}. Camilla: ${booking.numeroCamilla || 'N/A'}`,
-            "LOCATION:Booz Studio Central",
+            `LOCATION:${studioName}`,
             "END:VEVENT",
             "END:VCALENDAR"
         ].join("\n");
@@ -196,6 +207,7 @@ export default function Perfil() {
                 <DetalleReservaPopup
                     booking={detalleReserva}
                     close={() => setDetalleReserva(null)}
+                    studioName={studioName}
                 />
             )}
 
@@ -321,7 +333,7 @@ export default function Perfil() {
                                             <FaMapMarkerAlt className="item-icon" />
                                             <div>
                                                 <label>Ubicación</label>
-                                                <p>Booz Studio Central</p>
+                                                <p>{studioName}</p>
                                             </div>
                                         </div>
 
