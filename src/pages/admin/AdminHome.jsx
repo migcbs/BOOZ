@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import {
     FaUsers, FaChartLine, FaUserPlus, FaUserShield,
     FaTrashAlt, FaSearch, FaCreditCard, FaCalendarAlt,
@@ -547,9 +548,10 @@ export default function AdminHome() {
                             </div>
                         </div>
 
-                        {/* Panel lateral expediente */}
-                        {selectedUser && editForm && (
-                            <div className="adm-side-panel">
+                        {/* Expediente — popup flotante (centrado en desktop, bottom-sheet en mobile) */}
+                        {selectedUser && editForm && ReactDOM.createPortal(
+                            <div className="adm-panel-overlay" onClick={e => e.target === e.currentTarget && setSelectedUser(null)}>
+                            <div className="adm-side-panel animate-ios-pop">
                                 <div className="adm-panel-header">
                                     <h3>Expediente</h3>
                                     <button className="adm-panel-close" onClick={() => setSelectedUser(null)}><FaTimes /></button>
@@ -608,6 +610,8 @@ export default function AdminHome() {
                                     </button>
                                 </div>
                             </div>
+                            </div>,
+                            document.body
                         )}
                     </div>
                 )}
