@@ -147,6 +147,9 @@ export default function Perfil() {
                 if (response && response.ok) {
                     await Swal.fire('Cancelada', 'Tu lugar se ha liberado y tu crédito ha vuelto a tu billetera.', 'success');
                     loadProfileData();
+                } else {
+                    const data = await response?.json().catch(() => null);
+                    Swal.fire('No se pudo cancelar', data?.message || 'Ocurrió un error al cancelar tu reserva.', 'error');
                 }
             } catch (e) {
                 Swal.fire('Error', 'Servidor no disponible.', 'error');
@@ -195,13 +198,19 @@ export default function Perfil() {
             )}
 
             {isEditing ? (
-                <ProfileEditForm 
-                    initialData={fullUser} 
-                    onSave={handleSaveProfile} 
-                    onCancel={() => setIsEditing(false)} 
+                <ProfileEditForm
+                    initialData={fullUser}
+                    onSave={handleSaveProfile}
+                    onCancel={() => setIsEditing(false)}
                 />
             ) : (
                 <div className="profile-grid">
+
+                    {fullUser.emailVerified === false && (
+                        <div className="email-unverified-banner">
+                            Aún no has confirmado tu correo. Revisa tu bandeja de entrada (y spam) para verificar tu cuenta.
+                        </div>
+                    )}
 
                     {/* COLUMNA IZQUIERDA */}
                     <div className="summary-column">
