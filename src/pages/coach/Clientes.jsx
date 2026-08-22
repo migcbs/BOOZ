@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import {
     FaUserAlt, FaEdit, FaTrashAlt, FaSearch,
     FaPhone, FaHeartbeat, FaCoins, FaTimes, FaSave,
@@ -229,14 +230,10 @@ export default function Clientes() {
                 </div>
             </div>
 
-            {/* ── PANEL LATERAL DE EXPEDIENTE ── */}
-            {selected && editForm && (
-                <div className="glass-card" style={{
-                    width: 340, flexShrink: 0, position: 'sticky', top: 24,
-                    maxHeight: 'calc(100vh - 48px)', overflowY: 'auto',
-                    animation: 'slideInRight 0.35s cubic-bezier(0.16,1,0.3,1) both'
-                }}>
-                    <style>{`@keyframes slideInRight { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }`}</style>
+            {/* ── EXPEDIENTE — popup flotante (centrado en desktop, bottom-sheet en mobile) ── */}
+            {selected && editForm && ReactDOM.createPortal(
+                <div className="coach-panel-overlay" onClick={e => e.target === e.currentTarget && setSelected(null)}>
+                <div className="glass-card coach-panel-card animate-ios-pop">
 
                     {/* Header expediente */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -331,6 +328,8 @@ export default function Clientes() {
                         </button>
                     </div>
                 </div>
+                </div>,
+                document.body
             )}
         </div>
         </CoachLayout>

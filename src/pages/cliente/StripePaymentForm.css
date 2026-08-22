@@ -262,3 +262,15 @@
     color: var(--muted) !important;
     font-weight: 500 !important;
 }
+
+/* ======================================================
+   RESPONSIVE — MOBILE (antes sin breakpoints)
+   ====================================================== */
+@media (max-width: 480px) {
+    .spf-form { gap: 14px; }
+    .spf-summary { padding: 14px; }
+    .spf-card-wrapper { padding: 16px 14px; } /* mismo alto táctil, algo más de aire lateral */
+    .spf-actions { gap: 8px; }
+    .spf-btn-cancel, .spf-btn-pay { min-height: 48px; } /* target táctil >= 44px */
+    .spf-success { padding: 24px 12px; }
+}

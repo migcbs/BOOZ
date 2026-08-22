@@ -443,6 +443,45 @@ body {
 
 .animate-ios-entry { animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
+@keyframes coachPanelPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-ios-pop { animation: coachPanelPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Expediente — overlay + popup flotante (antes: panel sticky sin responsive,
+   se salía de la pantalla en mobile) */
+.coach-panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(29, 29, 31, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.coach-panel-card {
+    width: 100%;
+    max-width: 360px;
+    max-height: min(85vh, 720px);
+    overflow-y: auto;
+    padding: 24px;
+}
+
+@media (max-width: 600px) {
+    .coach-panel-overlay { align-items: flex-end; padding: 0; }
+    .coach-panel-card {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 24px 24px 0 0;
+    }
+}
+
 .loader-container-full {
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; height: 60vh;
