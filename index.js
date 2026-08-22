@@ -3,7 +3,11 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { addDays, parseISO, getDay } = require('date-fns');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
+const { Resend } = require('resend');
+const { addDays, parseISO, getDay, subHours, isAfter } = require('date-fns');
 const Stripe = require('stripe');
 const { verifyToken, requireRole, requireOwnerOrRole } = require('./middleware/auth');
 
@@ -32,17 +36,46 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const app = express();
 
 // ======================================================
+// SEGURIDAD — Headers HTTP básicos
+// ======================================================
+app.use(helmet({
+    // El frontend es una SPA de otro origen (Vercel static build) que consume
+    // esta API — CSP estricto por defecto rompería recursos cross-origin (ej. Stripe.js).
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
+
+// ======================================================
 // CORS
 // ======================================================
+const PROD_ORIGINS = [
+    'https://booz.vercel.app',
+    'https://booz-studio.com',
+    'https://www.booz-studio.com'
+];
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://booz.vercel.app',
-        'https://booz-studio.com',
-        'https://www.booz-studio.com'
-    ],
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true); // curl/health checks sin Origin
+        if (PROD_ORIGINS.includes(origin)) return callback(null, true);
+        // ✅ En desarrollo aceptamos cualquier puerto de localhost (el frontend
+        // puede levantar en 3000, 3001, etc. si esos puertos ya están ocupados)
+        if (process.env.NODE_ENV !== 'production' && /^http:\/\/localhost:\d+$/.test(origin)) {
+            return callback(null, true);
+        }
+        callback(new Error('No permitido por CORS'));
+    },
     credentials: true
 }));
+
+// ======================================================
+// RATE LIMITING — Protege login/signup de fuerza bruta
+// ======================================================
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    limit: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiados intentos. Intenta de nuevo en unos minutos.' }
+});
 
 // ======================================================
 // WEBHOOK DE STRIPE
@@ -137,9 +170,38 @@ app.use(express.json({ limit: '15mb' }));
 const COSTOS = { LMV: 1099, MJ: 699, SUELTA: 95 };
 
 // ======================================================
+// EMAIL — Resend (verificación de cuenta y recordatorios)
+// ======================================================
+const getResend = () => {
+    if (!process.env.RESEND_API_KEY) {
+        console.error('⚠️ RESEND_API_KEY no definida — no se enviarán emails');
+        return null;
+    }
+    return new Resend(process.env.RESEND_API_KEY);
+};
+
+const EMAIL_FROM = process.env.RESEND_FROM_EMAIL || 'BOOZ Studio <onboarding@resend.dev>';
+
+const sendVerificationEmail = async (email, nombre, token) => {
+    const resend = getResend();
+    if (!resend) return;
+    const verifyUrl = `${process.env.REACT_APP_API_URL || 'https://booz.vercel.app/api'}/verify-email?token=${token}`;
+    try {
+        await resend.emails.send({
+            from: EMAIL_FROM,
+            to: email,
+            subject: 'Confirma tu cuenta en BOOZ Studio',
+            html: `<p>Hola ${nombre},</p><p>Confirma tu cuenta en BOOZ Studio haciendo clic en el siguiente enlace:</p><p><a href="${verifyUrl}">Verificar mi cuenta</a></p>`
+        });
+    } catch (e) {
+        console.error('Error enviando email de verificación:', e);
+    }
+};
+
+// ======================================================
 // 1. AUTENTICACIÓN — Rutas públicas
 // ======================================================
-app.post('/api/signup', async (req, res) => {
+app.post('/api/signup', authLimiter, async (req, res) => {
     try {
         const { nombre, apellido, email, password, telefono, contactoEmergencia, tipoSangre, alergias } = req.body;
 
@@ -155,6 +217,7 @@ app.post('/api/signup', async (req, res) => {
         if (existe) return res.status(409).json({ error: 'Ya existe una cuenta con ese email' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const emailVerificationToken = crypto.randomBytes(32).toString('hex');
         const newUser = await prisma.user.create({
             data: {
                 nombre,
@@ -168,9 +231,12 @@ app.post('/api/signup', async (req, res) => {
                 role: 'cliente',
                 tipoCliente: 'REGULAR',
                 creditosDisponibles: 0,
-                suscripcionActiva: false
+                suscripcionActiva: false,
+                emailVerificationToken
             }
         });
+
+        sendVerificationEmail(emailLimpio, nombre, emailVerificationToken);
 
         const token = jwt.sign(
             { id: newUser.id, email: newUser.email, role: newUser.role },
@@ -178,7 +244,7 @@ app.post('/api/signup', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        const { password: _, ...safeUser } = newUser;
+        const { password: _, emailVerificationToken: __, ...safeUser } = newUser;
         res.status(201).json({ success: true, token, user: safeUser });
     } catch (e) {
         console.error('❌ ERROR SIGNUP:', e);
@@ -186,7 +252,28 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-app.post('/api/login', async (req, res) => {
+// ✅ Confirma la cuenta a partir del link enviado por email
+app.get('/api/verify-email', async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) return res.status(400).send('Token faltante');
+
+        const user = await prisma.user.findUnique({ where: { emailVerificationToken: String(token) } });
+        if (!user) return res.status(400).send('Enlace de verificación inválido o ya utilizado');
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: true, emailVerificationToken: null }
+        });
+
+        res.send('<h2>¡Cuenta verificada! Ya puedes cerrar esta ventana.</h2>');
+    } catch (e) {
+        console.error('Error verify-email:', e);
+        res.status(500).send('Error al verificar la cuenta');
+    }
+});
+
+app.post('/api/login', authLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -204,7 +291,7 @@ app.post('/api/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        const { password: _, ...safeUser } = user;
+        const { password: _, emailVerificationToken: __, ...safeUser } = user;
         res.json({ success: true, token, user: safeUser });
     } catch (e) {
         console.error('Error Login:', e);
@@ -230,7 +317,7 @@ app.get('/api/me', verifyToken, async (req, res) => {
             }
         });
         if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-        const { password: _, ...safeUser } = user;
+        const { password: _, emailVerificationToken: __, ...safeUser } = user;
         res.json(safeUser);
     } catch (e) {
         res.status(500).json({ error: 'Error en servidor' });
@@ -307,7 +394,7 @@ app.put('/api/coach/update-expediente/:id',
                 where: { id: id.trim() },
                 data: dataBase
             });
-            const { password: _, ...safeUser } = updated;
+            const { password: _, emailVerificationToken: __, ...safeUser } = updated;
             res.json({ success: true, user: safeUser });
         } catch (e) {
             console.error('Error Update:', e);
@@ -403,7 +490,8 @@ app.post('/api/coach/crear-paquete',
             await prisma.class.createMany({ data: slots, skipDuplicates: true });
             res.json({ success: true, clasesCreadas: slots.length });
         } catch (e) {
-            res.status(500).json({ error: e.message });
+            console.error('Error crear-paquete:', e);
+            res.status(500).json({ error: 'No se pudo crear el paquete de clases' });
         }
     }
 );
@@ -420,6 +508,10 @@ app.post('/api/coach/crear-suelta',
             }
 
             const [h, m] = hora.split(':').map(Number);
+            if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+                return res.status(400).json({ error: 'Formato de hora inválido' });
+            }
+
             const f = new Date(parseISO(fechaInicio));
             f.setHours(h, m, 0, 0);
 
@@ -624,7 +716,8 @@ app.post('/api/reservas',
                         descripcion: claseMaestra.descripcion || '',
                         color: claseMaestra.color || '#8FD9FB',
                         imageUrl: claseMaestra.imageUrl || '',
-                        criterios: claseMaestra.criterios || []
+                        criterios: claseMaestra.criterios || [],
+                        metodoPago: ['CREDITOS', 'SUSCRIPCION', 'CORTESIA', 'EFECTIVO'].includes(metodoPago) ? metodoPago : null
                     }
                 });
 
@@ -662,7 +755,7 @@ app.post('/api/reservas',
                 });
             });
 
-            const { password: _, ...safeUser } = result;
+            const { password: _, emailVerificationToken: __, ...safeUser } = result;
             res.json({ success: true, userUpdated: safeUser });
         } catch (e) {
             const mensajesControlados = [
@@ -685,6 +778,12 @@ app.post('/api/reservas/lista-espera',
     async (req, res) => {
         try {
             const { email, claseId } = req.body;
+
+            // ✅ Solo puedes anotarte a ti mismo (a menos que seas admin/coach)
+            if (req.user.role === 'cliente' && req.user.email !== email.toLowerCase()) {
+                return res.status(403).json({ error: 'No puedes anotar a otro usuario en la lista de espera' });
+            }
+
             const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
             if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
@@ -717,13 +816,22 @@ app.post('/api/reservas/cancelar',
             const reserva = await prisma.class.findUnique({
                 where: { id: reservaId },
                 select: {
-                    id: true, paqueteRef: true, userId: true,
-                    cupoMaximo: true, inscritos: true
+                    id: true, nombre: true, fecha: true, paqueteRef: true, userId: true,
+                    cupoMaximo: true, inscritos: true, metodoPago: true
                 }
             });
             if (!reserva) return res.status(404).json({ message: 'Reserva no encontrada' });
             if (reserva.userId !== req.user.id && req.user.role === 'cliente') {
                 return res.status(403).json({ message: 'Esta reserva no te pertenece' });
+            }
+
+            // ✅ Enforcement server-side: no se puede cancelar a menos de 24h de la clase
+            // (antes solo se validaba en el navegador, se podía saltar llamando al API directo)
+            const limiteCancelacion = subHours(new Date(reserva.fecha), 24);
+            if (isAfter(new Date(), limiteCancelacion) && req.user.role === 'cliente') {
+                return res.status(400).json({
+                    message: 'Faltan menos de 24 horas para la clase. Por política de Booz no es posible cancelar ni reembolsar el crédito.'
+                });
             }
 
             await prisma.$transaction(async (tx) => {
@@ -741,8 +849,7 @@ app.post('/api/reservas/cancelar',
                 });
 
                 // ✅ Solo devolver crédito si la reserva fue pagada con créditos
-                // (verificamos por paqueteRef SUELTA o campo metodoPago si lo tienes)
-                if (reserva.metodoPago === 'CREDITOS' || reserva.paqueteRef === 'SUELTA') {
+                if (reserva.metodoPago === 'CREDITOS') {
                     await tx.user.update({
                         where: { email: userEmail.toLowerCase() },
                         data: { creditosDisponibles: { increment: 1 } }
@@ -797,7 +904,7 @@ app.get('/api/user/:email',
             }
             });
             if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-            const { password: _, ...safeUser } = user;
+            const { password: _, emailVerificationToken: __, ...safeUser } = user;
             res.json(safeUser);
         } catch (e) {
             res.status(500).json({ error: 'Error al obtener usuario' });
@@ -863,7 +970,7 @@ app.get('/api/admin/stats-financieras',
     requireRole('admin'),
     async (req, res) => {
         try {
-            const PRECIOS = { LMV: 1099, MJ: 699, SUELTA: 95 };
+            const PRECIOS = COSTOS;
 
             console.log('[stats-financieras] paso 1: reservas...');
             // 1. Todas las reservas con fecha y usuario
@@ -1052,7 +1159,7 @@ app.get('/api/admin/stats-financieras',
         } catch (e) {
             console.error('[stats-financieras] ERROR:', e.message);
             console.error('[stats-financieras] STACK:', e.stack);
-            res.status(500).json({ error: e.message });
+            res.status(500).json({ error: 'Error al calcular estadísticas financieras' });
         }
     }
 );
@@ -1113,15 +1220,81 @@ app.post('/api/create-payment-intent',
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: Math.round(parseFloat(monto) * 100),
                 currency: 'mxn',
-                metadata: { email, tipo: 'recarga_billetera' }
+                metadata: { email: email.toLowerCase(), tipo: 'recarga_billetera' }
             });
 
             res.json({ clientSecret: paymentIntent.client_secret });
         } catch (e) {
-            res.status(500).json({ error: e.message });
+            console.error('Error create-payment-intent:', e);
+            res.status(500).json({ error: 'No se pudo iniciar el pago' });
         }
     }
 );
+
+// ======================================================
+// 7. CRON — Recordatorios de clase (Vercel Cron, 1x/día)
+// ======================================================
+app.get('/api/cron/recordatorios', async (req, res) => {
+    try {
+        // ✅ Protegido con secreto compartido — Vercel Cron manda este header automáticamente
+        const authHeader = req.headers['authorization'];
+        if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return res.status(401).json({ error: 'No autorizado' });
+        }
+
+        const resend = getResend();
+        if (!resend) return res.json({ enviados: 0, motivo: 'Resend no configurado' });
+
+        const ahora = new Date();
+        const en24h = new Date(ahora.getTime() + 24 * 60 * 60 * 1000);
+        const en48h = new Date(ahora.getTime() + 48 * 60 * 60 * 1000);
+
+        const reservas = await prisma.class.findMany({
+            where: {
+                NOT: { userId: null },
+                fecha: { gte: en24h, lte: en48h }
+            },
+            select: {
+                nombre: true, fecha: true,
+                user: { select: { email: true, nombre: true } }
+            }
+        });
+
+        let enviados = 0;
+        for (const r of reservas) {
+            if (!r.user?.email) continue;
+            try {
+                await resend.emails.send({
+                    from: EMAIL_FROM,
+                    to: r.user.email,
+                    subject: `Recordatorio: tu clase "${r.nombre}" es mañana`,
+                    html: `<p>Hola ${r.user.nombre},</p><p>Te recordamos tu clase <strong>${r.nombre}</strong> el ${new Date(r.fecha).toLocaleString('es-MX')}.</p><p>¡Te esperamos en BOOZ Studio!</p>`
+                });
+                enviados++;
+            } catch (e) {
+                console.error(`Error enviando recordatorio a ${r.user.email}:`, e);
+            }
+        }
+
+        res.json({ enviados, total: reservas.length });
+    } catch (e) {
+        console.error('Error cron/recordatorios:', e);
+        res.status(500).json({ error: 'Error al procesar recordatorios' });
+    }
+});
+
+// ======================================================
+// MANEJO DE ERRORES — 404 y errores no capturados
+// ======================================================
+app.use((req, res) => {
+    res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+    console.error('❌ Error no capturado:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+});
 
 // ======================================================
 // LANZAMIENTO

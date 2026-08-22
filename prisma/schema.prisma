@@ -29,6 +29,7 @@ enum MetodoPago {
   CREDITOS
   SUSCRIPCION
   CORTESIA  // Para asignaciones manuales de admin/coach
+  EFECTIVO
 }
 
 model User {
@@ -63,6 +64,10 @@ model User {
 
   // ✅ NUEVO: Referencia al último pago Stripe para auditoría
   ultimoPagoStripeId  String?
+
+  // ✅ NUEVO: Verificación de email
+  emailVerified          Boolean  @default(false)
+  emailVerificationToken String?  @unique
 
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
