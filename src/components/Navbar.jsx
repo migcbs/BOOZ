@@ -3,6 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaTiktok, FaUserCircle } from "react-icons/fa";
 import "./Navbar.css";
 import IsologoBooz from './assets/isologo.png';
+import API_BASE_URL from '../apiConfig';
+
+const DEFAULT_SOCIAL = {
+  facebookUrl: 'https://www.facebook.com/booz.studio',
+  instagramUrl: 'https://www.instagram.com/booz.studio/',
+  tiktokUrl: 'https://www.tiktok.com/@booz.studio',
+};
 
 const scrollToSection = (id) => {
   if (id === "inicio-section") {
@@ -30,6 +37,18 @@ export default function Navbar() {
   });
 
   const role = currentUser?.role || "";
+  const [social, setSocial] = useState(DEFAULT_SOCIAL);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/config`)
+      .then(res => res.json())
+      .then(data => setSocial(s => ({
+        facebookUrl: data?.facebookUrl || s.facebookUrl,
+        instagramUrl: data?.instagramUrl || s.instagramUrl,
+        tiktokUrl: data?.tiktokUrl || s.tiktokUrl,
+      })))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     try {
@@ -156,13 +175,13 @@ export default function Navbar() {
           </div>
 
           <div className="social-icons">
-            <a href="https://www.facebook.com/booz.studio" target="_blank" rel="noreferrer" aria-label="Facebook">
+            <a href={social.facebookUrl} target="_blank" rel="noreferrer" aria-label="Facebook">
               <FaFacebookF />
             </a>
-            <a href="https://www.instagram.com/booz.studio/" target="_blank" rel="noreferrer" aria-label="Instagram">
+            <a href={social.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a href="https://www.tiktok.com/@booz.studio" target="_blank" rel="noreferrer" aria-label="TikTok">
+            <a href={social.tiktokUrl} target="_blank" rel="noreferrer" aria-label="TikTok">
               <FaTiktok />
             </a>
           </div>

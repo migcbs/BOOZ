@@ -5,7 +5,7 @@ import { es } from 'date-fns/locale';
 import { FaTimes, FaClock, FaBed, FaTicketAlt, FaMapMarkerAlt, FaTag, FaInfoCircle } from 'react-icons/fa';
 import './Reserva.css';
 
-export default function DetalleReservaPopup({ booking, close }) {
+export default function DetalleReservaPopup({ booking, close, studioName = 'Booz Studio Central' }) {
   if (!booking) return null;
 
   const fechaObj = booking.dateTime
@@ -71,7 +71,7 @@ export default function DetalleReservaPopup({ booking, close }) {
               <FaMapMarkerAlt className="item-icon" />
               <div>
                 <label>Ubicación</label>
-                <p>Booz Studio Central</p>
+                <p>{studioName}</p>
               </div>
             </div>
 

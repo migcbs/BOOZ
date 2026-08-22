@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaCog, FaMoneyBillWave, FaTags, FaPlus, FaEye, FaEyeSlash, FaPen, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaCog, FaMoneyBillWave, FaTags, FaPlus, FaEye, FaEyeSlash, FaPen, FaCheck, FaTimes, FaAddressCard, FaSave } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { apiGet, apiPut, apiPost } from '../../authFetch';
+
+const CONTACTO_FIELDS = [
+    { key: 'studioName',     label: 'Nombre / ubicación del estudio', placeholder: 'Booz Studio Central' },
+    { key: 'whatsappNumber', label: 'WhatsApp (solo números, con lada país)', placeholder: '522212477126' },
+    { key: 'facebookUrl',    label: 'Facebook', placeholder: 'https://www.facebook.com/...' },
+    { key: 'instagramUrl',   label: 'Instagram', placeholder: 'https://www.instagram.com/...' },
+    { key: 'tiktokUrl',      label: 'TikTok', placeholder: 'https://www.tiktok.com/@...' },
+];
 
 export default function AdminConfiguracion() {
     const [config, setConfig]         = useState(null);
@@ -12,6 +20,8 @@ export default function AdminConfiguracion() {
     const [addingCriterio, setAddingCriterio] = useState(false);
     const [editingId, setEditingId]   = useState(null);
     const [editValue, setEditValue]   = useState('');
+    const [contactoForm, setContactoForm] = useState(null);
+    const [savingContacto, setSavingContacto] = useState(false);
 
     const loadAll = async () => {
         setLoading(true);
@@ -22,6 +32,7 @@ export default function AdminConfiguracion() {
             ]);
             const [dc, dk] = await Promise.all([rc.json(), rk.json()]);
             setConfig(dc);
+            setContactoForm(dc);
             setCriterios(Array.isArray(dk) ? dk : []);
         } catch (e) {
             console.error('Error cargando configuración:', e);
@@ -73,6 +84,21 @@ export default function AdminConfiguracion() {
             setCriterios(list => list.map(c => c.id === criterio.id ? data.criterio : c));
         } catch (e) {
             Swal.fire('Error', e.message || 'No se pudo actualizar el criterio.', 'error');
+        }
+    };
+
+    const saveContacto = async () => {
+        setSavingContacto(true);
+        try {
+            const res = await apiPut('/config', contactoForm);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || 'Error');
+            setConfig(data.config);
+            Swal.fire({ icon: 'success', title: 'Guardado', timer: 1200, showConfirmButton: false });
+        } catch (e) {
+            Swal.fire('Error', e.message || 'No se pudo guardar.', 'error');
+        } finally {
+            setSavingContacto(false);
         }
     };
 
@@ -133,6 +159,31 @@ export default function AdminConfiguracion() {
                         <span className="cfg-switch-knob" />
                     </button>
                 </div>
+            </div>
+
+            <div className="adm-card cfg-card">
+                <div className="adm-card-header">
+                    <h3><FaAddressCard /> Contacto y redes sociales</h3>
+                </div>
+                <p className="cfg-toggle-hint" style={{ marginBottom: 16 }}>
+                    Estos datos se usan en toda la plataforma (navbar, botón de WhatsApp, tarjetas de reserva) sin necesitar un nuevo despliegue.
+                </p>
+                <div className="cfg-contacto-grid">
+                    {CONTACTO_FIELDS.map(({ key, label, placeholder }) => (
+                        <div key={key} className="adm-field">
+                            <label>{label}</label>
+                            <input
+                                className="cfg-input"
+                                value={contactoForm?.[key] || ''}
+                                placeholder={placeholder}
+                                onChange={e => setContactoForm(f => ({ ...f, [key]: e.target.value }))}
+                            />
+                        </div>
+                    ))}
+                </div>
+                <button type="button" className="cfg-btn-add" style={{ marginTop: 16 }} onClick={saveContacto} disabled={savingContacto}>
+                    <FaSave /> {savingContacto ? 'Guardando...' : 'Guardar contacto'}
+                </button>
             </div>
 
             <div className="adm-card cfg-card">

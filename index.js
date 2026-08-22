@@ -586,9 +586,14 @@ app.put('/api/config',
     requireRole('admin'),
     async (req, res) => {
         try {
-            const { permitirEfectivo } = req.body;
+            const { permitirEfectivo, whatsappNumber, facebookUrl, instagramUrl, tiktokUrl, studioName } = req.body;
             const data = {};
             if (typeof permitirEfectivo === 'boolean') data.permitirEfectivo = permitirEfectivo;
+            if (typeof whatsappNumber === 'string') data.whatsappNumber = whatsappNumber.trim();
+            if (typeof facebookUrl === 'string') data.facebookUrl = facebookUrl.trim();
+            if (typeof instagramUrl === 'string') data.instagramUrl = instagramUrl.trim();
+            if (typeof tiktokUrl === 'string') data.tiktokUrl = tiktokUrl.trim();
+            if (typeof studioName === 'string') data.studioName = studioName.trim();
 
             const config = await prisma.siteConfig.upsert({
                 where: { id: 1 },
