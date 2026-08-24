@@ -182,6 +182,28 @@ const getResend = () => {
 
 const EMAIL_FROM = process.env.RESEND_FROM_EMAIL || 'BOOZ Studio <onboarding@resend.dev>';
 
+// ======================================================
+// CACHÉ EN MEMORIA — endpoints públicos de solo-lectura que casi
+// no cambian pero se piden en casi cada carga de página (Navbar,
+// WhatsAppButton, ReservaPopup, CoachCalendar...). Reduce carga a
+// la base de datos bajo tráfico real sin arriesgar datos obsoletos
+// por mucho tiempo (TTL corto + invalidación manual al escribir).
+// ======================================================
+const memoCache = new Map();
+const CACHE_TTL_MS = 30_000;
+
+const getCached = (key) => {
+    const entry = memoCache.get(key);
+    if (!entry || Date.now() > entry.expiresAt) return null;
+    return entry.value;
+};
+
+const setCached = (key, value) => {
+    memoCache.set(key, { value, expiresAt: Date.now() + CACHE_TTL_MS });
+};
+
+const invalidateCache = (key) => memoCache.delete(key);
+
 const sendVerificationEmail = async (email, nombre, token) => {
     const resend = getResend();
     if (!resend) return;
@@ -570,11 +592,18 @@ app.delete('/api/admin/clases-reset',
 // ======================================================
 app.get('/api/config', async (req, res) => {
     try {
-        const config = await prisma.siteConfig.upsert({
-            where: { id: 1 },
-            update: {},
-            create: { id: 1 },
-        });
+        const cached = getCached('config');
+        if (cached) return res.json(cached);
+
+        let config = await prisma.siteConfig.findUnique({ where: { id: 1 } });
+        if (!config) {
+            config = await prisma.siteConfig.upsert({
+                where: { id: 1 },
+                update: {},
+                create: { id: 1 },
+            });
+        }
+        setCached('config', config);
         res.json(config);
     } catch (e) {
         res.status(500).json({ error: 'Error al obtener configuración' });
@@ -600,6 +629,7 @@ app.put('/api/config',
                 update: data,
                 create: { id: 1, ...data },
             });
+            invalidateCache('config');
             res.json({ success: true, config });
         } catch (e) {
             res.status(500).json({ error: 'Error al actualizar configuración' });
@@ -610,10 +640,17 @@ app.put('/api/config',
 app.get('/api/criterios', async (req, res) => {
     try {
         const soloActivos = req.query.todos !== 'true';
+        const cacheKey = soloActivos ? 'criterios:activos' : null;
+        if (cacheKey) {
+            const cached = getCached(cacheKey);
+            if (cached) return res.json(cached);
+        }
+
         const criterios = await prisma.criterio.findMany({
             where: soloActivos ? { activo: true } : undefined,
             orderBy: { orden: 'asc' },
         });
+        if (cacheKey) setCached(cacheKey, criterios);
         res.json(criterios);
     } catch (e) {
         res.status(500).json([]);
@@ -633,6 +670,7 @@ app.post('/api/criterios',
             const criterio = await prisma.criterio.create({
                 data: { nombre: nombre.trim(), orden: (ultimo?.orden ?? -1) + 1 },
             });
+            invalidateCache('criterios:activos');
             res.json({ success: true, criterio });
         } catch (e) {
             if (e.code === 'P2002') {
@@ -658,6 +696,7 @@ app.put('/api/criterios/:id',
                 where: { id: req.params.id },
                 data,
             });
+            invalidateCache('criterios:activos');
             res.json({ success: true, criterio });
         } catch (e) {
             if (e.code === 'P2002') {
@@ -1304,7 +1343,7 @@ app.use((err, req, res, next) => {
 // ======================================================
 // LANZAMIENTO
 // ======================================================
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
     app.listen(3001, () => console.log('✅ Servidor local en puerto 3001'));
 }
 

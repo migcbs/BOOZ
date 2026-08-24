@@ -1,0 +1,35 @@
+/* ======================================================
+   DESIGN TOKENS — BOOZ STUDIO
+   Escala compartida entre cliente / admin / coach (antes cada
+   hoja de estilo definía su propia paleta de sombras/radios sin
+   coordinarse). Solo se aplican donde es seguro (sombras, focus) —
+   no se tocaron los radios ya existentes por selector para no
+   arriesgar layouts sin poder revisar cada pantalla visualmente.
+   ====================================================== */
+:root {
+  --booz-shadow-sm: 0 2px 10px rgba(29, 29, 31, 0.06);
+  --booz-shadow-md: 0 8px 24px rgba(29, 29, 31, 0.10);
+  --booz-shadow-lg: 0 16px 40px rgba(29, 29, 31, 0.14);
+  --booz-shadow-accent: 0 8px 24px rgba(143, 217, 251, 0.30);
+  --booz-focus-ring: 0 0 0 3px rgba(143, 217, 251, 0.45);
+}
+
+/* Foco de teclado consistente en toda la plataforma (antes solo
+   algunos inputs lo tenían) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--booz-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
