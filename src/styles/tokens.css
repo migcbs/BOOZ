@@ -27,9 +27,15 @@ textarea:focus-visible,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* 0.01ms (no 0.001ms) a propósito: una duración por debajo de la
+     resolución de frame de algunos motores de render deja la animación
+     "atorada" en su primer keyframe en vez de resolverla — le pasó
+     exactamente eso al navbar-container (se quedaba con el transform
+     de entrada, translateY(-24px), congelado indefinidamente). */
   *, *::before, *::after {
-    animation-duration: 0.001ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
