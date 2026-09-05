@@ -42,7 +42,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Oscurece un poco para que el botón brille */
+  background: rgba(0, 0, 0, 0.2); /* Oscurece lo justo para que el botón se lea, sin tapar el video */
   z-index: 2;
 }
 
