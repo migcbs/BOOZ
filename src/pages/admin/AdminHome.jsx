@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import {
     FaUsers, FaChartLine, FaUserPlus, FaUserShield,
-    FaTrashAlt, FaSearch, FaCreditCard, FaCalendarAlt,
+    FaTrashAlt, FaCreditCard, FaCalendarAlt,
     FaWallet, FaCheckCircle, FaFileMedical, FaHistory,
     FaEnvelope, FaSignOutAlt, FaClock, FaTimes, FaSave,
     FaDownload, FaHeartbeat, FaBars, FaUserClock, FaWhatsapp,
@@ -17,6 +17,8 @@ import authFetch from '../../authFetch';
 import CoachCalendar from '../coach/CoachCalendar';
 import AdminFinanzas from './AdminFinanzas';
 import AdminConfiguracion from './AdminConfiguracion';
+import AdminSpotlight from './AdminSpotlight';
+import { normalize } from './adminSearch';
 
 // ── TABS ──────────────────────────────────────────────────
 const TABS = [
@@ -269,8 +271,8 @@ export default function AdminHome() {
         ? Math.round(allClases.reduce((s, c) => s + (c.inscritos / Math.max(c.cupoMaximo, 1)), 0) / allClases.length * 100) : 0;
 
     const filteredUsers = clientes.filter(u => {
-        const q = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
-        const matchSearch = q.includes(searchTerm.toLowerCase());
+        const q = normalize(`${u.nombre} ${u.apellido} ${u.email}`);
+        const matchSearch = q.includes(normalize(searchTerm));
         if (filterActivo === 'activos')   return matchSearch && u.suscripcionActiva;
         if (filterActivo === 'inactivos') return matchSearch && !u.suscripcionActiva;
         if (filterActivo === 'lesiones')  return matchSearch && u.lesiones;
@@ -334,11 +336,14 @@ export default function AdminHome() {
                 {/* Topbar */}
                 <div className="adm-topbar">
                     <button className="adm-hamburger" onClick={() => setSidebarOpen(o => !o)}><FaBars /></button>
-                    <div className="adm-topbar-search">
-                        <FaSearch />
-                        <input placeholder="Buscar alumnas, clases..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                        {searchTerm && <button onClick={() => setSearchTerm('')}><FaTimes /></button>}
-                    </div>
+                    <AdminSpotlight
+                        allUsers={allUsers}
+                        allClases={allClases}
+                        query={searchTerm}
+                        onQueryChange={setSearchTerm}
+                        onGoToTab={(tabId) => { setActiveTab(tabId); setSidebarOpen(false); }}
+                        onOpenAlumna={(user) => { setActiveTab('users'); openExpediente(user); }}
+                    />
                     <p className="adm-topbar-date">{format(new Date(), "EEEE dd MMM", { locale: es })}</p>
                 </div>
 
