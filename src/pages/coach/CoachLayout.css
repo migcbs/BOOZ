@@ -250,7 +250,10 @@
 @media (max-width: 600px) {
     .cl-topbar {
         padding: 0 16px;
-        height: 54px;
+        /* Deja espacio para el notch/status bar en iOS (requiere
+           viewport-fit=cover en index.html; en Android/desktop es 0px) */
+        height: calc(54px + env(safe-area-inset-top, 0px));
+        padding-top: env(safe-area-inset-top, 0px);
     }
 
     .cl-topbar-title h1 { font-size: 0.9rem; }
