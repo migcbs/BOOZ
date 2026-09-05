@@ -110,7 +110,7 @@ export default function Rutinas() {
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div className="rutina-form-grid">
                         <div>
                             <label className="coach-label-mini">Nombre *</label>
                             <input className="coach-input" style={{ marginBottom: 0 }}

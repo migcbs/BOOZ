@@ -1,6 +1,7 @@
 // WhatsAppButton.jsx (Botón Flotante y Modal de Contacto - FINAL)
 
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { FaWhatsapp } from 'react-icons/fa'; // 🟢 Importar el ícono de WhatsApp
 import { AiOutlineClose } from 'react-icons/ai'; // 🟢 Ícono para cerrar
 import "./Whatsapp.css";
@@ -72,8 +73,9 @@ export default function WhatsAppButton() {
         <FaWhatsapp size={28} color="#25D366" /> {/* Ícono de WhatsApp */}
       </button>
 
-      {/* POP-UP / MODAL DEL FORMULARIO */}
-      {isOpen && (
+      {/* POP-UP / MODAL DEL FORMULARIO — portal para que su stacking no
+          dependa de dónde vive este componente en el árbol de React */}
+      {isOpen && ReactDOM.createPortal(
         <div className="modal-overlay" onClick={() => setIsOpen(false)}>
           <div className="whatsapp-modal-card glass-card" onClick={(e) => e.stopPropagation()}>
             
@@ -150,7 +152,8 @@ export default function WhatsAppButton() {
             </div>
             
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

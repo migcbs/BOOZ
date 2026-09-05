@@ -114,7 +114,7 @@ export default function ListaEspera() {
                     </p>
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
                     {espera.map((item, idx) => (
                         <div key={item.id} className="glass-card"
                              style={{ padding: '20px 22px', borderLeft: '4px solid #FF9500', animation: `fadeInUp 0.4s ease ${idx * 0.05}s both` }}>

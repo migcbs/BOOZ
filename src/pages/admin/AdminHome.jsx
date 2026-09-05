@@ -634,7 +634,7 @@ export default function AdminHome() {
                                 <p style={{ color: '#8e8e93', fontSize: '0.85rem' }}>No hay alumnas en lista de espera actualmente.</p>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
                                 {espera.map((item, idx) => (
                                     <div key={item.id} className="adm-card" style={{ padding: '20px 22px', borderLeft: '4px solid #FF9500' }}>
                                         {/* Info alumna */}
