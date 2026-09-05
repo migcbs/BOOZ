@@ -905,8 +905,9 @@ body {
 @media (max-width: 768px) {
     .adm-sidebar {
         transform: translateX(-100%);
-        /* Mismo espacio para notch/status bar que el topbar */
-        padding-top: calc(24px + env(safe-area-inset-top, 0px));
+        /* position:fixed — no le llega el margin-top de .app-viewport,
+           necesita su propio empuje para no recortarse con el notch/status bar */
+        padding-top: max(30px, env(safe-area-inset-top, 0px)) !important;
     }
 
     .adm-sidebar.open {
@@ -917,13 +918,7 @@ body {
 
     .adm-main { margin-left: 0; }
 
-    .adm-topbar {
-        padding: 0 16px;
-        /* Deja espacio para el notch/status bar en iOS (requiere
-           viewport-fit=cover en index.html; en Android/desktop es 0px) */
-        height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
-        padding-top: env(safe-area-inset-top, 0px);
-    }
+    .adm-topbar { padding: 0 16px; }
 
     .adm-hamburger { display: flex; }
 

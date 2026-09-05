@@ -25,6 +25,10 @@ html, body {
   min-height: 100vh;
   width: 100%;
   position: relative;
+  /* Empuje verificado en DevTools (iPhone 14 Pro Max) contra el recorte
+     del status bar/notch en admin y coach — el Navbar de cliente es
+     position:fixed y no se ve afectado por el margin de un ancestro. */
+  margin-top: 30px;
 }
 
 .main-content {
