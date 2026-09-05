@@ -27,7 +27,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 3000;
+    /* Por encima del Navbar (z-index:9999) — antes en 3000 el navbar
+       podía tapar el header/botón de cerrar del modal */
+    z-index: 10000;
     padding: 20px;
     animation: tiendaOverlayIn 0.25s ease both;
 }

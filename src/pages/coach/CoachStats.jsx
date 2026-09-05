@@ -103,7 +103,7 @@ export default function CoachStats() {
                 <MetricCard icon={<FaChartBar />}      label="Ocupación promedio" value={`${ocupacionTotal}%`} color={ocupacionTotal > 70 ? '#34C759' : '#FF9500'} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div className="cs-outer-grid">
 
                 {/* Clases más populares */}
                 <div className="glass-card">
@@ -141,7 +141,7 @@ export default function CoachStats() {
                     <h3 className="card-subtitle"><FaClock color="#A9B090" /> Horarios más demandados</h3>
                     {horarios.length === 0
                         ? <p style={{ color: '#8e8e93', fontSize: '0.85rem' }}>Sin datos aún.</p>
-                        : <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        : <div className="cs-horarios-grid">
                             {horarios.map(h => (
                                 <div key={h.hora} style={{
                                     background: 'rgba(143,217,251,0.06)', borderRadius: 14,

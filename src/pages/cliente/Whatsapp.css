@@ -65,7 +65,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    /* Por encima del Navbar (z-index:9999) — antes en 2000, el z-index
+       más bajo de todos los popups del sitio, tapado casi siempre */
+    z-index: 10000;
     padding: 20px;
     animation: overlayIn 0.25s ease both;
 }
