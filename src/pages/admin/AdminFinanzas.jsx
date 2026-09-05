@@ -451,8 +451,14 @@ export default function AdminFinanzas({ salesStats }) {
                 </div>
             </div>
 
-            {/* ── KPIs ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))', gap: isMobile ? 10 : 12, marginBottom: 28 }}>
+            {/* ── KPIs ──
+                Son 6 tarjetas fijas — con auto-fill/minmax a veces cabían solo
+                5 por fila y la 6ta quedaba sola en una fila aparte, mucho más
+                angosta al no tener vecinas que la estiraran. repeat(6,1fr) las
+                fuerza a compartir el ancho entre sí siempre en una sola fila
+                en desktop; en pantallas muy angostas (pero no isMobile) se
+                permite encoger un poco antes de que isMobile tome el control. */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, minmax(0, 1fr))', gap: isMobile ? 10 : 12, marginBottom: 28 }}>
                 <KPI label="Ingresos totales est."  value={fmt(kpis.totalIngresosEst)} color={C.blue}   spark={sparkData}   sub="Basado en precios de lista" />
                 <KPI label="ARR estimado"            value={fmt(kpis.arrEstimado)}      color={C.blue}   sub="Si todas las activas pagan 12 meses" />
                 <KPI label="LTV por alumna"          value={fmt(kpis.ltv)}              color={C.sage}   sub="Ingreso promedio por cliente" />
