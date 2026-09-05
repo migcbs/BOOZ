@@ -25,10 +25,17 @@ html, body {
   min-height: 100vh;
   width: 100%;
   position: relative;
-  /* Empuje verificado en DevTools (iPhone 14 Pro Max) contra el recorte
-     del status bar/notch en admin y coach — el Navbar de cliente es
-     position:fixed y no se ve afectado por el margin de un ancestro. */
-  margin-top: 30px;
+}
+
+/* Empuje verificado en DevTools (iPhone 14 Pro Max) contra el recorte
+   del status bar/notch en admin y coach — el Navbar de cliente es
+   position:fixed y no se ve afectado por el margin de un ancestro.
+   Escopeado solo a mobile: en desktop/tablet no hay notch que evitar
+   y generaba un hueco visible arriba del hero en cliente/home. */
+@media (max-width: 768px) {
+  .app-viewport {
+    margin-top: 30px;
+  }
 }
 
 .main-content {
