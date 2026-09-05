@@ -101,7 +101,7 @@ button {
     /* Esta era la regla que realmente ganaba (selector más específico que
        .image-darkener sola) — las otras dos definiciones duplicadas en
        este mismo archivo y en Home.css nunca tuvieron efecto real. */
-    background: rgba(0, 0, 0, 0.08);
+    background: #00000070;
     z-index: 2;
 }
 
@@ -2824,7 +2824,7 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.08); /* Consistente con .banner-background .image-darkener */
+    background: #00000070; /* Consistente con .banner-background .image-darkener */
     z-index: 1; /* Por encima del video, debajo del botón */
 }
 
