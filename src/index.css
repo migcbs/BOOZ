@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Los avisos de SweetAlert (confirmaciones y errores) deben quedar por encima
+   de los popups y modales del sistema, que usan z-index 10000; con el 1060 por
+   defecto se dibujaban detrás y no se veían. */
+.swal2-container {
+  z-index: 20000 !important;
+}

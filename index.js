@@ -7,9 +7,10 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
 const { Resend } = require('resend');
-const { addDays, parseISO, getDay, subHours, isAfter } = require('date-fns');
+const { subHours, isAfter } = require('date-fns');
 const Stripe = require('stripe');
 const { verifyToken, requireRole, requireOwnerOrRole } = require('./middleware/auth');
+const { ZONA_ESTUDIO, partesEnZona, fechaEnHoraEstudio, sumarDiasYMD, diaSemanaYMD } = require('./lib/fechas');
 
 // ======================================================
 // PRISMA — Patrón correcto para Serverless (Vercel)
@@ -490,10 +491,10 @@ app.post('/api/coach/crear-paquete',
             const slots = [];
 
             for (let i = 0; i < 28; i++) {
-                const fechaBase = addDays(parseISO(fechaInicio), i);
-                if (diasValidos.includes(getDay(fechaBase))) {
-                    const f = new Date(fechaBase);
-                    f.setHours(h, m, 0, 0);
+                const dia = sumarDiasYMD(fechaInicio, i);
+                if (diasValidos.includes(diaSemanaYMD(dia))) {
+                    // La hora es la del estudio, no la del servidor (UTC en Vercel)
+                    const f = fechaEnHoraEstudio(dia, h, m);
                     slots.push({
                         nombre,
                         tematica,
@@ -534,8 +535,8 @@ app.post('/api/coach/crear-suelta',
                 return res.status(400).json({ error: 'Formato de hora inválido' });
             }
 
-            const f = new Date(parseISO(fechaInicio));
-            f.setHours(h, m, 0, 0);
+            // La hora es la del estudio, no la del servidor (UTC en Vercel)
+            const f = fechaEnHoraEstudio(fechaInicio, h, m);
 
             const nueva = await prisma.class.create({
                 data: {
@@ -1079,7 +1080,7 @@ app.get('/api/admin/stats-financieras',
             const diasNom = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             const porDia = Array(7).fill(0).map((_, i) => ({ dia: diasNom[i], ingreso: 0, count: 0 }));
             todasReservas.filter(r => true /* sin filtro metodoPago */).forEach(r => {
-                const d = new Date(r.fecha).getDay();
+                const d = partesEnZona(new Date(r.fecha)).weekday;
                 porDia[d].ingreso += PRECIOS[r.paqueteRef] || 0;
                 porDia[d].count++;
             });
@@ -1120,9 +1121,9 @@ app.get('/api/admin/stats-financieras',
             // ── OCUPACIÓN POR HORARIO (heatmap: día × hora) ──────────────────
             const heatmap = {};
             clasesMaestras.forEach(c => {
-                const f    = new Date(c.fecha);
-                const dia  = diasNom[f.getDay()];
-                const hora = `${String(f.getHours()).padStart(2,'0')}:00`;
+                const f    = partesEnZona(new Date(c.fecha));
+                const dia  = diasNom[f.weekday];
+                const hora = `${String(f.hour).padStart(2,'0')}:00`;
                 const key  = `${dia}-${hora}`;
                 if (!heatmap[key]) heatmap[key] = { dia, hora, inscritos: 0, cupo: 0, clases: 0 };
                 heatmap[key].inscritos += c.inscritos;
@@ -1312,7 +1313,7 @@ app.get('/api/cron/recordatorios', async (req, res) => {
                     from: EMAIL_FROM,
                     to: r.user.email,
                     subject: `Recordatorio: tu clase "${r.nombre}" es mañana`,
-                    html: `<p>Hola ${r.user.nombre},</p><p>Te recordamos tu clase <strong>${r.nombre}</strong> el ${new Date(r.fecha).toLocaleString('es-MX')}.</p><p>¡Te esperamos en BOOZ Studio!</p>`
+                    html: `<p>Hola ${r.user.nombre},</p><p>Te recordamos tu clase <strong>${r.nombre}</strong> el ${new Date(r.fecha).toLocaleString('es-MX', { timeZone: ZONA_ESTUDIO })}.</p><p>¡Te esperamos en BOOZ Studio!</p>`
                 });
                 enviados++;
             } catch (e) {
