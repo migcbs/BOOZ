@@ -94,7 +94,11 @@ export default function ReservaPopup({ dayData, close }) {
       if (res.ok && data.success) {
         // ✅ CORRECCIÓN: actualizar booz_user
         localStorage.setItem("booz_user", JSON.stringify(data.userUpdated));
-        await Swal.fire({
+        // Cerrar primero: antes se esperaba al aviso de 2 s, que además quedaba
+        // detrás del popup (z-index 10000), así que el botón se veía en
+        // "Procesando..." sin que la alumna viera la confirmación.
+        close();
+        Swal.fire({
           icon: 'success',
           title: '¡Reservado!',
           text: 'Tu lugar ha sido asegurado.',
@@ -102,7 +106,6 @@ export default function ReservaPopup({ dayData, close }) {
           timer: 2000,
           showConfirmButton: false
         });
-        close();
       } else {
         throw new Error(data.message || "Error al procesar la reserva");
       }
